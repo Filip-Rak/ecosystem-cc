@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string_view>
 
+#include "Application/System/InputSystem.hpp"
+
 namespace
 {
 constexpr uint16_t WindowWidth = 1280u;
@@ -15,7 +17,9 @@ namespace cc::eco
 Application::Application()
     : m_engine(
           { .Title = Title.data(), .WindowWidth = WindowWidth, .WindowHeight = WindowHeight } )
-{}
+{
+	m_engine.addSystem< InputSystem >();
+}
 
 auto Application::run() -> void
 {

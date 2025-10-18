@@ -1,19 +1,10 @@
 #include "Engine/Engine.hpp"
 
-#include <cstdint>
-
 #include "Engine/Interface/IService.hpp"
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 #include "Engine/Service/SFWindowService.hpp"
 #include "Engine/Service/TimeService.hpp"
-
-namespace
-{
-std::string Title = "CircleCollision";
-constexpr uint16_t WindowWidth = 1280u;
-constexpr uint16_t WindowHeight = 720u;
-}  // namespace
 
 namespace cc
 {
