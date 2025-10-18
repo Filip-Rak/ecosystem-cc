@@ -1,0 +1,8 @@
+# Ignore IDEs
+.vscode/
+
+# Ignore build directories
+build/
+
+# Ignore clang
+.cache

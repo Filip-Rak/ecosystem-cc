@@ -1,0 +1,16 @@
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  -bugprone-suspicious-stringview-data-usage,
+  performance-*,
+  modernize-*,
+  readability-*,
+  -readability-identifier-length,
+  -readability-uppercase-literal-suffix,
+  -readability-braces-around-statements,
+  misc-*,
+  -misc-non-private-member-variables-in-classes
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '(?!.*build).*'
+SystemHeaders: false
