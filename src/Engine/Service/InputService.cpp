@@ -19,7 +19,7 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 }
 }  // namespace
 
-auto InputService::init( entt::registry& registry ) -> void
+InputService::InputService( entt::registry& registry )
 {
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 

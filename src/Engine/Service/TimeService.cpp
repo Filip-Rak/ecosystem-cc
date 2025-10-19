@@ -6,7 +6,7 @@
 
 namespace cc
 {
-auto TimeService::init( entt::registry& registry ) -> void
+TimeService::TimeService( entt::registry& registry )
 {
 	publishTime( registry );
 }

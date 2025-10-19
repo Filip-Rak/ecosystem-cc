@@ -12,7 +12,7 @@ namespace cc
 class InputService : public IEndFrameService
 {
 public:
-	auto init( entt::registry& registry ) -> void override;
+	InputService( entt::registry& registry );
 
 	auto endFrame( entt::registry& registry ) -> void override;
 

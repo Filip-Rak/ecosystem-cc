@@ -60,7 +60,6 @@ private:
 	auto setupDispatcher() -> void;
 	auto createCoreServices() -> void;
 	auto createWindowServices( const Args& args ) -> void;
-	auto initServices() -> void;
 
 	auto onExit( const event::Exit& exitEvent ) -> void;
 

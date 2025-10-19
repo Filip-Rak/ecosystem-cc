@@ -9,26 +9,25 @@ namespace cc
 struct IFrameService : NonMoveable, NonCopyable
 {
 	virtual ~IFrameService() = default;
-	virtual void init( entt::registry& registry ) {}
-	virtual void beginFrame( entt::registry& registry ) = 0;
-	virtual void endFrame( entt::registry& registry ) = 0;
+	virtual auto beginFrame( entt::registry& registry ) -> void = 0;
+	virtual auto endFrame( entt::registry& registry ) -> void = 0;
 };
 
 struct IPassiveService : IFrameService
 {
-	void beginFrame( entt::registry& registry ) final {}
-	void endFrame( entt::registry& registry ) final {}
+	auto beginFrame( entt::registry& registry ) -> void final {}
+	auto endFrame( entt::registry& registry ) -> void final {}
 };
 
 struct IBeginFrameService : IFrameService
 {
-	void beginFrame( entt::registry& registry ) override = 0;
-	void endFrame( entt::registry& registry ) final {}
+	auto beginFrame( entt::registry& registry ) -> void override = 0;
+	auto endFrame( entt::registry& registry ) -> void final {}
 };
 
 struct IEndFrameService : IFrameService
 {
-	void beginFrame( entt::registry& registry ) final {}
-	void endFrame( entt::registry& registry ) override = 0;
+	auto beginFrame( entt::registry& registry ) -> void final {}
+	auto endFrame( entt::registry& registry ) -> void override = 0;
 };
 }  // namespace cc

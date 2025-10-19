@@ -33,11 +33,9 @@ template < typename T >
 
 namespace cc
 {
-SFWindowService::SFWindowService( uint16_t width, uint16_t height, const std::string& title )
+SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
+                                  const std::string& title )
     : m_window( sf::VideoMode( { width, height } ), title )
-{}
-
-auto SFWindowService::init( entt::registry& registry ) -> void
 {
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::Exit >().connect< &SFWindowService::onExit >( *this );

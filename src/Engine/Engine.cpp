@@ -17,8 +17,6 @@ Engine::Engine( const Args& args )
 	{
 		createWindowServices( args );
 	}
-
-	initServices();
 };
 
 auto Engine::run() -> void
@@ -44,19 +42,15 @@ auto Engine::setupDispatcher() -> void
 
 auto Engine::createCoreServices() -> void
 {
-	addService< TimeService >();
+	addService< TimeService >( m_registry );
 }
 
 auto Engine::createWindowServices( const Args& args ) -> void
 {
-	auto& window = addService< SFWindowService >( args.WindowWidth, args.WindowHeight, args.Title );
+	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight,
+	                                              args.Title );
 	addService< SFRenderService >( window.getWindow() );
-	addService< InputService >();
-}
-
-auto Engine::initServices() -> void
-{
-	for ( auto& service : m_services ) service->init( m_registry );
+	addService< InputService >( m_registry );
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void

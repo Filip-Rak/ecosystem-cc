@@ -19,8 +19,8 @@ namespace cc
 class SFWindowService : public IBeginFrameService
 {
 public:
-	SFWindowService( uint16_t width, uint16_t height, const std::string& title );
-	auto init( entt::registry& registry ) -> void override;
+	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
+	                 const std::string& title );
 
 	auto beginFrame( entt::registry& registry ) -> void override;
 
