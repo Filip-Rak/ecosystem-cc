@@ -1,7 +1,6 @@
 #include "Engine/Engine.hpp"
 
 #include "Engine/Events/SystemEvents.hpp"
-#include "Engine/Interface/IService.hpp"
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 #include "Engine/Service/SFWindowService.hpp"
@@ -12,7 +11,7 @@ namespace cc
 Engine::Engine( const Args& args )
 {
 	setupDispatcher();
-	createEngineServices();
+	createCoreServices();
 
 	if ( args.EnableGUI )
 	{
@@ -26,9 +25,9 @@ auto Engine::run() -> void
 {
 	while ( m_isRunning )
 	{
-		for ( auto& service : m_services ) service.get().beginFrame( m_registry );
+		for ( auto& service : m_services ) service->beginFrame( m_registry );
 		for ( auto& system : m_systems ) system->update( m_registry );
-		for ( auto& service : m_services ) service.get().endFrame( m_registry );
+		for ( auto& service : m_services ) service->endFrame( m_registry );
 	}
 }
 
@@ -43,28 +42,21 @@ auto Engine::setupDispatcher() -> void
 	dispatcher.sink< event::Exit >().connect< &Engine::onExit >( *this );
 }
 
-auto Engine::createEngineServices() -> void
+auto Engine::createCoreServices() -> void
 {
-	auto& timeService = m_registry.ctx().emplace< TimeService >();
-	m_services.emplace_back( timeService );
+	addService< TimeService >();
 }
 
 auto Engine::createWindowServices( const Args& args ) -> void
 {
-	auto& window = m_registry.ctx().emplace< SFWindowService >( args.WindowWidth, args.WindowHeight,
-	                                                            args.Title );
-	m_services.emplace_back( window );
-
-	auto& renderer = m_registry.ctx().emplace< SFRenderService >( window.getWindow() );
-	m_services.emplace_back( renderer );
-
-	auto& inputService = m_registry.ctx().emplace< InputService >();
-	m_services.emplace_back( inputService );
+	auto& window = addService< SFWindowService >( args.WindowWidth, args.WindowHeight, args.Title );
+	addService< SFRenderService >( window.getWindow() );
+	addService< InputService >();
 }
 
 auto Engine::initServices() -> void
 {
-	for ( auto& service : m_services ) service.get().init( m_registry );
+	for ( auto& service : m_services ) service->init( m_registry );
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void

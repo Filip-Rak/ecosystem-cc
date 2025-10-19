@@ -72,3 +72,4 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 
 # Templates
 AlwaysBreakTemplateDeclarations: Yes  # Yes | Multiline | No
+RequiresClausePosition: WithPreceding # OwnLine | WithPreceding | WithFollowing

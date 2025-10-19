@@ -1,12 +1,12 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include <entt/entt.hpp>
 
+#include "Engine/Interface/IService.hpp"
 #include "Engine/Interface/ISystem.hpp"
 #include "Engine/Utility/Traits.hpp"
 
@@ -16,8 +16,6 @@ namespace event
 {
 struct Exit;
 }
-
-struct IFrameService;
 
 struct Args
 {
@@ -32,8 +30,12 @@ class Engine : NonMoveable, NonCopyable
 public:
 	Engine( const Args& args );
 
+	auto run() -> void;
+
+	[[nodiscard]] auto registry() -> entt::registry&;
+
 	template < typename T, typename... Args >
-	    requires std::derived_from< T, ISystem >
+	requires std::derived_from< T, ISystem >
 	auto addSystem( Args&&... args ) -> T&
 	{
 		auto ptr = std::make_unique< T >( std::forward< Args >( args )... );
@@ -42,26 +44,28 @@ public:
 		return ref;
 	}
 
-	auto run() -> void;
-
-	template < typename T >
-	auto service() -> T&
+private:
+	template < typename T, typename... Args >
+	requires std::derived_from< T, IFrameService >
+	auto addService( Args&&... args ) -> T&
 	{
-		return m_registry.ctx().get< T >();
+		auto ptr = std::make_unique< T >( std::forward< Args >( args )... );
+		auto& ref = *ptr;
+		m_registry.ctx().emplace< T& >( ref );
+		m_services.push_back( std::move( ptr ) );
+
+		return ref;
 	}
 
-	[[nodiscard]] auto registry() -> entt::registry&;
-
-private:
 	auto setupDispatcher() -> void;
-	auto createEngineServices() -> void;
+	auto createCoreServices() -> void;
 	auto createWindowServices( const Args& args ) -> void;
 	auto initServices() -> void;
 
 	auto onExit( const event::Exit& exitEvent ) -> void;
 
 	entt::registry m_registry;
-	std::vector< std::reference_wrapper< IFrameService > > m_services;
+	std::vector< std::unique_ptr< IFrameService > > m_services;
 	std::vector< std::unique_ptr< ISystem > > m_systems;
 
 	bool m_isRunning{ true };

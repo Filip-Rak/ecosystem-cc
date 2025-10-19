@@ -12,7 +12,7 @@ namespace cc::eco
 {
 InputSystem::InputSystem( entt::registry& registry )
 {
-	// TODO: Add the same check in services's init method
+	// TODO: Add the same check in services init methods
 	assert( registry.ctx().contains< InputService >() && "InputService not initialized" );
 	assert( registry.ctx().contains< Time >() && "Time not initialized" );
 }
@@ -33,7 +33,7 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	if ( input.isPressed( keyboard::Key::Escape ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::Exit >();
+		dispatcher.enqueue< event::Exit >();  // FIXME: Should this be a trigger?
 	}
 }
 }  // namespace cc::eco
