@@ -1,5 +1,6 @@
 #include "Application/System/InputSystem.hpp"
 
+#include <cassert>
 #include <iostream>  // FIXME: Debug
 
 #include <entt/entt.hpp>

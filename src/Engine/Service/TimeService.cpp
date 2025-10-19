@@ -1,5 +1,7 @@
 #include "Engine/Service/TimeService.hpp"
 
+#include <cassert>
+
 #include <entt/entt.hpp>
 
 #include "Engine/Utility/Time.hpp"
@@ -8,6 +10,7 @@ namespace cc
 {
 TimeService::TimeService( entt::registry& registry )
 {
+	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	publishTime( registry );
 }
 

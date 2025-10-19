@@ -49,8 +49,8 @@ auto Engine::createWindowServices( const Args& args ) -> void
 {
 	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight,
 	                                              args.Title );
-	addService< SFRenderService >( window.getWindow() );
 	addService< InputService >( m_registry );
+	addService< SFRenderService >( window.getWindow() );
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void

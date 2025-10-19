@@ -1,5 +1,7 @@
 #include "InputService.hpp"
 
+#include <cassert>
+
 #include <entt/entt.hpp>
 
 #include "Engine/Events/WindowEvents.hpp"
@@ -21,6 +23,7 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 
 InputService::InputService( entt::registry& registry )
 {
+	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 
 	// clang-format off

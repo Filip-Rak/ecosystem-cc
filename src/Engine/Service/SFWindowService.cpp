@@ -1,5 +1,7 @@
 #include "Engine/Service/SFWindowService.hpp"
 
+#include <cstdint>
+
 #include <SFML/Window/Event.hpp>
 #include <entt/entt.hpp>
 #include <magic_enum/magic_enum.hpp>
@@ -37,6 +39,7 @@ SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint
                                   const std::string& title )
     : m_window( sf::VideoMode( { width, height } ), title )
 {
+	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::Exit >().connect< &SFWindowService::onExit >( *this );
 }
@@ -44,7 +47,6 @@ SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint
 auto SFWindowService::beginFrame( entt::registry& registry ) -> void
 {
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-
 	publishWindowEvents( dispatcher );
 	dispatcher.update();
 }
