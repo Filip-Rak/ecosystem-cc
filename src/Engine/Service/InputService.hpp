@@ -12,7 +12,8 @@ namespace cc
 class InputService : public IEndFrameService
 {
 public:
-	InputService( entt::dispatcher& dispatcher );
+	auto init( entt::registry& registry ) -> void override;
+
 	auto endFrame( entt::registry& registry ) -> void override;
 
 	[[nodiscard]] auto isPressed( keyboard::Key key ) const -> bool;

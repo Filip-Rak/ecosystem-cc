@@ -50,10 +50,14 @@ public:
 		return m_registry.ctx().get< T >();
 	}
 
-	auto registry() -> entt::registry&;
+	[[nodiscard]] auto registry() -> entt::registry&;
 
 private:
-	auto initWindowServices( const Args& args, entt::dispatcher& dispatcher ) -> void;
+	auto setupDispatcher() -> void;
+	auto createEngineServices() -> void;
+	auto createWindowServices( const Args& args ) -> void;
+	auto initServices() -> void;
+
 	auto onExit( const event::Exit& exitEvent ) -> void;
 
 	entt::registry m_registry;

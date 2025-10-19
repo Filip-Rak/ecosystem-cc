@@ -19,8 +19,10 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 }
 }  // namespace
 
-InputService::InputService( entt::dispatcher& dispatcher )
+auto InputService::init( entt::registry& registry ) -> void
 {
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+
 	// clang-format off
 	dispatcher.sink< event::MouseButtonChanged >().connect< &InputService::onButtonChanged >(*this );
 	dispatcher.sink< event::KeyChanged >().connect< &InputService::onKeyChanged >( *this );

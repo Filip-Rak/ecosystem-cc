@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string_view>
 
+#include <entt/fwd.hpp>
+
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/System/InputSystem.hpp"
 
@@ -21,7 +23,8 @@ App::App( const cli::Options& options )
                   .WindowHeight = WindowHeight,
                   .EnableGUI = !options.headless } )
 {
-	if ( !options.headless ) m_engine.addSystem< InputSystem >();
+	auto& registry = m_engine.registry();
+	if ( !options.headless ) m_engine.addSystem< InputSystem >( registry );
 }
 
 auto App::run() -> void

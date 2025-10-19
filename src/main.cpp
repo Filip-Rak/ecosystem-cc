@@ -3,9 +3,11 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/CLI/ParseCLI.hpp"
 
+using namespace cc;
+
 auto main( int argc, char** argv ) -> int
 {
-	const cc::cli::Options options = cc::cli::parse( argc, argv );
-	cc::eco::App app( options );
+	const cli::Options options = cli::parse( argc, argv );
+	eco::App app( options );
 	app.run();
 }

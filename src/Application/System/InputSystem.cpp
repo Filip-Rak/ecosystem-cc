@@ -10,9 +10,16 @@
 
 namespace cc::eco
 {
+InputSystem::InputSystem( entt::registry& registry )
+{
+	// TODO: Add the same check in services's init method
+	assert( registry.ctx().contains< InputService >() && "InputService not initialized" );
+	assert( registry.ctx().contains< Time >() && "Time not initialized" );
+}
+
 auto InputSystem::update( entt::registry& registry ) -> void
 {
-	// FIXME: Debug
+	// TODO: Debug
 	const auto& input = registry.ctx().get< InputService >();
 	const auto& time = registry.ctx().get< Time >();
 

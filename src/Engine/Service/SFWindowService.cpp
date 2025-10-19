@@ -33,10 +33,13 @@ template < typename T >
 
 namespace cc
 {
-SFWindowService::SFWindowService( entt::dispatcher& dispatcher, uint16_t width, uint16_t height,
-                                  const std::string& title )
+SFWindowService::SFWindowService( uint16_t width, uint16_t height, const std::string& title )
     : m_window( sf::VideoMode( { width, height } ), title )
+{}
+
+auto SFWindowService::init( entt::registry& registry ) -> void
 {
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::Exit >().connect< &SFWindowService::onExit >( *this );
 }
 
@@ -73,11 +76,7 @@ auto SFWindowService::pollEvents() -> std::vector< sf::Event >
 	std::vector< sf::Event > events;
 	while ( const auto event = m_window.pollEvent() )
 	{
-		if ( const auto* closed = event->getIf< sf::Event::Closed >() )
-		{
-			m_window.close();
-		}
-		else if ( const auto* focusGained = event->getIf< sf::Event::FocusGained >() )
+		if ( const auto* focusGained = event->getIf< sf::Event::FocusGained >() )
 		{
 			m_inFocus = true;
 		}
@@ -108,7 +107,9 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher ) -> voi
 	{
 		if ( const auto* closed = event.getIf< sf::Event::Closed >() )
 		{
+			// TODO: Make into one event?
 			dispatcher.enqueue< event::WindowClosed >();
+			dispatcher.enqueue< event::Exit >();
 		}
 		else if ( const auto* lostFocus = event.getIf< sf::Event::FocusLost >() )
 		{

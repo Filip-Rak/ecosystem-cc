@@ -17,6 +17,7 @@ namespace cc
 class TimeService : public IBeginFrameService
 {
 public:
+	auto init( entt::registry& registry ) -> void override;
 	auto beginFrame( entt::registry& registry ) -> void override;
 
 private:

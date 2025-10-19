@@ -1,11 +1,16 @@
 #include "Engine/Service/TimeService.hpp"
 
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 
 #include "Engine/Utility/Time.hpp"
 
 namespace cc
 {
+auto TimeService::init( entt::registry& registry ) -> void
+{
+	publishTime( registry );
+}
+
 auto TimeService::beginFrame( entt::registry& registry ) -> void
 {
 	processDeltaTime();

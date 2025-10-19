@@ -19,8 +19,9 @@ namespace cc
 class SFWindowService : public IBeginFrameService
 {
 public:
-	SFWindowService( entt::dispatcher& dispatcher, uint16_t width, uint16_t height,
-	                 const std::string& title );
+	SFWindowService( uint16_t width, uint16_t height, const std::string& title );
+	auto init( entt::registry& registry ) -> void override;
+
 	auto beginFrame( entt::registry& registry ) -> void override;
 
 	[[nodiscard]] auto isOpen() const -> bool;
@@ -29,8 +30,8 @@ public:
 
 private:
 	auto onExit( const event::Exit& exitEvent ) -> void;
-	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
 	auto publishWindowEvents( entt::dispatcher& ) -> void;
+	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
 
 	sf::RenderWindow m_window;
 	bool m_inFocus{ true };

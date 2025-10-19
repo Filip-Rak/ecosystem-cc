@@ -11,13 +11,15 @@ namespace cc
 {
 Engine::Engine( const Args& args )
 {
-	auto& dispatcher = m_registry.ctx().emplace< entt::dispatcher >();
-	dispatcher.sink< event::Exit >().connect< &Engine::onExit >( *this );
+	setupDispatcher();
+	createEngineServices();
 
-	auto& timeService = m_registry.ctx().emplace< TimeService >();
-	m_services.emplace_back( timeService );
+	if ( args.EnableGUI )
+	{
+		createWindowServices( args );
+	}
 
-	if ( args.EnableGUI ) initWindowServices( args, dispatcher );
+	initServices();
 };
 
 auto Engine::run() -> void
@@ -30,17 +32,39 @@ auto Engine::run() -> void
 	}
 }
 
-auto Engine::initWindowServices( const Args& args, entt::dispatcher& dispatcher ) -> void
+auto Engine::registry() -> entt::registry&
 {
-	auto& window = m_registry.ctx().emplace< SFWindowService >( dispatcher, args.WindowWidth,
-	                                                            args.WindowHeight, args.Title );
+	return m_registry;
+}
+
+auto Engine::setupDispatcher() -> void
+{
+	auto& dispatcher = m_registry.ctx().emplace< entt::dispatcher >();
+	dispatcher.sink< event::Exit >().connect< &Engine::onExit >( *this );
+}
+
+auto Engine::createEngineServices() -> void
+{
+	auto& timeService = m_registry.ctx().emplace< TimeService >();
+	m_services.emplace_back( timeService );
+}
+
+auto Engine::createWindowServices( const Args& args ) -> void
+{
+	auto& window = m_registry.ctx().emplace< SFWindowService >( args.WindowWidth, args.WindowHeight,
+	                                                            args.Title );
 	m_services.emplace_back( window );
 
 	auto& renderer = m_registry.ctx().emplace< SFRenderService >( window.getWindow() );
 	m_services.emplace_back( renderer );
 
-	auto& inputService = m_registry.ctx().emplace< InputService >( dispatcher );
+	auto& inputService = m_registry.ctx().emplace< InputService >();
 	m_services.emplace_back( inputService );
+}
+
+auto Engine::initServices() -> void
+{
+	for ( auto& service : m_services ) service.get().init( m_registry );
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void

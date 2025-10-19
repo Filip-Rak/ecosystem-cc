@@ -9,6 +9,7 @@ namespace cc
 struct IFrameService : NonMoveable, NonCopyable
 {
 	virtual ~IFrameService() = default;
+	virtual void init( entt::registry& registry ) {}
 	virtual void beginFrame( entt::registry& registry ) = 0;
 	virtual void endFrame( entt::registry& registry ) = 0;
 };
