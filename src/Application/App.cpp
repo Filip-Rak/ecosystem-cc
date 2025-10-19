@@ -16,10 +16,12 @@ constexpr std::string_view Title = "Ecosystem";
 namespace cc::eco
 {
 App::App( const cli::Params& params )
-    : m_engine(
-          { .Title = Title.data(), .WindowWidth = WindowWidth, .WindowHeight = WindowHeight } )
+    : m_engine( { .Title = Title.data(),
+                  .WindowWidth = WindowWidth,
+                  .WindowHeight = WindowHeight,
+                  .EnableGUI = !params.headless } )
 {
-	m_engine.addSystem< InputSystem >();
+	if ( !params.headless ) m_engine.addSystem< InputSystem >();
 }
 
 auto App::run() -> void

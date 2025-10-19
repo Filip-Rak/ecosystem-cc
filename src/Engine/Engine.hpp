@@ -12,6 +12,11 @@
 
 namespace cc
 {
+namespace event
+{
+struct Exit;
+}
+
 struct IFrameService;
 
 struct Args
@@ -19,6 +24,7 @@ struct Args
 	const std::string Title = "Engine";
 	const uint16_t WindowWidth = 1280u;
 	const uint16_t WindowHeight = 720u;
+	const bool EnableGUI = true;
 };
 
 class Engine : NonMoveable, NonCopyable
@@ -47,8 +53,13 @@ public:
 	auto registry() -> entt::registry&;
 
 private:
+	auto initWindowServices( const Args& args, entt::dispatcher& dispatcher ) -> void;
+	auto onExit( const event::Exit& exitEvent ) -> void;
+
 	entt::registry m_registry;
 	std::vector< std::reference_wrapper< IFrameService > > m_services;
 	std::vector< std::unique_ptr< ISystem > > m_systems;
+
+	bool m_isRunning{ true };
 };
 }  // namespace cc
