@@ -2,6 +2,6 @@
 
 namespace cc::cli
 {
-struct Params;
-auto parse( int argc, char** argv ) -> Params;
+struct Options;
+auto parse( int argc, char** argv ) -> Options;
 }  // namespace cc::cli

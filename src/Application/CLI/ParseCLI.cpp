@@ -2,16 +2,16 @@
 
 #include <CLI/CLI.hpp>
 
-#include "Application/CLI/CLIParams.hpp"
+#include "Application/CLI/CLIOptions.hpp"
 
 namespace cc::cli
 {
-auto parse( int argc, char** argv ) -> Params
+auto parse( int argc, char** argv ) -> Options
 {
-	Params params;
+	Options options;
 
 	CLI::App app{ "Ecosystem" };
-	app.add_flag( "--headless", params.headless, "Run without GUI" );
+	app.add_flag( "--headless", options.headless, "Run without GUI" );
 
 	try
 	{
@@ -22,6 +22,6 @@ auto parse( int argc, char** argv ) -> Params
 		std::exit( app.exit( error ) );
 	}
 
-	return params;
+	return options;
 }
 }  // namespace cc::cli

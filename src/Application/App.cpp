@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string_view>
 
-#include "Application/CLI/CLIParams.hpp"
+#include "Application/CLI/CLIOptions.hpp"
 #include "Application/System/InputSystem.hpp"
 
 namespace
@@ -15,13 +15,13 @@ constexpr std::string_view Title = "Ecosystem";
 
 namespace cc::eco
 {
-App::App( const cli::Params& params )
+App::App( const cli::Options& options )
     : m_engine( { .Title = Title.data(),
                   .WindowWidth = WindowWidth,
                   .WindowHeight = WindowHeight,
-                  .EnableGUI = !params.headless } )
+                  .EnableGUI = !options.headless } )
 {
-	if ( !params.headless ) m_engine.addSystem< InputSystem >();
+	if ( !options.headless ) m_engine.addSystem< InputSystem >();
 }
 
 auto App::run() -> void

@@ -2,7 +2,7 @@
 
 namespace cc::cli
 {
-struct Params
+struct Options
 {
 	bool headless{ false };
 };

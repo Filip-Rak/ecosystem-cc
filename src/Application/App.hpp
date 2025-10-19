@@ -5,7 +5,7 @@
 
 namespace cc::cli
 {
-struct Params;
+struct Options;
 }
 
 namespace cc::eco
@@ -13,7 +13,7 @@ namespace cc::eco
 class App : NonMoveable, NonCopyable
 {
 public:
-	App( const cli::Params& params );
+	App( const cli::Options& options );
 	auto run() -> void;
 
 private:
