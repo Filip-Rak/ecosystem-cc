@@ -3,12 +3,17 @@
 #include "Engine/Engine.hpp"
 #include "Engine/Utility/Traits.hpp"
 
+namespace cc::cli
+{
+struct Params;
+}
+
 namespace cc::eco
 {
-class Application : NonMoveable, NonCopyable
+class App : NonMoveable, NonCopyable
 {
 public:
-	Application();
+	App( const cli::Params& params );
 	auto run() -> void;
 
 private:

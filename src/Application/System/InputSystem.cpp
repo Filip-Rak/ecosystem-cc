@@ -8,7 +8,6 @@
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Utility/Time.hpp"
 
-
 namespace cc::eco
 {
 auto InputSystem::update( entt::registry& registry ) -> void

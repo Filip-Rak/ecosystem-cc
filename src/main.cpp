@@ -1,7 +1,11 @@
-#include "Application/Application.hpp"
+#include "Application/App.hpp"
 
-auto main() -> int
+#include "Application/CLI/CLIParams.hpp"
+#include "Application/CLI/ParseCLI.hpp"
+
+auto main( int argc, char** argv ) -> int
 {
-	cc::eco::Application app;
+	const cc::cli::Params params = cc::cli::parse( argc, argv );
+	cc::eco::App app( params );
 	app.run();
 }

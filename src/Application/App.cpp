@@ -1,8 +1,9 @@
-#include "Application/Application.hpp"
+#include "Application/App.hpp"
 
 #include <cstdint>
 #include <string_view>
 
+#include "Application/CLI/CLIParams.hpp"
 #include "Application/System/InputSystem.hpp"
 
 namespace
@@ -14,14 +15,14 @@ constexpr std::string_view Title = "Ecosystem";
 
 namespace cc::eco
 {
-Application::Application()
+App::App( const cli::Params& params )
     : m_engine(
           { .Title = Title.data(), .WindowWidth = WindowWidth, .WindowHeight = WindowHeight } )
 {
 	m_engine.addSystem< InputSystem >();
 }
 
-auto Application::run() -> void
+auto App::run() -> void
 {
 	m_engine.run();
 }

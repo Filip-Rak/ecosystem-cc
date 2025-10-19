@@ -28,6 +28,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(magic_enum)
 
+FetchContent_Declare(
+    CLI11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+    GIT_TAG v2.5.0
+)
+FetchContent_MakeAvailable(CLI11)
+
 set(DEPENDENCIES
     EnTT::EnTT
     glm::glm
@@ -35,4 +42,5 @@ set(DEPENDENCIES
     sfml-window 
     sfml-graphics
     magic_enum::magic_enum
+    CLI11::CLI11
 )
