@@ -13,8 +13,9 @@ class GUIService : public IEndFrameService
 public:
 	using DrawFunction = std::function< void( entt::registry& registry ) >;
 
-	auto endFrame( entt::registry& registry ) -> void override;
+	GUIService();
 
+	auto endFrame( entt::registry& registry ) -> void override;
 	auto addToDraw( DrawFunction drawFunction ) -> void;
 
 private:

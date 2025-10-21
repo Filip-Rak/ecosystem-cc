@@ -24,9 +24,9 @@ App::App( const cli::Options& options )
                   .WindowHeight = WindowHeight,
                   .EnableGUI = !options.headless } )
 {
-	auto& registry = m_engine.registry();
 	if ( !options.headless )
 	{
+		auto& registry = m_engine.registry();
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< InputSystem >( registry );
 	}
