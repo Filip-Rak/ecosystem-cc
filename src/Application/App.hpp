@@ -8,7 +8,7 @@ namespace cc::cli
 struct Options;
 }
 
-namespace cc::eco
+namespace cc::app
 {
 class App : NonMoveable, NonCopyable
 {
@@ -19,4 +19,4 @@ public:
 private:
 	Engine m_engine;
 };
-}  // namespace cc::eco
+}  // namespace cc::app

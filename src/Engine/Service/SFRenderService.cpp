@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <imgui-SFML.h>
 
 namespace cc
 {
@@ -14,6 +15,7 @@ auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
 
 auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 {
+	ImGui::SFML::Render( m_window );
 	m_window.display();
 }
 }  // namespace cc

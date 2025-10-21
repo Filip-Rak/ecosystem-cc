@@ -22,6 +22,8 @@ public:
 	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
 	                 const std::string& title );
 
+	~SFWindowService();
+
 	auto beginFrame( entt::registry& registry ) -> void override;
 
 	[[nodiscard]] auto isOpen() const -> bool;
@@ -34,6 +36,7 @@ private:
 	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
 
 	sf::RenderWindow m_window;
+	sf::Clock m_imguiClock;
 	bool m_inFocus{ true };
 };
 }  // namespace cc

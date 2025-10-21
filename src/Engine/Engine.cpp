@@ -1,6 +1,7 @@
 #include "Engine/Engine.hpp"
 
 #include "Engine/Events/SystemEvents.hpp"
+#include "Engine/Service/GUIService.hpp"
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 #include "Engine/Service/SFWindowService.hpp"
@@ -50,6 +51,7 @@ auto Engine::createWindowServices( const Args& args ) -> void
 	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight,
 	                                              args.Title );
 	addService< InputService >( m_registry );
+	addService< GUIService >();
 	addService< SFRenderService >( window.getWindow() );
 }
 

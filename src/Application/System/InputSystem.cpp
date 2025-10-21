@@ -9,7 +9,7 @@
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Utility/Time.hpp"
 
-namespace cc::eco
+namespace cc::app
 {
 InputSystem::InputSystem( entt::registry& registry )
 {
@@ -34,7 +34,8 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	if ( input.isPressed( keyboard::Key::Escape ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::Exit >();  // FIXME: Should this be a trigger?
+		dispatcher.enqueue< event::Exit >();  // FIXME: Should this be a trigger, should .update be
+		                                      // in the loop?
 	}
 }
-}  // namespace cc::eco
+}  // namespace cc::app

@@ -35,12 +35,30 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(CLI11)
 
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.1
+)
+FetchContent_MakeAvailable(imgui)
+
+set(IMGUI_DIR ${imgui_SOURCE_DIR})
+set(IMGUI_SFML_FIND_SFML OFF)
+
+FetchContent_Declare(
+    imgui-sfml
+    GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+    GIT_TAG v3.0
+)
+FetchContent_MakeAvailable(imgui-sfml)
+
 set(DEPENDENCIES
+    CLI11::CLI11
     EnTT::EnTT
     glm::glm
+    ImGui-SFML::ImGui-SFML
+    magic_enum::magic_enum
+    sfml-graphics
     sfml-system 
     sfml-window 
-    sfml-graphics
-    magic_enum::magic_enum
-    CLI11::CLI11
 )

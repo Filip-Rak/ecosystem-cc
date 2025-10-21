@@ -4,6 +4,7 @@
 
 #include <SFML/Window/Event.hpp>
 #include <entt/entt.hpp>
+#include <imgui-SFML.h>
 #include <magic_enum/magic_enum.hpp>
 
 #include "Engine/Events/WindowEvents.hpp"
@@ -40,8 +41,15 @@ SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint
     : m_window( sf::VideoMode( { width, height } ), title )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
+	assert( ImGui::SFML::Init( m_window ) && "Creation of imgui context for SFML Failed" );
+
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::Exit >().connect< &SFWindowService::onExit >( *this );
+}
+
+SFWindowService::~SFWindowService()
+{
+	ImGui::SFML::Shutdown();
 }
 
 auto SFWindowService::beginFrame( entt::registry& registry ) -> void
@@ -95,8 +103,10 @@ auto SFWindowService::pollEvents() -> std::vector< sf::Event >
 		}
 
 		events.emplace_back( *event );
+		ImGui::SFML::ProcessEvent( m_window, *event );
 	}
 
+	ImGui::SFML::Update( m_window, m_imguiClock.restart() );
 	return events;
 }
 

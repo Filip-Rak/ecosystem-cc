@@ -7,6 +7,7 @@
 
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/System/InputSystem.hpp"
+#include "Application/System/UISystem.hpp"
 
 namespace
 {
@@ -15,7 +16,7 @@ constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
 }  // namespace
 
-namespace cc::eco
+namespace cc::app
 {
 App::App( const cli::Options& options )
     : m_engine( { .Title = Title.data(),
@@ -24,11 +25,15 @@ App::App( const cli::Options& options )
                   .EnableGUI = !options.headless } )
 {
 	auto& registry = m_engine.registry();
-	if ( !options.headless ) m_engine.addSystem< InputSystem >( registry );
+	if ( !options.headless )
+	{
+		m_engine.addSystem< UISystem >( registry );
+		m_engine.addSystem< InputSystem >( registry );
+	}
 }
 
 auto App::run() -> void
 {
 	m_engine.run();
 }
-}  // namespace cc::eco
+}  // namespace cc::app

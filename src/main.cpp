@@ -8,6 +8,6 @@ using namespace cc;
 auto main( int argc, char** argv ) -> int
 {
 	const cli::Options options = cli::parse( argc, argv );
-	eco::App app( options );
+	app::App app( options );
 	app.run();
 }

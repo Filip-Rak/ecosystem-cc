@@ -4,10 +4,11 @@
 
 namespace cc::app
 {
-class InputSystem : public ISystem
+class UISystem : public ISystem
 {
 public:
-	InputSystem( entt::registry& registry );
+	UISystem( entt::registry& registry );
+
 	auto update( entt::registry& registry ) -> void override;
 };
 }  // namespace cc::app
