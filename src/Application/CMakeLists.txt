@@ -4,6 +4,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/System/InputSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/UISystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuBar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
     PARENT_SCOPE
 )

@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 #include "Application/UI/MenuBar.hpp"
+#include "Application/UI/SidePanel.hpp"
 #include "Application/UI/StatusBar.hpp"
 #include "Engine/Service/GUIService.hpp"
 
@@ -18,6 +19,7 @@ UISystem::UISystem( entt::registry& registry )
 	    []( entt::registry& /*registry*/ ) -> void
 	    {
 		    ui::drawMenuBar();
+		    ui::drawSidePanel();
 		    ui::drawStatusBar();
 	    } );
 }
