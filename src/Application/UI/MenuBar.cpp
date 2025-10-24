@@ -4,47 +4,51 @@
 
 #include <imgui.h>
 
+#include "Application/UI/Constants.h"
+
 namespace cc::app::ui
 {
 namespace
 {
+constexpr const auto& Labels = constant::MenuBar.WidgetLabels;
+
 auto drawFileMenu() -> void
 {
-	if ( ImGui::BeginMenu( "File" ) )
+	if ( ImGui::BeginMenu( Labels.File.data() ) )
 	{
-		if ( ImGui::MenuItem( "Exit" ) )
+		if ( ImGui::MenuItem( Labels.Exit.data() ) )
 		{
-			std::cout << "Exit\n";
+			std::cout << Labels.Exit.data() << "\n";
 		}
 		ImGui::EndMenu();
 	}
 }
 auto drawEditMenu() -> void
 {
-	if ( ImGui::BeginMenu( "Edit" ) )
+	if ( ImGui::BeginMenu( Labels.Edit.data() ) )
 	{
-		if ( ImGui::MenuItem( "Speed up" ) )
+		if ( ImGui::MenuItem( Labels.SpeedUp.data() ) )
 		{
-			std::cout << "Speed up\n";
+			std::cout << Labels.SpeedUp.data() << "\n";
 		}
-		else if ( ImGui::MenuItem( "Slow down" ) )
+		else if ( ImGui::MenuItem( Labels.SlowDown.data() ) )
 		{
-			std::cout << "Slow down\n";
+			std::cout << Labels.SlowDown.data() << "\n";
 		}
-		if ( ImGui::MenuItem( "Pause / Resume" ) )
+		if ( ImGui::MenuItem( Labels.Resume.data() ) )
 		{
-			std::cout << "Pause / Resume\n";
+			std::cout << Labels.Resume.data() << " -> " << Labels.Pause.data() << "\n";
 		}
 		ImGui::EndMenu();
 	}
 }
 auto drawHelpMenu() -> void
 {
-	if ( ImGui::BeginMenu( "Help" ) )
+	if ( ImGui::BeginMenu( Labels.Help.data() ) )
 	{
-		if ( ImGui::MenuItem( "About" ) )
+		if ( ImGui::MenuItem( Labels.About.data() ) )
 		{
-			std::cout << "About\n";
+			std::cout << Labels.About.data() << "\n";
 		}
 		ImGui::EndMenu();
 	}

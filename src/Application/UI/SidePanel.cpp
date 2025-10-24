@@ -29,11 +29,9 @@ auto drawSidePanel() -> void
 		ImGui::TextUnformatted( "Inspector" );
 		ImGui::Separator();
 
-		// Optional: scrolling content region so the panel frame stays fixed
 		if ( ImGui::BeginChild( "RightPanelContent", ImVec2( -1, -1 ), ImGuiChildFlags_None,
 		                        ImGuiWindowFlags_NoMove ) )
 		{
-			// ... put lots of controls here ...
 			ImGui::Text( "Property A" );
 			static float opacity = 1.f;
 			ImGui::SliderFloat( "Opacity", &opacity, 0.0f, 1.0f );
