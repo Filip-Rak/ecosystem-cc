@@ -3,6 +3,8 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
+#include "Application/UI/MenuBar.hpp"
+#include "Application/UI/StatusBar.hpp"
 #include "Engine/Service/GUIService.hpp"
 
 namespace cc::app
@@ -15,22 +17,8 @@ UISystem::UISystem( entt::registry& registry )
 	gui.addToDraw(
 	    []( entt::registry& /*registry*/ ) -> void
 	    {
-		    ImGui::Begin( "ImGui Test" );
-
-		    static int click_count = 0;
-
-		    ImGui::Text( "ImGui!" );
-		    ImGui::Separator();
-
-		    if ( ImGui::Button( "Click me" ) )
-		    {
-			    click_count++;
-		    }
-
-		    ImGui::SameLine();
-		    ImGui::Text( "Clicked %d times", click_count );
-
-		    ImGui::End();
+		    ui::drawMenuBar();
+		    ui::drawStatusBar();
 	    } );
 }
 
