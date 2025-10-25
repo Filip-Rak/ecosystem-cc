@@ -23,6 +23,7 @@ auto drawFileMenu() -> void
 		ImGui::EndMenu();
 	}
 }
+
 auto drawEditMenu() -> void
 {
 	if ( ImGui::BeginMenu( Labels.Edit.data() ) )
@@ -42,6 +43,7 @@ auto drawEditMenu() -> void
 		ImGui::EndMenu();
 	}
 }
+
 auto drawHelpMenu() -> void
 {
 	if ( ImGui::BeginMenu( Labels.Help.data() ) )

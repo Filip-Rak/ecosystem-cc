@@ -1,8 +1,10 @@
 #include "Application/UI/StatusBar.hpp"
 
+#include <entt/entt.hpp>
 #include <imgui.h>
 
 #include "Application/UI/Constants.h"
+#include "Engine/Utility/Time.hpp"
 
 namespace cc::app::ui
 {
@@ -28,7 +30,7 @@ auto setProperties() -> void
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ScaledPadding );
 }
 
-auto createWidgets() -> void
+auto createWidgets( entt::registry& registry ) -> void
 {
 	// TODO: Implement.
 	// clang-format off
@@ -36,33 +38,34 @@ auto createWidgets() -> void
     ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
     ImGui::SameLine(); ImGui::Text( Labels.Mouse.data(), 34, 24 );
     ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
-    ImGui::SameLine(); ImGui::Text( Labels.Zoom.data(), 1.f );
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), 720472);
     ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
     ImGui::SameLine(); ImGui::Text( Labels.INFile.data(), "input.json");
     ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
     ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), "output.csv");
-
+	
+	const auto& time = registry.ctx().get< Time >();
     ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
-    ImGui::SameLine(); ImGui::Text( Labels.FPS.data(), 60.f);
+    ImGui::SameLine(); ImGui::Text( Labels.RunTime.data(), time.RunTime );
+	ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+    ImGui::SameLine(); ImGui::Text( Labels.FPS.data(), time.FPS );
 	// clang-format on
 }
 
-auto createBar() -> void
+auto createBar( entt::registry& registry ) -> void
 {
 	if ( ImGui::Begin( "StatusBar", nullptr, Constants.Flags ) )
 	{
-		createWidgets();
+		createWidgets( registry );
 		ImGui::End();
 	}
 
 	ImGui::PopStyleVar();
 }
 }  // namespace
-auto drawStatusBar() -> void
+auto drawStatusBar( entt::registry& registry ) -> void
 {
 	setProperties();
-	createBar();
+	createBar( registry );
 }
 }  // namespace cc::app::ui

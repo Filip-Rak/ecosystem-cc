@@ -13,29 +13,53 @@ namespace
 constexpr const auto& Constants = constant::SidePanel;
 constexpr const auto& Labels = Constants.WidgetLabels;
 
-auto setProperties( config::SidePanel& panelConfig )
+auto setProperties( entt::registry& registry )
 {
+	auto& panelConfig = registry.ctx().get< config::SidePanel >();
 	const auto* const ViewPort = ImGui::GetMainViewport();
 	const auto& panelWidth = panelConfig.width;
 
 	constexpr float StatusBarHeight = constant::StatusBar.Height;
 	const float PanelTop = ViewPort->WorkPos.y;
 	const float PanelLeft = ViewPort->WorkPos.x + ViewPort->WorkSize.x - panelWidth;
-	const float PanelHeight = ViewPort->WorkSize.y - StatusBarHeight;
+	const float UiScale = ImGui::GetIO().FontGlobalScale;
+	const float PanelHeight = ViewPort->WorkSize.y - ( StatusBarHeight * UiScale );
 
 	ImGui::SetNextWindowPos( ImVec2{ PanelLeft, PanelTop }, ImGuiCond_Always );
 	ImGui::SetNextWindowSize( ImVec2{ panelWidth, PanelHeight }, ImGuiCond_Always );
 }
 
-auto drawWidgets() -> void
+auto drawContents( entt::registry& registry ) -> void
 {
-	ImGui::Text( "Dummy" );
-	static float dummyVal = 1.f;
-	ImGui::SliderFloat( "Dummy", &dummyVal, 0.0f, 1.0f );
+	auto& panelConfig = registry.ctx().get< config::SidePanel >();
+	constexpr const auto& Contents = Constants.Contents;
+
+	// FIXME: Not for UI config but internal for renderer
+	static float zoom = 5.f;
+	static int speed = 5.f;
+
+	ImGui::SliderFloat( Labels.ZoomSlider.data(), &zoom, Contents.minZoom, Contents.maxZoom,
+	                    Contents.sliderPrecision.data() );
+	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed );
+
+	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
+	{
+		// TODO: Ask the sim instead of toggle.
+		static bool toggle = true;
+		panelConfig.pauseButtonLabel =
+		    ( toggle ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
+		toggle = !toggle;
+	}
+
+	float& uiScale = ImGui::GetIO().FontGlobalScale;
+	ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale,
+	                    Contents.maxUIScale, Contents.sliderPrecision.data(),
+	                    ImGuiSliderFlags_AlwaysClamp );
 }
 
-auto drawPanel( config::SidePanel& panelConfig ) -> void
+auto drawPanel( entt::registry& registry ) -> void
 {
+	auto& panelConfig = registry.ctx().get< config::SidePanel >();
 	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, Constants.MainWindowFlags ) )
 	{
 		panelConfig.width = ImGui::GetWindowSize().x;
@@ -44,7 +68,7 @@ auto drawPanel( config::SidePanel& panelConfig ) -> void
 		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size,
 		                        ScrollPanel.ChildFlags, ScrollPanel.WindowFlags ) )
 		{
-			drawWidgets();
+			drawContents( registry );
 		}
 		ImGui::EndChild();
 	}
@@ -55,8 +79,7 @@ auto drawPanel( config::SidePanel& panelConfig ) -> void
 
 auto drawSidePanel( entt::registry& registry ) -> void
 {
-	auto& panelConfig = registry.ctx().get< config::SidePanel >();
-	setProperties( panelConfig );
-	drawPanel( panelConfig );
+	setProperties( registry );
+	drawPanel( registry );
 }
 }  // namespace cc::app::ui

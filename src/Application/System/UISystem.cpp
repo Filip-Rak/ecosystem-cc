@@ -22,9 +22,9 @@ UISystem::UISystem( entt::registry& registry )
 	    {
 		    ui::drawMenuBar();
 		    ui::drawSidePanel( registry );
-		    ui::drawStatusBar();
+		    ui::drawStatusBar( registry );
 	    } );
-}
+}  // namespace
 
 auto UISystem::update( entt::registry& registry ) -> void {}
 }  // namespace cc::app
