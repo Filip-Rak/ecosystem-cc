@@ -5,6 +5,7 @@
 
 #include "Application/UI/Config.hpp"
 #include "Application/UI/Constants.h"
+#include "Engine/Events/GUIEvents.hpp"
 
 namespace cc::app::ui
 {
@@ -39,8 +40,9 @@ auto drawContents( entt::registry& registry ) -> void
 	static int speed = 5.f;
 
 	ImGui::SliderFloat( Labels.ZoomSlider.data(), &zoom, Contents.minZoom, Contents.maxZoom,
-	                    Contents.sliderPrecision.data() );
-	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed );
+	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d",
+	                  ImGuiSliderFlags_AlwaysClamp );
 
 	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
 	{
@@ -52,9 +54,13 @@ auto drawContents( entt::registry& registry ) -> void
 	}
 
 	float& uiScale = ImGui::GetIO().FontGlobalScale;
-	ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale,
-	                    Contents.maxUIScale, Contents.sliderPrecision.data(),
-	                    ImGuiSliderFlags_AlwaysClamp );
+	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale,
+	                         Contents.maxUIScale, Contents.sliderPrecision.data(),
+	                         ImGuiSliderFlags_AlwaysClamp ) )
+	{
+		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+		dispatcher.enqueue< event::RebuildFont >();
+	}
 }
 
 auto drawPanel( entt::registry& registry ) -> void

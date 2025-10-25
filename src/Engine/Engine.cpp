@@ -52,7 +52,7 @@ auto Engine::createWindowServices( const Args& args ) -> void
 	                                              args.Title );
 	addService< InputService >( m_registry );
 	addService< GUIService >();
-	addService< SFRenderService >( window.getWindow() );
+	addService< SFRenderService >( m_registry, window.getWindow() );
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void
