@@ -6,3 +6,6 @@ build/
 
 # Ignore clang
 .cache
+
+# Ignore ImGUI
+**/imgui.ini

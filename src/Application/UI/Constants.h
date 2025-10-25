@@ -10,37 +10,59 @@ struct MenuBar_t
 {
 	struct WidgetLabels_t
 	{
-		std::string_view File = "File";
-		std::string_view Exit = "Exit";
-		std::string_view Edit = "Edit";
-		std::string_view SpeedUp = "Speed up";
-		std::string_view SlowDown = "Slow down";
-		std::string_view Resume = "Resume";
-		std::string_view Pause = "Pause";
-		std::string_view Help = "Help";
-		std::string_view About = "About";
+		static constexpr std::string_view File = "File";
+		static constexpr std::string_view Exit = "Exit";
+		static constexpr std::string_view Edit = "Edit";
+		static constexpr std::string_view SpeedUp = "Speed up";
+		static constexpr std::string_view SlowDown = "Slow down";
+		static constexpr std::string_view Resume = "Resume";
+		static constexpr std::string_view Pause = "Pause";
+		static constexpr std::string_view Help = "Help";
+		static constexpr std::string_view About = "About";
 	} WidgetLabels;
 
-} inline constexpr MenuBar;
+} constexpr MenuBar;
 
 struct StatusBar_t
 {
-	float Height = 25.f;
-	ImVec2 Padding{ 10.f, 5.f };
-	ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-	                         ImGuiWindowFlags_NoSavedSettings |
-	                         ImGuiWindowFlags_NoBringToFrontOnFocus;
+	static constexpr float Height = 25.f;
+	static constexpr ImVec2 Padding{ 10.f, 5.f };
+	static constexpr ImGuiWindowFlags Flags =
+	    ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+	    ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 	struct Labels_t
 	{
-		std::string_view Separator = "|";
-		std::string_view Running = "Running";
-		std::string_view Mouse = "Mouse: (%d, %d)";
-		std::string_view Zoom = "Zoom: %.1fx";
-		std::string_view Seed = "Seed: %u";
-		std::string_view INFile = "IN File: %s";
-		std::string_view OUTFile = "OUT File: %s";
-		std::string_view FPS = "FPS: %.0f";
+		static constexpr std::string_view Separator = "|";
+		static constexpr std::string_view Running = "Running";
+		static constexpr std::string_view Mouse = "Mouse: (%d, %d)";
+		static constexpr std::string_view Zoom = "Zoom: %.1fx";
+		static constexpr std::string_view Seed = "Seed: %u";
+		static constexpr std::string_view INFile = "IN File: %s";
+		static constexpr std::string_view OUTFile = "OUT File: %s";
+		static constexpr std::string_view FPS = "FPS: %.0f";
 	} Labels;
 } constexpr StatusBar;
+
+struct SidePanel_t
+{
+	static constexpr float InitialWidth = 300.f;
+	static constexpr ImGuiWindowFlags MainWindowFlags =
+	    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+	    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoSavedSettings;
+
+	struct ScrollablePanel_t
+	{
+		static constexpr ImGuiWindowFlags ChildFlags = ImGuiChildFlags_None;
+		static constexpr ImGuiWindowFlags WindowFlags =
+		    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+		static constexpr ImVec2 Size = ImVec2( -1, -1 );
+	} ScrollablePanel;
+
+	struct WidgetLabels_t
+	{
+		static constexpr std::string_view SidePanel = "Side Panel";
+		static constexpr std::string_view ScrollablePanel = "Scrollable Panel";
+	} WidgetLabels;
+} constexpr SidePanel;
 }  // namespace cc::app::ui::constant

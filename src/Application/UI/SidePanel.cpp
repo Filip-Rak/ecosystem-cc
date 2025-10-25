@@ -1,43 +1,62 @@
 #include "Application/UI/SidePanel.hpp"
 
+#include <entt/entt.hpp>
 #include <imgui.h>
+
+#include "Application/UI/Config.hpp"
+#include "Application/UI/Constants.h"
 
 namespace cc::app::ui
 {
-auto drawSidePanel() -> void
+namespace
+{
+constexpr const auto& Constants = constant::SidePanel;
+constexpr const auto& Labels = Constants.WidgetLabels;
+
+auto setProperties( config::SidePanel& panelConfig )
 {
 	const auto* const ViewPort = ImGui::GetMainViewport();
+	const auto& panelWidth = panelConfig.width;
 
-	static float panelWidth = 300.f;
-
-	constexpr float StatusBarHeight = 25.f;  // TODO: Replace with actual
+	constexpr float StatusBarHeight = constant::StatusBar.Height;
 	const float PanelTop = ViewPort->WorkPos.y;
 	const float PanelLeft = ViewPort->WorkPos.x + ViewPort->WorkSize.x - panelWidth;
 	const float PanelHeight = ViewPort->WorkSize.y - StatusBarHeight;
 
 	ImGui::SetNextWindowPos( ImVec2{ PanelLeft, PanelTop }, ImGuiCond_Always );
 	ImGui::SetNextWindowSize( ImVec2{ panelWidth, PanelHeight }, ImGuiCond_Always );
+}
 
-	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-	                                   ImGuiWindowFlags_NoBringToFrontOnFocus |
-	                                   ImGuiWindowFlags_NoSavedSettings;
+auto drawWidgets() -> void
+{
+	ImGui::Text( "Dummy" );
+	static float dummyVal = 1.f;
+	ImGui::SliderFloat( "Dummy", &dummyVal, 0.0f, 1.0f );
+}
 
-	if ( ImGui::Begin( "SidePanel", nullptr, flags ) )
+auto drawPanel( config::SidePanel& panelConfig ) -> void
+{
+	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, Constants.MainWindowFlags ) )
 	{
-		panelWidth = ImGui::GetWindowSize().x;
+		panelConfig.width = ImGui::GetWindowSize().x;
 
-		ImGui::TextUnformatted( "Inspector" );
-		ImGui::Separator();
-
-		if ( ImGui::BeginChild( "RightPanelContent", ImVec2( -1, -1 ), ImGuiChildFlags_None,
-		                        ImGuiWindowFlags_NoMove ) )
+		constexpr const auto& ScrollPanel = Constants.ScrollablePanel;
+		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size,
+		                        ScrollPanel.ChildFlags, ScrollPanel.WindowFlags ) )
 		{
-			ImGui::Text( "Property A" );
-			static float opacity = 1.f;
-			ImGui::SliderFloat( "Opacity", &opacity, 0.0f, 1.0f );
+			drawWidgets();
 		}
 		ImGui::EndChild();
 	}
 	ImGui::End();
+}
+
+}  // namespace
+
+auto drawSidePanel( entt::registry& registry ) -> void
+{
+	auto& panelConfig = registry.ctx().get< config::SidePanel >();
+	setProperties( panelConfig );
+	drawPanel( panelConfig );
 }
 }  // namespace cc::app::ui

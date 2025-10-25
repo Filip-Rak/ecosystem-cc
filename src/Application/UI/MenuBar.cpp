@@ -31,7 +31,7 @@ auto drawEditMenu() -> void
 		{
 			std::cout << Labels.SpeedUp.data() << "\n";
 		}
-		else if ( ImGui::MenuItem( Labels.SlowDown.data() ) )
+		if ( ImGui::MenuItem( Labels.SlowDown.data() ) )
 		{
 			std::cout << Labels.SlowDown.data() << "\n";
 		}
