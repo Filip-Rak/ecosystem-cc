@@ -51,6 +51,8 @@ struct SidePanel_t
 		std::string_view PauseButtonPaused = "Resume";
 		std::string_view PauseButtonRunning = "Pause";
 		std::string_view UIScaleSlider = "UI Scale";
+		std::string_view IncrementButton = "Increment";
+		std::string_view RestartButton = "Restart";
 	} WidgetLabels;
 
 	struct ScrollablePanel_t

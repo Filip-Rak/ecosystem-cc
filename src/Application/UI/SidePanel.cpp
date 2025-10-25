@@ -7,6 +7,8 @@
 #include "Application/UI/Constants.h"
 #include "Engine/Events/GUIEvents.hpp"
 
+#include <iostream>  // TODO: Debug
+
 namespace cc::app::ui
 {
 namespace
@@ -44,14 +46,28 @@ auto drawContents( entt::registry& registry ) -> void
 	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
 
+	static bool toggle = true;
 	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
 	{
 		// TODO: Ask the sim instead of toggle.
-		static bool toggle = true;
 		panelConfig.pauseButtonLabel =
 		    ( toggle ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
 		toggle = !toggle;
 	}
+
+	ImGui::SameLine();
+	if ( ImGui::Button( Labels.IncrementButton.data() ) )
+	{
+		std::cout << Labels.IncrementButton.data() << "\n";
+	}
+
+	ImGui::SameLine();
+	ImGui::BeginDisabled( toggle );
+	if ( ImGui::Button( Labels.RestartButton.data() ) )
+	{
+		std::cout << Labels.RestartButton.data() << "\n";
+	}
+	ImGui::EndDisabled();
 
 	float& uiScale = ImGui::GetIO().FontGlobalScale;
 	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale,
