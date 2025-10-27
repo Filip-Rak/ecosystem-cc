@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 
 #include "Engine/Interface/IRenderService.hpp"
 
@@ -21,9 +22,22 @@ public:
 	auto beginFrame( entt::registry& registry ) -> void override;
 	auto endFrame( entt::registry& registry ) -> void override;
 
+	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
+	    -> GridHandle override;
+	auto drawGrid( GridHandle handle ) -> void override;
+
 private:
+	struct GridData
+	{
+		float cellSize;
+		sf::VertexArray vertices;
+		bool drawNext = false;
+	};
+
 	auto onRebuildFont( const event::RebuildFont& event ) -> void;
-	bool m_updatedFont = true;
+
+	std::vector< GridData > m_gridDataVector;
 	sf::RenderWindow& m_window;
+	bool m_updatedFont = true;
 };
 }  // namespace cc

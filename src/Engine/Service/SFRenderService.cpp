@@ -5,6 +5,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <entt/entt.hpp>
+#include <glm/vec2.hpp>
 #include <imgui-SFML.h>
 #include <imgui.h>
 
@@ -14,7 +15,17 @@ namespace cc
 {
 namespace
 {
-// TODO: FIgure out a better place for this -> should be part of the base.
+// TODO: Make a separate translator file
+template < typename T >
+auto operator+( const glm::vec< 2, T >& g, const sf::Vector2< T >& s ) -> sf::Vector2< T >
+{
+	return { s.x + g.x, s.y + g.y };
+}
+}  // namespace
+
+namespace
+{
+// TODO: Figure out a better place for this -> should be part of the base.
 auto rebuildFont() -> void
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -52,6 +63,12 @@ auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
 
 auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 {
+	for ( auto& grid : m_gridDataVector )
+	{
+		m_window.draw( grid.vertices );
+		grid.drawNext = false;
+	}
+
 	ImGui::SFML::Render( m_window );
 	m_window.display();
 
@@ -60,6 +77,54 @@ auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 		rebuildFont();
 		m_updatedFont = true;
 	}
+}
+
+auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
+                                  float cellSize ) -> GridHandle
+{
+	constexpr std::size_t VertsPerCell = 6;
+	const std::size_t cellNumber = width * height;
+
+	sf::VertexArray vertices( sf::PrimitiveType::Triangles, cellNumber * VertsPerCell );
+	for ( std::size_t index = 0; index < cellNumber; index++ )
+	{
+		const auto yInt = index / width;
+		const auto y = static_cast< float >( yInt );
+		const auto x = static_cast< float >( index % width );
+
+		const float left = x * cellSize;
+		const float top = y * cellSize;
+		const float right = left + cellSize;
+		const float bottom = top + cellSize;
+
+		const sf::Vector2f a{ left, top };
+		const sf::Vector2f b{ right, top };
+		const sf::Vector2f c{ right, bottom };
+		const sf::Vector2f d{ left, bottom };
+
+		const std::size_t A0 = index + 0;
+		const std::size_t B0 = index + 1;
+		const std::size_t C0 = index + 2;
+		const std::size_t A1 = index + 3;
+		const std::size_t C1 = index + 4;
+		const std::size_t D1 = index + 5;
+
+		vertices[ A0 ].position = position + a;
+		vertices[ B0 ].position = position + b;
+		vertices[ C0 ].position = position + c;
+
+		vertices[ A1 ].position = position + a;
+		vertices[ C1 ].position = position + c;
+		vertices[ D1 ].position = position + d;
+	}
+
+	m_gridDataVector.emplace_back( cellSize, std::move( vertices ) );
+	return { static_cast< uint16_t >( m_gridDataVector.size() - 1 ) };
+}
+
+auto SFRenderService::drawGrid( GridHandle handle ) -> void
+{
+	m_gridDataVector[ handle.id ].drawNext = true;
 }
 
 auto SFRenderService::onRebuildFont( const event::RebuildFont& /*event*/ ) -> void
