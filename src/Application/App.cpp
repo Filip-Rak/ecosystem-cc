@@ -24,8 +24,18 @@ namespace
 auto initializeGrid( entt::registry& registry ) -> void
 {
 	// TODO: Load grid properties from file.
-	constexpr int fixedDim = 100;
-	auto& grid = registry.ctx().emplace< Grid >( fixedDim, fixedDim );
+	constexpr uint16_t FixedDim = 100;
+	auto& grid = registry.ctx().emplace< Grid >( FixedDim, FixedDim );
+
+	const auto Count = FixedDim * FixedDim;
+
+	// DEBUG: Assume all properties range from 0.f to 1.f
+	const float Offset = 1.f / static_cast< float >( Count );
+	for ( std::size_t i = 0; i < Count; i++ )
+	{
+		const float Value = static_cast< float >( i + 1 ) * Offset;
+		grid.cellsRowMajor.emplace_back( Value, Value, Value, Value );
+	}
 }
 }  // namespace
 
