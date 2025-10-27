@@ -2,6 +2,7 @@ Checks: >
   clang-analyzer-*,
   bugprone-*,
   -bugprone-suspicious-stringview-data-usage,
+  -bugprone-easily-swappable-parameters,
   performance-*,
   modernize-*,
   readability-*,

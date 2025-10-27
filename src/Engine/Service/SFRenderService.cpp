@@ -14,7 +14,7 @@ namespace cc
 {
 namespace
 {
-// TODO: FIgure out a better place for this.
+// TODO: FIgure out a better place for this -> should be part of the base.
 auto rebuildFont() -> void
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -25,7 +25,7 @@ auto rebuildFont() -> void
 	constexpr float BaseFontSize = 13.f;
 
 	ImFontConfig cfg;
-	// cfg.SizePixels = BaseFontSize * UiScale; FIXME: Do something about this stupidity.
+	// cfg.SizePixels = BaseFontSize * UiScale;  // FIXME: Do something about this stupidity.
 
 	io.Fonts->AddFontDefault( &cfg );
 	io.Fonts->Build();
