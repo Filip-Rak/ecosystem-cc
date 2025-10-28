@@ -4,7 +4,6 @@
 #include <SFML/Graphics/VertexArray.hpp>
 
 #include "Engine/Interface/IRenderService.hpp"
-#include "Engine/Utility/RenderHandles.hpp"  // TODO: Should this header be exposed to others? In interface even?
 
 namespace cc
 {
@@ -23,6 +22,10 @@ public:
 	auto beginFrame( entt::registry& registry ) -> void override;
 	auto endFrame( entt::registry& registry ) -> void override;
 
+	auto createCamera() -> CameraHandle override;
+	auto moveCamera( CameraHandle handle, glm::vec2 offset ) -> void override;
+	auto setCamera( CameraHandle handle ) -> void override;
+
 	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
 	    -> GridHandle override;
 	auto draw( GridHandle handle ) -> void override;
@@ -34,9 +37,15 @@ private:
 		sf::VertexArray vertices;
 	};
 
+	struct CameraData
+	{
+		sf::View view;
+	};
+
 	auto onRebuildFont( const event::RebuildFont& event ) -> void;
 
 	std::vector< GridData > m_gridDataVector;
+	std::vector< CameraData > m_cameraVector;
 	sf::RenderWindow& m_window;
 	bool m_updatedFont = true;
 };

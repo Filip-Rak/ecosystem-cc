@@ -15,5 +15,6 @@ public:
 private:
 	IRenderService& m_renderer;
 	GridHandle m_grid;
+	CameraHandle m_camera;
 };
 }  // namespace cc::app

@@ -8,6 +8,7 @@
 #include <magic_enum/magic_enum.hpp>
 
 #include "Engine/Events/WindowEvents.hpp"
+#include "Engine/Utility/SFMath.hpp"
 
 namespace
 {
@@ -25,12 +26,6 @@ using namespace cc;
 		return static_cast< mouse::Button >( button );
 
 	return mouse::Button::Unknown;
-}
-
-template < typename T >
-[[nodiscard]] auto toVec( const sf::Vector2< T > sfVector )
-{
-	return glm::vec< 2, T >( sfVector.x, sfVector.y );
 }
 }  // namespace
 
@@ -156,7 +151,7 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher ) -> voi
 			const auto button = mousePressed->button;
 			const auto position = mousePressed->position;
 			dispatcher.enqueue< event::MouseButtonChanged >( toCcButton( button ),
-			                                                 toVec( position ), true );
+			                                                 toGlm( position ), true );
 		}
 		else if ( const auto* mouseReleased = event.getIf< sf::Event::MouseButtonReleased >() )
 		{
@@ -165,7 +160,7 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher ) -> voi
 			const auto button = mouseReleased->button;
 			const auto position = mouseReleased->position;
 			dispatcher.enqueue< event::MouseButtonChanged >( toCcButton( button ),
-			                                                 toVec( position ), false );
+			                                                 toGlm( position ), false );
 		}
 	}
 }

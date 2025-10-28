@@ -16,4 +16,16 @@ auto operator+( const sf::Vector2< T >& s, const glm::vec< 2, T >& g ) -> glm::v
 {
 	return { s.x + g.x, s.y + g.y };
 }
+
+template < typename T >
+[[nodiscard]] auto toGlm( const sf::Vector2< T > sfVector )
+{
+	return glm::vec< 2, T >( sfVector.x, sfVector.y );
+}
+
+template < typename T >
+[[nodiscard]] auto toSf( const glm::vec< 2, T > glmVector )
+{
+	return sf::Vector2< T >( glmVector.x, glmVector.y );
+}
 }  // namespace cc

@@ -64,6 +64,23 @@ auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 	}
 }
 
+auto SFRenderService::createCamera() -> CameraHandle
+{
+	m_cameraVector.emplace_back( m_window.getView() );
+	return { static_cast< uint16_t >( m_cameraVector.size() - 1 ) };
+}
+
+auto SFRenderService::moveCamera( CameraHandle handle, glm::vec2 offset ) -> void
+{
+	auto& view = m_cameraVector[ handle.index ].view;
+	view.move( toSf( offset ) );
+}
+
+auto SFRenderService::setCamera( CameraHandle handle ) -> void
+{
+	m_window.setView( m_cameraVector[ handle.index ].view );
+}
+
 auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
                                   float cellSize ) -> GridHandle
 {
