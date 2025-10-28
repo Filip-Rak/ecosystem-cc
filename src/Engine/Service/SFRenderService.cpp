@@ -10,19 +10,10 @@
 #include <imgui.h>
 
 #include "Engine/Events/GUIEvents.hpp"
+#include "Engine/Utility/SFMath.hpp"
 
 namespace cc
 {
-namespace
-{
-// TODO: Make a separate translator file
-template < typename T >
-auto operator+( const glm::vec< 2, T >& g, const sf::Vector2< T >& s ) -> sf::Vector2< T >
-{
-	return { s.x + g.x, s.y + g.y };
-}
-}  // namespace
-
 namespace
 {
 // TODO: Figure out a better place for this -> should be part of the base.
@@ -63,12 +54,6 @@ auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
 
 auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 {
-	for ( auto& grid : m_gridDataVector )
-	{
-		m_window.draw( grid.vertices );
-		grid.drawNext = false;
-	}
-
 	ImGui::SFML::Render( m_window );
 	m_window.display();
 
@@ -102,12 +87,14 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 		const sf::Vector2f c{ right, bottom };
 		const sf::Vector2f d{ left, bottom };
 
-		const std::size_t A0 = index + 0;
-		const std::size_t B0 = index + 1;
-		const std::size_t C0 = index + 2;
-		const std::size_t A1 = index + 3;
-		const std::size_t C1 = index + 4;
-		const std::size_t D1 = index + 5;
+		const std::size_t vertexBase = index * VertsPerCell;
+
+		const std::size_t A0 = vertexBase + 0;
+		const std::size_t B0 = vertexBase + 1;
+		const std::size_t C0 = vertexBase + 2;
+		const std::size_t A1 = vertexBase + 3;
+		const std::size_t C1 = vertexBase + 4;
+		const std::size_t D1 = vertexBase + 5;
 
 		vertices[ A0 ].position = position + a;
 		vertices[ B0 ].position = position + b;
@@ -122,9 +109,10 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 	return { static_cast< uint16_t >( m_gridDataVector.size() - 1 ) };
 }
 
-auto SFRenderService::drawGrid( GridHandle handle ) -> void
+auto SFRenderService::draw( GridHandle handle ) -> void
 {
-	m_gridDataVector[ handle.id ].drawNext = true;
+	const auto& grid = m_gridDataVector[ handle.index ];
+	m_window.draw( grid.vertices );
 }
 
 auto SFRenderService::onRebuildFont( const event::RebuildFont& /*event*/ ) -> void

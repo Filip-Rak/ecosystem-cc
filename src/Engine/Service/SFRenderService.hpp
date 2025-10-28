@@ -4,6 +4,7 @@
 #include <SFML/Graphics/VertexArray.hpp>
 
 #include "Engine/Interface/IRenderService.hpp"
+#include "Engine/Utility/RenderHandles.hpp"  // TODO: Should this header be exposed to others? In interface even?
 
 namespace cc
 {
@@ -24,14 +25,13 @@ public:
 
 	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
 	    -> GridHandle override;
-	auto drawGrid( GridHandle handle ) -> void override;
+	auto draw( GridHandle handle ) -> void override;
 
 private:
 	struct GridData
 	{
 		float cellSize;
 		sf::VertexArray vertices;
-		bool drawNext = false;
 	};
 
 	auto onRebuildFont( const event::RebuildFont& event ) -> void;

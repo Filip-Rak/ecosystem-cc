@@ -2,6 +2,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CLI/ParseCli.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/InputSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/RenderSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/UISystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp

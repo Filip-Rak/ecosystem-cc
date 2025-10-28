@@ -8,7 +8,9 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/Grid/Grid.hpp"
 #include "Application/System/InputSystem.hpp"
+#include "Application/System/RenderSystem.hpp"
 #include "Application/System/UISystem.hpp"
+#include "Engine/Service/SFRenderService.hpp"
 
 namespace
 {
@@ -24,12 +26,12 @@ namespace
 auto initializeGrid( entt::registry& registry ) -> void
 {
 	// TODO: Load grid properties from file.
-	constexpr uint16_t FixedDim = 100;
+	constexpr uint16_t FixedDim = 100;  // WARN: Same as RenderSystem.
 	auto& grid = registry.ctx().emplace< Grid >( FixedDim, FixedDim );
 
 	const auto Count = FixedDim * FixedDim;
 
-	// DEBUG: Assume all properties range from 0.f to 1.f
+	// TODO: Assume all properties range from 0.f to 1.f
 	const float Offset = 1.f / static_cast< float >( Count );
 	for ( std::size_t i = 0; i < Count; i++ )
 	{
@@ -50,6 +52,10 @@ App::App( const cli::Options& options )
 
 	if ( !options.headless )
 	{
+		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
+
+		auto& renderer = registry.ctx().get< SFRenderService >();
+		m_engine.addSystem< RenderSystem >( registry, renderer );
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< UISystem >( registry );
 	}
