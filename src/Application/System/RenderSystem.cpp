@@ -30,18 +30,25 @@ auto RenderSystem::update( entt::registry& registry ) -> void
 	auto& input = registry.ctx().get< InputService >();
 	auto& time = registry.ctx().get< Time >();
 
-	glm::vec2 inputValue{ 0.f };
-	if ( input.isDown( keyboard::Key::W ) ) inputValue.y -= 1;
-	if ( input.isDown( keyboard::Key::S ) ) inputValue.y += 1;
-	if ( input.isDown( keyboard::Key::A ) ) inputValue.x -= 1;
-	if ( input.isDown( keyboard::Key::D ) ) inputValue.x += 1;
+	glm::vec2 movementInput{ 0.f };
+	if ( input.isDown( keyboard::Key::W ) ) movementInput.y -= 1;
+	if ( input.isDown( keyboard::Key::S ) ) movementInput.y += 1;
+	if ( input.isDown( keyboard::Key::A ) ) movementInput.x -= 1;
+	if ( input.isDown( keyboard::Key::D ) ) movementInput.x += 1;
 
-	constexpr float Speed = 100.f;
-	const glm::vec2 offset = inputValue * Speed * time.DeltaTime;
+	constexpr float movementSpeed = 100.f;
+	const glm::vec2 movementOffset = movementInput * movementSpeed * time.DeltaTime;
+	m_renderer.moveCamera( m_camera, movementOffset );
 
-	m_renderer.moveCamera( m_camera, offset );
+	float zoomInput = 0.f;
+	if ( input.isDown( keyboard::Key::Up ) ) zoomInput -= 1.f;
+	if ( input.isDown( keyboard::Key::Down ) ) zoomInput += 1.f;
+
+	constexpr float zoomSpeed = 0.1f;
+	const float zoomDelta = zoomInput * zoomSpeed * time.DeltaTime;
+	m_renderer.zoomCamera( m_camera, zoomDelta );
+
 	m_renderer.setCamera( m_camera );
-
 	m_renderer.draw( m_grid );
 }
 }  // namespace cc::app

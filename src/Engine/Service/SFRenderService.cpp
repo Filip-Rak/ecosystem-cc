@@ -81,6 +81,15 @@ auto SFRenderService::setCamera( CameraHandle handle ) -> void
 	m_window.setView( m_cameraVector[ handle.index ].view );
 }
 
+auto SFRenderService::zoomCamera( CameraHandle handle, float delta ) -> void
+{
+	auto& camera = m_cameraVector[ handle.index ];
+
+	const float newZoom = camera.zoomLevel + delta;
+	camera.zoomLevel = newZoom;
+	camera.view.zoom( 1.f + delta );
+}
+
 auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
                                   float cellSize ) -> GridHandle
 {
