@@ -6,7 +6,9 @@
 #include <entt/fwd.hpp>
 
 #include "Application/CLI/CLIOptions.hpp"
-#include "Application/Grid/Grid.hpp"
+#include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/Grid.hpp"
+#include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
 #include "Application/System/UISystem.hpp"
@@ -39,8 +41,13 @@ auto initializeGrid( entt::registry& registry ) -> void
 		grid.cellsRowMajor.emplace_back( Value, Value, Value, Value );
 	}
 }
-}  // namespace
 
+auto initializeEntities( entt::registry& registry ) -> void
+{
+	initializeGrid( registry );
+	registry.ctx().emplace< Camera >();
+}
+}  // namespace
 App::App( const cli::Options& options )
     : m_engine( { .Title = Title.data(),
                   .WindowWidth = WindowWidth,
@@ -48,16 +55,17 @@ App::App( const cli::Options& options )
                   .EnableGUI = !options.headless } )
 {
 	auto& registry = m_engine.registry();
-	initializeGrid( registry );
+	initializeEntities( registry );
 
 	if ( !options.headless )
 	{
 		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
 
 		auto& renderer = registry.ctx().get< SFRenderService >();
-		m_engine.addSystem< RenderSystem >( registry, renderer );
 		m_engine.addSystem< InputSystem >( registry );
+		m_engine.addSystem< CameraMovementSystem >( registry );
 		m_engine.addSystem< UISystem >( registry );
+		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}
 }
 

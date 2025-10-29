@@ -6,7 +6,7 @@
 
 #include <entt/entity/entity.hpp>
 
-#include "Application/Grid/Cell.hpp"
+#include "Application/ContextEntity/Cell.hpp"
 
 namespace cc::app
 {
