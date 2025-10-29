@@ -13,8 +13,8 @@ struct IRenderService : IFrameService
 	auto endFrame( entt::registry& registry ) -> void override = 0;
 
 	auto virtual createCamera() -> CameraHandle = 0;
-	auto virtual moveCamera( CameraHandle handle, glm::vec2 offset ) -> void = 0;
-	auto virtual zoomCamera( CameraHandle handle, float delta ) -> void = 0;
+	auto virtual setPosition( CameraHandle handle, glm::vec2 position ) -> void = 0;
+	auto virtual setZoom( CameraHandle handle, float level ) -> void = 0;
 	auto virtual setCamera( CameraHandle handle ) -> void = 0;
 
 	auto virtual createGrid( std::size_t width, std::size_t height, glm::vec2 position,

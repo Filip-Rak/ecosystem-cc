@@ -66,14 +66,16 @@ auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
 
 auto SFRenderService::createCamera() -> CameraHandle
 {
-	m_cameraVector.emplace_back( m_window.getView() );
+	const auto& view = m_window.getView();
+	auto& camera = m_cameraVector.emplace_back( view, view.getSize() );
+
 	return { static_cast< uint16_t >( m_cameraVector.size() - 1 ) };
 }
 
-auto SFRenderService::moveCamera( CameraHandle handle, glm::vec2 offset ) -> void
+auto SFRenderService::setPosition( CameraHandle handle, glm::vec2 position ) -> void
 {
 	auto& view = m_cameraVector[ handle.index ].view;
-	view.move( toSf( offset ) );
+	view.setCenter( toSf( position ) );
 }
 
 auto SFRenderService::setCamera( CameraHandle handle ) -> void
@@ -81,13 +83,12 @@ auto SFRenderService::setCamera( CameraHandle handle ) -> void
 	m_window.setView( m_cameraVector[ handle.index ].view );
 }
 
-auto SFRenderService::zoomCamera( CameraHandle handle, float delta ) -> void
+auto SFRenderService::setZoom( CameraHandle handle, float level ) -> void
 {
 	auto& camera = m_cameraVector[ handle.index ];
 
-	const float newZoom = camera.zoomLevel + delta;
-	camera.zoomLevel = newZoom;
-	camera.view.zoom( 1.f + delta );
+	const sf::Vector2f newSize = camera.baseSize * level;
+	camera.view.setSize( newSize );
 }
 
 auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
