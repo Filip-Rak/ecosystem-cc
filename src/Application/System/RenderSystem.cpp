@@ -64,8 +64,29 @@ auto RenderSystem::update( entt::registry& registry ) -> void
 auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
 {
 	auto& colors = visualGrid.colors;
-	colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.VegetationRange,
-	                                     constant::VisModes.Temperature );
+
+	using enum VisMode;
+	switch ( visualGrid.visMode )
+	{
+	case Vegetation:
+		colorizeCells< &Cell::vegetation >( colors, grid, constant::Cell.VegetationRange,
+		                                    constant::VisModes.Vegetation );
+		break;
+	case Elevation:
+		colorizeCells< &Cell::Elevation >( colors, grid, constant::Cell.ElevationRange,
+		                                   constant::VisModes.Elevation );
+		break;
+	case Humidity:
+		colorizeCells< &Cell::Humidity >( colors, grid, constant::Cell.HumidityRange,
+		                                  constant::VisModes.Humidity );
+		break;
+	case Temperature:
+		colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.TemperatureRange,
+		                                     constant::VisModes.Temperature );
+		break;
+
+	default: assert( false && "Unhandled VisMode selected" );
+	}
 
 	m_renderer.setGridColors( m_gridHandle, colors );
 }

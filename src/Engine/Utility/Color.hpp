@@ -19,23 +19,6 @@ struct Color
 	uint8_t alpha{ Opaque };
 };
 
-constexpr auto operator*( Color color, float multiplier ) noexcept -> Color
-{
-	const auto scaleMultiplier = static_cast< uint8_t >( multiplier * Range );
-	auto scale = [ scaleMultiplier ]( uint8_t colorValue ) noexcept -> uint8_t
-	{ return static_cast< uint8_t >( ( colorValue * scaleMultiplier ) >> BitDivisionBy256 ); };
-
-	return { .red = scale( color.red ),
-	         .green = scale( color.green ),
-	         .blue = scale( color.blue ),
-	         .alpha = scale( color.alpha ) };
-}
-
-constexpr auto operator*( float multiplier, Color color ) noexcept -> Color
-{
-	return color * multiplier;
-}
-
 inline auto lerpColor( Color a, Color b, float t ) noexcept -> Color
 {
 	const auto scaledT = static_cast< uint8_t >( t * Range );
