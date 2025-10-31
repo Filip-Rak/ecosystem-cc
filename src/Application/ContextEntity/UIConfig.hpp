@@ -2,13 +2,18 @@
 
 #include <string>
 
-#include "Application/UI/Constants.h"
+#include "Application/Constants/UIConstants.hpp"
 
-namespace cc::app::ui::config
+namespace cc::app
 {
 struct SidePanel
 {
 	float width{ constant::SidePanel.InitialWidth };
 	std::string pauseButtonLabel{ constant::SidePanel.WidgetLabels.PauseButtonPaused };
 };
-}  // namespace cc::app::ui::config
+
+struct UIConfig
+{
+	SidePanel sidePanel;
+};
+}  // namespace cc::app

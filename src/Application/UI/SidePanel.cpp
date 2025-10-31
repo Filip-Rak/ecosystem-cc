@@ -5,13 +5,13 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
+#include "Application/Constants/UIConstants.hpp"
 #include "Application/Constants/VisModeConstants.hpp"
+#include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
-#include "Application/UI/Config.hpp"
-#include "Application/UI/Constants.h"  // TODO: Move to constants
 #include "Engine/Events/GUIEvents.hpp"
 
-namespace cc::app::ui
+namespace cc::app
 {
 namespace
 {
@@ -20,7 +20,7 @@ constexpr const auto& Labels = Constants.WidgetLabels;
 
 auto setProperties( entt::registry& registry )
 {
-	auto& panelConfig = registry.ctx().get< config::SidePanel >();
+	const auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
 	const auto* const ViewPort = ImGui::GetMainViewport();
 	const auto& panelWidth = panelConfig.width;
 
@@ -36,7 +36,7 @@ auto setProperties( entt::registry& registry )
 
 auto drawContents( entt::registry& registry ) -> void
 {
-	auto& panelConfig = registry.ctx().get< config::SidePanel >();
+	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
 	constexpr const auto& Contents = Constants.Contents;
 
 	// FIXME: Not for UI config but internal for renderer
@@ -106,7 +106,7 @@ auto drawContents( entt::registry& registry ) -> void
 
 auto drawPanel( entt::registry& registry ) -> void
 {
-	auto& panelConfig = registry.ctx().get< config::SidePanel >();
+	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
 	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, Constants.MainWindowFlags ) )
 	{
 		panelConfig.width = ImGui::GetWindowSize().x;
@@ -129,4 +129,4 @@ auto drawSidePanel( entt::registry& registry ) -> void
 	setProperties( registry );
 	drawPanel( registry );
 }
-}  // namespace cc::app::ui
+}  // namespace cc::app

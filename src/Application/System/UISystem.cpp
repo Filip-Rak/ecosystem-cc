@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
-#include "Application/UI/Config.hpp"
+#include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/UI/MenuBar.hpp"
 #include "Application/UI/SidePanel.hpp"
 #include "Application/UI/StatusBar.hpp"
@@ -14,15 +14,15 @@ namespace cc::app
 UISystem::UISystem( entt::registry& registry )
 {
 	assert( registry.ctx().contains< GUIService >() && "GUIService uninitialized" );
-	registry.ctx().emplace< ui::config::SidePanel >();
+	assert( registry.ctx().contains< UIConfig >() && "UIConfig uninitialized" );
 
 	auto& gui = registry.ctx().get< GUIService >();
 	gui.addToDraw(
 	    []( entt::registry& registry ) -> void
 	    {
-		    ui::drawMenuBar();
-		    ui::drawSidePanel( registry );
-		    ui::drawStatusBar( registry );
+		    drawMenuBar();
+		    drawSidePanel( registry );
+		    drawStatusBar( registry );
 	    } );
 }  // namespace
 

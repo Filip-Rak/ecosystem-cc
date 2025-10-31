@@ -1,6 +1,6 @@
 #pragma once
 
-namespace cc::app::ui
+namespace cc::app
 {
 auto drawMenuBar() -> void;
 }

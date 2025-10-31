@@ -3,10 +3,10 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
-#include "Application/UI/Constants.h"
+#include "Application/Constants/UIConstants.hpp"
 #include "Engine/Utility/Time.hpp"
 
-namespace cc::app::ui
+namespace cc::app
 {
 namespace
 {
@@ -68,4 +68,4 @@ auto drawStatusBar( entt::registry& registry ) -> void
 	setProperties();
 	createBar( registry );
 }
-}  // namespace cc::app::ui
+}  // namespace cc::app

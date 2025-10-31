@@ -2,7 +2,7 @@
 
 #include <entt/fwd.hpp>
 
-namespace cc::app::ui
+namespace cc::app
 {
 auto drawSidePanel( entt::registry& registry ) -> void;
 }

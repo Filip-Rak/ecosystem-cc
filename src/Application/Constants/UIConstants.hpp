@@ -4,7 +4,7 @@
 
 #include <imgui.h>
 
-namespace cc::app::ui::constant
+namespace cc::app::constant
 {
 struct MenuBar_t
 {
@@ -84,4 +84,4 @@ struct StatusBar_t
 		std::string_view RunTime = "Run time: %.0fs";
 	} Labels;
 } constexpr StatusBar;
-}  // namespace cc::app::ui::constant
+}  // namespace cc::app::constant

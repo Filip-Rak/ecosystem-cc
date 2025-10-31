@@ -8,6 +8,7 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
@@ -46,7 +47,11 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 {
 	initializeGrid( registry, headless );
 
-	if ( !headless ) registry.ctx().emplace< Camera >();
+	if ( !headless )
+	{
+		registry.ctx().emplace< Camera >();
+		registry.ctx().emplace< UIConfig >();
+	}
 }
 }  // namespace
 

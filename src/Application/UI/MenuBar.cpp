@@ -4,9 +4,9 @@
 
 #include <imgui.h>
 
-#include "Application/UI/Constants.h"
+#include "Application/Constants/UIConstants.hpp"
 
-namespace cc::app::ui
+namespace cc::app
 {
 namespace
 {
@@ -66,4 +66,4 @@ auto drawMenuBar() -> void
 		ImGui::EndMainMenuBar();
 	}
 }
-}  // namespace cc::app::ui
+}  // namespace cc::app
