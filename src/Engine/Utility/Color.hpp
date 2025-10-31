@@ -2,13 +2,15 @@
 
 #include <cstdint>
 
+namespace cc
+{
 namespace
 {
 constexpr uint8_t Opaque{ 255 };
-}
+constexpr uint8_t BitDivisionBy256 = 8;
+constexpr uint8_t Range{ 255 };
+}  // namespace
 
-namespace cc
-{
 struct Color
 {
 	uint8_t red{};
@@ -16,4 +18,36 @@ struct Color
 	uint8_t blue{};
 	uint8_t alpha{ Opaque };
 };
+
+constexpr auto operator*( Color color, float multiplier ) noexcept -> Color
+{
+	const auto scaleMultiplier = static_cast< uint8_t >( multiplier * Range );
+	auto scale = [ scaleMultiplier ]( uint8_t colorValue ) noexcept -> uint8_t
+	{ return static_cast< uint8_t >( ( colorValue * scaleMultiplier ) >> BitDivisionBy256 ); };
+
+	return { .red = scale( color.red ),
+	         .green = scale( color.green ),
+	         .blue = scale( color.blue ),
+	         .alpha = scale( color.alpha ) };
+}
+
+constexpr auto operator*( float multiplier, Color color ) noexcept -> Color
+{
+	return color * multiplier;
+}
+
+inline auto lerpColor( Color a, Color b, float t ) noexcept -> Color
+{
+	const auto scaledT = static_cast< uint8_t >( t * Range );
+	auto lerp_channel = [ scaledT ]( uint8_t colorA, uint8_t colorB ) noexcept -> uint8_t
+	{
+		return static_cast< uint8_t >( colorA +
+		                               ( ( ( colorB - colorA ) * scaledT ) >> BitDivisionBy256 ) );
+	};
+
+	return { .red = lerp_channel( a.red, b.red ),
+	         .green = lerp_channel( a.green, b.green ),
+	         .blue = lerp_channel( a.blue, b.blue ),
+	         .alpha = lerp_channel( a.alpha, b.alpha ) };
+}
 }  // namespace cc

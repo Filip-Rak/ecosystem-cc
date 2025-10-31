@@ -8,6 +8,7 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
@@ -25,27 +26,30 @@ namespace cc::app
 {
 namespace
 {
-auto initializeGrid( entt::registry& registry ) -> void
+auto initializeGrid( entt::registry& registry, bool headless ) -> void
 {
 	// TODO: Load grid properties from file.
 	constexpr uint16_t FixedDim = 100;  // WARN: Same as RenderSystem.
 	auto& grid = registry.ctx().emplace< Grid >( FixedDim, FixedDim );
 
-	const auto Count = FixedDim * FixedDim;
+	const auto count = FixedDim * FixedDim;
 
 	// TODO: Assume all properties range from 0.f to 1.f
-	const float Offset = 1.f / static_cast< float >( Count );
-	for ( std::size_t i = 0; i < Count; i++ )
+	const float offset = 1.f / static_cast< float >( count );
+	for ( std::size_t i = 0; i < count; i++ )
 	{
-		const float Value = static_cast< float >( i + 1 ) * Offset;
-		grid.cellsRowMajor.emplace_back( Value, Value, Value, Value );
+		const float Value = static_cast< float >( i + 1 ) * offset;
+		grid.cells.emplace_back( Value, Value, Value, Value );
 	}
+
+	if ( !headless ) registry.ctx().emplace< VisualGrid >( count );
 }
 
-auto initializeEntities( entt::registry& registry ) -> void
+auto initializeEntities( entt::registry& registry, bool headless ) -> void
 {
-	initializeGrid( registry );
-	registry.ctx().emplace< Camera >();
+	initializeGrid( registry, headless );
+
+	if ( !headless ) registry.ctx().emplace< Camera >();
 }
 }  // namespace
 App::App( const cli::Options& options )
@@ -55,7 +59,7 @@ App::App( const cli::Options& options )
                   .EnableGUI = !options.headless } )
 {
 	auto& registry = m_engine.registry();
-	initializeEntities( registry );
+	initializeEntities( registry, options.headless );
 
 	if ( !options.headless )
 	{

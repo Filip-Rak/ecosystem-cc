@@ -8,6 +8,7 @@ namespace cc::app
 {
 struct Camera;
 struct Grid;
+struct VisualGrid;
 
 class RenderSystem : public ISystem
 {
@@ -16,7 +17,7 @@ public:
 	auto update( entt::registry& registry ) -> void override;
 
 private:
-	auto updateGridHandle( const Grid& grid ) -> void;
+	auto updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void;
 	auto updateCameraHandle( const Camera& camera ) -> void;
 
 	IRenderService& m_renderer;
