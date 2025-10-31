@@ -65,7 +65,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 {
 	auto& colors = visualGrid.colors;
 
-	using enum VisMode;
+	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
 	{
 	case Vegetation:

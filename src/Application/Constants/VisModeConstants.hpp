@@ -1,7 +1,10 @@
 #pragma once
 
+#include <array>
+#include <cassert>
 #include <string_view>
 
+#include "Application/ContextEntity/VisMode.hpp"
 #include "Engine/Utility/Color.hpp"
 
 namespace cc::app::constant
@@ -40,5 +43,22 @@ struct VisModes_t
 	                             .HighEndName = "Hot",
 	                             .LowEndColor = Color{ .blue = 255 },
 	                             .HighEndColor = Color{ .red = 255 } };
+
+	const std::array< app::constant::VisMode_t, 4 > Array = { Vegetation, Elevation, Humidity,
+	                                                          Temperature };
 } constexpr VisModes;
+
+[[nodiscard]] constexpr auto getVisModeData( VisModeEnum visMode ) -> VisMode_t
+{
+	using enum VisModeEnum;
+	switch ( visMode )
+	{
+	case Vegetation: return VisModes.Vegetation; break;
+	case Elevation: return VisModes.Elevation; break;
+	case Humidity: return VisModes.Humidity; break;
+	case Temperature: return VisModes.Temperature; break;
+	default: assert( false && "Invalid VisMode" );
+	}
+}
+
 }  // namespace cc::app::constant

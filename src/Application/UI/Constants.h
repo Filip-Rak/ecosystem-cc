@@ -32,7 +32,7 @@ struct SidePanel_t
 
 	struct Contents_t
 	{
-		// TODO: Should zoom constraints  be part of renderer instead?
+		// TODO: Should zoom constraints be part of renderer instead?
 		float minZoom = 0.1f;
 		float maxZoom = 10.f;
 		int minSpeed = 1;
@@ -53,6 +53,7 @@ struct SidePanel_t
 		std::string_view UIScaleSlider = "UI Scale";
 		std::string_view IncrementButton = "Increment";
 		std::string_view RestartButton = "Restart";
+		std::string_view VisModeCombo = "Legend";
 	} WidgetLabels;
 
 	struct ScrollablePanel_t

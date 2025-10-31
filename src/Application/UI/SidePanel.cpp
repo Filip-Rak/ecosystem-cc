@@ -1,13 +1,15 @@
 #include "Application/UI/SidePanel.hpp"
 
+#include <iostream>  // TODO: Debug
+
 #include <entt/entt.hpp>
 #include <imgui.h>
 
+#include "Application/Constants/VisModeConstants.hpp"
+#include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/UI/Config.hpp"
-#include "Application/UI/Constants.h"
+#include "Application/UI/Constants.h"  // TODO: Move to constants
 #include "Engine/Events/GUIEvents.hpp"
-
-#include <iostream>  // TODO: Debug
 
 namespace cc::app::ui
 {
@@ -76,6 +78,29 @@ auto drawContents( entt::registry& registry ) -> void
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< event::RebuildFont >();
+	}
+
+	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
+	auto currentVisModeInt = static_cast< int >( currentVisMode );
+	constexpr app::constant::VisModes_t VisModes = app::constant::VisModes;
+
+	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(),
+	                        app::constant::getVisModeData( currentVisMode ).Name.data() ) )
+	{
+		// TODO: WHAT - THIS BRILLIANT. Make more like this!
+		for ( int index = 0; const auto& mode : VisModes.Array )
+		{
+			bool isSelected = ( currentVisModeInt == index );
+			if ( ImGui::Selectable( mode.Name.data(), isSelected ) )
+			{
+				currentVisModeInt = index;
+				currentVisMode = static_cast< VisModeEnum >( currentVisModeInt );
+			}
+			if ( isSelected ) ImGui::SetItemDefaultFocus();
+
+			++index;
+		}
+		ImGui::EndCombo();
 	}
 }
 

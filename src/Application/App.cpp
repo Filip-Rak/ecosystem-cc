@@ -15,17 +15,14 @@
 #include "Application/System/UISystem.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 
+namespace cc::app
+{
 namespace
 {
 constexpr uint16_t WindowWidth = 1280u;
 constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
-}  // namespace
 
-namespace cc::app
-{
-namespace
-{
 auto initializeGrid( entt::registry& registry, bool headless ) -> void
 {
 	// TODO: Load grid properties from file.
@@ -52,6 +49,7 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 	if ( !headless ) registry.ctx().emplace< Camera >();
 }
 }  // namespace
+
 App::App( const cli::Options& options )
     : m_engine( { .Title = Title.data(),
                   .WindowWidth = WindowWidth,
