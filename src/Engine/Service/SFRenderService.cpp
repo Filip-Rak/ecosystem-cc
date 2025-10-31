@@ -78,7 +78,7 @@ auto SFRenderService::setPosition( CameraHandle handle, glm::vec2 position ) -> 
 	view.setCenter( toSf( position ) );
 }
 
-auto SFRenderService::setCamera( CameraHandle handle ) -> void
+auto SFRenderService::setActiveCamera( CameraHandle handle ) -> void
 {
 	m_window.setView( m_cameraVector[ handle.index ].view );
 }

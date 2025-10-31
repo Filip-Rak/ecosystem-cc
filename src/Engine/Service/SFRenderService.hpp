@@ -24,7 +24,7 @@ public:
 
 	auto createCamera() -> CameraHandle override;
 	auto setPosition( CameraHandle handle, glm::vec2 position ) -> void override;
-	auto setCamera( CameraHandle handle ) -> void override;
+	auto setActiveCamera( CameraHandle handle ) -> void override;
 	auto setZoom( CameraHandle handle, float level ) -> void override;
 
 	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )

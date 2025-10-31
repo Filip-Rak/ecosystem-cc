@@ -30,11 +30,10 @@ auto RenderSystem::update( entt::registry& registry ) -> void
 {
 	auto& camera = registry.ctx().get< Camera >();
 
-	// TODO: if?
 	m_renderer.setPosition( m_camera, camera.position );
 	m_renderer.setZoom( m_camera, camera.zoomLevel );
 
-	m_renderer.setCamera( m_camera );
+	m_renderer.setActiveCamera( m_camera );
 	m_renderer.draw( m_grid );
 }
 }  // namespace cc::app
