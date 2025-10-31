@@ -1,16 +1,21 @@
 #include "Application/System/RenderSystem.hpp"
 
 #include <cassert>
+#include <cstddef>
+#include <vector>
 
 #include <entt/entt.hpp>
 #include <glm/vec2.hpp>
 
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/Grid.hpp"
+#include "Engine/Utility/Color.hpp"
+
 namespace cc::app
 {
 namespace
 {
-auto initGrid( entt::registry& /*registry*/, IRenderService& renderer ) -> GridHandle
+auto initGridHandle( entt::registry& /*registry*/, IRenderService& renderer ) -> GridHandle
 {
 	// TODO: Base visual grid on data from registry.
 	// WARN: Same as App.
@@ -20,20 +25,36 @@ auto initGrid( entt::registry& /*registry*/, IRenderService& renderer ) -> GridH
 }  // namespace
 RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
     : m_renderer( renderer ),
-      m_grid( initGrid( registry, renderer ) ),
-      m_camera( renderer.createCamera() )
+      m_gridHandle( initGridHandle( registry, renderer ) ),
+      m_cameraHandle( renderer.createCamera() )
 {
 	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
 }
 
 auto RenderSystem::update( entt::registry& registry ) -> void
 {
-	auto& camera = registry.ctx().get< Camera >();
+	const auto& grid = registry.ctx().get< Grid >();
+	updateGridHandle( grid );
 
-	m_renderer.setPosition( m_camera, camera.position );
-	m_renderer.setZoom( m_camera, camera.zoomLevel );
+	const auto& camera = registry.ctx().get< Camera >();
+	updateCameraHandle( camera );
+}
 
-	m_renderer.setActiveCamera( m_camera );
-	m_renderer.draw( m_grid );
+auto RenderSystem::updateGridHandle( const Grid& grid ) -> void
+{
+	// TODO: Use actual smart coloring.
+	std::vector< Color > colors( grid.cellsRowMajor.size(),
+	                             Color{ .red = 126, .green = 255, .blue = 240 } );
+
+	m_renderer.setGridColors( m_gridHandle, colors );
+}
+
+auto RenderSystem::updateCameraHandle( const Camera& camera ) -> void
+{
+	m_renderer.setPosition( m_cameraHandle, camera.position );
+	m_renderer.setZoom( m_cameraHandle, camera.zoomLevel );
+
+	m_renderer.setActiveCamera( m_cameraHandle );
+	m_renderer.draw( m_gridHandle );
 }
 }  // namespace cc::app

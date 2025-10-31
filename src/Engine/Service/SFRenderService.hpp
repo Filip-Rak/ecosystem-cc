@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
@@ -29,19 +31,22 @@ public:
 
 	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
 	    -> GridHandle override;
+	auto setGridColors( GridHandle& handle, const std::vector< Color >& colors ) -> void override;
+
 	auto draw( GridHandle handle ) -> void override;
 
 private:
 	struct GridData
 	{
-		float cellSize;
+		float cellNumber;
 		sf::VertexArray vertices;
+		static const std::size_t VertsPerCell = 6;
 	};
 
 	struct CameraData
 	{
 		sf::View view;
-		const sf::Vector2f baseSize;
+		const sf::Vector2f BaseSize;
 		float zoomLevel = 1.f;
 	};
 

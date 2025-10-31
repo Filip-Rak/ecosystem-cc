@@ -87,17 +87,20 @@ auto SFRenderService::setZoom( CameraHandle handle, float level ) -> void
 {
 	auto& camera = m_cameraVector[ handle.index ];
 
-	const sf::Vector2f newSize = camera.baseSize * level;
+	const sf::Vector2f newSize = camera.BaseSize * level;
 	camera.view.setSize( newSize );
 }
 
 auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
                                   float cellSize ) -> GridHandle
 {
-	constexpr std::size_t VertsPerCell = 6;
 	const std::size_t cellNumber = width * height;
 
-	sf::VertexArray vertices( sf::PrimitiveType::Triangles, cellNumber * VertsPerCell );
+	auto& gridData = m_gridDataVector.emplace_back( cellNumber );
+	auto& vertices = gridData.vertices;
+
+	vertices.setPrimitiveType( sf::PrimitiveType::Triangles );
+	vertices.resize( cellNumber * GridData::VertsPerCell );
 	for ( std::size_t index = 0; index < cellNumber; index++ )
 	{
 		const auto yInt = index / width;
@@ -114,7 +117,7 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 		const sf::Vector2f c{ right, bottom };
 		const sf::Vector2f d{ left, bottom };
 
-		const std::size_t vertexBase = index * VertsPerCell;
+		const std::size_t vertexBase = index * GridData::VertsPerCell;
 
 		const std::size_t A0 = vertexBase + 0;
 		const std::size_t B0 = vertexBase + 1;
@@ -132,8 +135,29 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 		vertices[ D1 ].position = position + d;
 	}
 
-	m_gridDataVector.emplace_back( cellSize, std::move( vertices ) );
 	return { static_cast< uint16_t >( m_gridDataVector.size() - 1 ) };
+}
+
+auto SFRenderService::setGridColors( GridHandle& handle, const std::vector< Color >& colors )
+    -> void
+{
+	auto& grid = m_gridDataVector[ handle.index ];
+	assert( grid.cellNumber == colors.size() && "Grid and color size mismatch" );
+
+	for ( std::size_t cellIndex = 0; cellIndex < colors.size(); cellIndex++ )
+	{
+		const std::size_t vertexBase = cellIndex * GridData::VertsPerCell;
+		for ( std::size_t vertIndex = 0; vertIndex < GridData::VertsPerCell; vertIndex++ )
+		{
+			auto& sfColor = grid.vertices[ vertexBase + vertIndex ].color;
+			const auto& glmColorToApply = colors[ cellIndex ];
+
+			sfColor.r = glmColorToApply.red;
+			sfColor.g = glmColorToApply.green;
+			sfColor.b = glmColorToApply.blue;
+			sfColor.a = glmColorToApply.alpha;
+		}
+	}
 }
 
 auto SFRenderService::draw( GridHandle handle ) -> void
