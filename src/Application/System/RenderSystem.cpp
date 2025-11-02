@@ -7,7 +7,7 @@
 #include <glm/vec2.hpp>
 
 #include "Application/Constants/CellConstants.hpp"
-#include "Application/Constants/VisModeConstants.hpp"
+#include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -27,7 +27,7 @@ auto initGridHandle( entt::registry& /*registry*/, IRenderService& renderer ) ->
 
 template < auto CellPropertyPtr >
 auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float propertyRange,
-                    const constant::VisModeConstants& visMode ) -> void
+                    const constant::Visual_t::VisMode_t& visMode ) -> void
 {
 	const auto& cells = grid.cells;
 	for ( std::size_t index = 0; index < cells.size(); index++ )
@@ -64,25 +64,26 @@ auto RenderSystem::update( entt::registry& registry ) -> void
 auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
 {
 	auto& colors = visualGrid.colors;
+	constexpr const auto& VisModes = constant::Visual.VisModes;
 
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
 	{
 	case Vegetation:
 		colorizeCells< &Cell::vegetation >( colors, grid, constant::Cell.VegetationRange,
-		                                    constant::VisModes.Vegetation );
+		                                    VisModes.Vegetation );
 		break;
 	case Elevation:
 		colorizeCells< &Cell::Elevation >( colors, grid, constant::Cell.ElevationRange,
-		                                   constant::VisModes.Elevation );
+		                                   VisModes.Elevation );
 		break;
 	case Humidity:
 		colorizeCells< &Cell::Humidity >( colors, grid, constant::Cell.HumidityRange,
-		                                  constant::VisModes.Humidity );
+		                                  VisModes.Humidity );
 		break;
 	case Temperature:
 		colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.TemperatureRange,
-		                                     constant::VisModes.Temperature );
+		                                     VisModes.Temperature );
 		break;
 
 	default: assert( false && "Unhandled VisMode selected" );

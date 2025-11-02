@@ -32,9 +32,6 @@ struct SidePanel_t
 
 	struct Contents_t
 	{
-		// TODO: Should zoom constraints be part of renderer instead?
-		float minZoom = 0.1f;
-		float maxZoom = 10.f;
 		int minSpeed = 1;
 		int maxSpeed = 240;
 		float maxUIScale = 5.f;

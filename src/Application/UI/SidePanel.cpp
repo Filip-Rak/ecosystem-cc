@@ -6,7 +6,8 @@
 #include <imgui.h>
 
 #include "Application/Constants/UIConstants.hpp"
-#include "Application/Constants/VisModeConstants.hpp"
+#include "Application/Constants/VisualConstants.hpp"
+#include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/Events/GUIEvents.hpp"
@@ -21,8 +22,8 @@ constexpr const auto& Labels = Constants.WidgetLabels;
 auto setProperties( entt::registry& registry )
 {
 	const auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	const auto* const ViewPort = ImGui::GetMainViewport();
 	const auto& panelWidth = panelConfig.width;
+	const auto* const ViewPort = ImGui::GetMainViewport();
 
 	constexpr float StatusBarHeight = constant::StatusBar.Height;
 	const float PanelTop = ViewPort->WorkPos.y;
@@ -36,14 +37,14 @@ auto setProperties( entt::registry& registry )
 
 auto drawContents( entt::registry& registry ) -> void
 {
-	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
 	constexpr const auto& Contents = Constants.Contents;
+	constexpr const auto& Visual = constant::Visual;
+	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
+	auto& Cam = registry.ctx().get< Camera >();
 
-	// FIXME: Not for UI config but internal for renderer
-	static float zoom = 5.f;
 	static int speed = 5.f;
 
-	ImGui::SliderFloat( Labels.ZoomSlider.data(), &zoom, Contents.minZoom, Contents.maxZoom,
+	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
 	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
 	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
@@ -82,13 +83,13 @@ auto drawContents( entt::registry& registry ) -> void
 
 	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
 	auto currentVisModeInt = static_cast< int >( currentVisMode );
-	constexpr app::constant::VisModesConstants VisModes = app::constant::VisModes;
+	constexpr const auto& VisModesArr = app::constant::Visual.VisModes.Array;
 
 	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(),
 	                        app::constant::getVisModeData( currentVisMode ).Name.data() ) )
 	{
 		// TODO: WHAT - THIS BRILLIANT. Make more like this!
-		for ( int index = 0; const auto& mode : VisModes.Array )
+		for ( int index = 0; const auto& mode : VisModesArr )
 		{
 			bool isSelected = ( currentVisModeInt == index );
 			if ( ImGui::Selectable( mode.Name.data(), isSelected ) )
