@@ -27,7 +27,7 @@ auto initGridHandle( entt::registry& /*registry*/, IRenderService& renderer ) ->
 
 template < auto CellPropertyPtr >
 auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float propertyRange,
-                    const constant::VisMode_t& visMode ) -> void
+                    const constant::VisModeConstants& visMode ) -> void
 {
 	const auto& cells = grid.cells;
 	for ( std::size_t index = 0; index < cells.size(); index++ )

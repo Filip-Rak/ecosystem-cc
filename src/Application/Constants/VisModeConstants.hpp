@@ -46,19 +46,12 @@ struct VisModes_t
 
 	const std::array< app::constant::VisMode_t, 4 > Array = { Vegetation, Elevation, Humidity,
 	                                                          Temperature };
-} constexpr VisModes;
+} inline constexpr VisModes;
 
 [[nodiscard]] constexpr auto getVisModeData( VisModeEnum visMode ) -> VisMode_t
 {
-	using enum VisModeEnum;
-	switch ( visMode )
-	{
-	case Vegetation: return VisModes.Vegetation; break;
-	case Elevation: return VisModes.Elevation; break;
-	case Humidity: return VisModes.Humidity; break;
-	case Temperature: return VisModes.Temperature; break;
-	default: assert( false && "Invalid VisMode" );
-	}
+	const auto index = static_cast< std::size_t >( visMode );
+	return VisModes.Array[ index ];
 }
 
 }  // namespace cc::app::constant

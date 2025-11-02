@@ -82,7 +82,7 @@ auto drawContents( entt::registry& registry ) -> void
 
 	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
 	auto currentVisModeInt = static_cast< int >( currentVisMode );
-	constexpr app::constant::VisModes_t VisModes = app::constant::VisModes;
+	constexpr app::constant::VisModesConstants VisModes = app::constant::VisModes;
 
 	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(),
 	                        app::constant::getVisModeData( currentVisMode ).Name.data() ) )
