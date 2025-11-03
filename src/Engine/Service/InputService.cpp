@@ -43,6 +43,7 @@ InputService::InputService( entt::registry& registry )
 
 auto InputService::beginFrame( entt::registry& registry ) -> void
 {
+	// TODO: Copy or ref?
 	if ( const auto& inputMap = registry.ctx().get< InputMap >(); !inputMap.windowInFocus )
 	{
 		zeroInput();
@@ -51,6 +52,7 @@ auto InputService::beginFrame( entt::registry& registry ) -> void
 	{
 		m_keyboard.current = inputMap.keySates;
 		m_mouse.current = inputMap.buttonSates;
+		m_mouse.currentPosition = inputMap.mousePos;
 	}
 }
 
@@ -58,6 +60,7 @@ auto InputService::endFrame( entt::registry& /*registry*/ ) -> void
 {
 	m_keyboard.previous = m_keyboard.current;
 	m_mouse.previous = m_mouse.current;
+	m_mouse.lastPosition = m_mouse.currentPosition;
 }
 
 auto InputService::isPressed( keyboard::Key key ) const -> bool
@@ -108,9 +111,19 @@ auto InputService::isDown( mouse::Button button ) const -> bool
 	return m_mouse.current[ buttonIndex ];
 }
 
-auto InputService::getLastMousePos() const -> glm::vec2
+auto InputService::getCurrentMousePos() const -> glm::ivec2
+{
+	return m_mouse.currentPosition;
+}
+
+auto InputService::getLastMousePos() const -> glm::ivec2
 {
 	return m_mouse.lastPosition;
+}
+
+auto InputService::getMouseMoveDelta() const -> glm::ivec2
+{
+	return m_mouse.lastPosition - m_mouse.currentPosition;
 }
 
 auto InputService::zeroInput() -> void

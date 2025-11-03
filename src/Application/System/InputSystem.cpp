@@ -19,9 +19,12 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 {
 	if ( input.isPressed( keyboard::Key::Space ) )
 	{
+		// TODO: Switch to print?
 		std::cout << "Run time: " << time.RunTime << "\n";
 		std::cout << "FPS: " << time.FPS << "\n";
 		std::cout << "DeltaTime: " << time.DeltaTime << "\n";
+		std::cout << "Mouse Position { " << input.getCurrentMousePos().x << ", "
+		          << input.getCurrentMousePos().y << " }\n";
 	}
 
 	if ( input.isPressed( keyboard::Key::Escape ) )

@@ -4,7 +4,7 @@
 #include <glm/vec2.hpp>
 #include <magic_enum/magic_enum.hpp>
 
-#include "Engine/Events/WindowEvents.hpp"
+#include "Engine/ContextEntity/InputMap.hpp"
 #include "Engine/Interface/IService.hpp"
 
 namespace cc
@@ -29,22 +29,25 @@ public:
 	[[nodiscard]] auto isDown( keyboard::Key key ) const -> bool;
 	[[nodiscard]] auto isDown( mouse::Button button ) const -> bool;
 
-	[[nodiscard]] auto getLastMousePos() const -> glm::vec2;
+	[[nodiscard]] auto getCurrentMousePos() const -> glm::ivec2;
+	[[nodiscard]] auto getLastMousePos() const -> glm::ivec2;
+	[[nodiscard]] auto getMouseMoveDelta() const -> glm::ivec2;
 
 private:
 	struct Keyboard
 	{
 		static constexpr int KeyCount = magic_enum::enum_count< keyboard::Key >();
-		std::array< bool, KeyCount > current;
+		std::array< bool, KeyCount > current{};
 		std::array< bool, KeyCount > previous{};
 	};
 
 	struct Mouse
 	{
 		static constexpr int ButtonCount = magic_enum::enum_count< mouse::Button >();
-		std::array< bool, ButtonCount > current;
+		std::array< bool, ButtonCount > current{};
 		std::array< bool, ButtonCount > previous{};
-		glm::vec2 lastPosition{ 0.f };
+		glm::ivec2 currentPosition{ 0 };
+		glm::ivec2 lastPosition{ 0 };
 	};
 
 	auto zeroInput() -> void;

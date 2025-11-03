@@ -38,16 +38,19 @@ auto updateInputMap( InputMap& inputMap, keyboard::Key ccKey, bool pressed ) -> 
 	inputMap.keySates[ ccKeyIndex ] = pressed;
 }
 
-auto updateInputMap( InputMap& inputMap, mouse::Button ccButton, bool pressed,
-                     glm::vec2 glmPosition ) -> void
+auto updateInputMap( InputMap& inputMap, mouse::Button ccButton, bool pressed ) -> void
 {
 	const auto buttonIndex = static_cast< std::size_t >( ccButton );
 	inputMap.buttonSates[ buttonIndex ] = pressed;
-	inputMap.mousePos = glmPosition;
 }
 auto updateInputMap( InputMap& inputMap, bool inFocus ) -> void
 {
 	inputMap.windowInFocus = inFocus;
+}
+
+auto updateInputMap( InputMap& inputMap, sf::Vector2i mousePos ) -> void
+{
+	inputMap.mousePos = toGlm( mousePos );
 }
 }  // namespace
 
@@ -72,7 +75,12 @@ auto SFWindowService::beginFrame( entt::registry& registry ) -> void
 {
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	auto& inputMap = registry.ctx().get< InputMap >();
+
 	publishWindowEvents( dispatcher, inputMap );
+
+	const sf::Vector2i mousePos = sf::Mouse::getPosition( m_window );
+	updateInputMap( inputMap, mousePos );
+
 	dispatcher.update();
 }
 
@@ -184,7 +192,7 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher, InputMa
 			const auto ccButton = toCcButton( mousePressed->button );
 
 			dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
-			updateInputMap( inputMap, ccButton, Pressed, glmPosition );
+			updateInputMap( inputMap, ccButton, Pressed );
 		}
 		else if ( const auto* mouseReleased = event.getIf< sf::Event::MouseButtonReleased >() )
 		{
@@ -195,7 +203,7 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher, InputMa
 			const auto ccButton = toCcButton( mouseReleased->button );
 
 			dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
-			updateInputMap( inputMap, ccButton, Pressed, glmPosition );
+			updateInputMap( inputMap, ccButton, Pressed );
 		}
 	}
 }
