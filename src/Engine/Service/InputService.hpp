@@ -47,9 +47,7 @@ private:
 		glm::vec2 lastPosition{ 0.f };
 	};
 
-	auto onButtonChanged( const event::MouseButtonChanged& event ) -> void;
-	auto onKeyChanged( const event::KeyChanged& event ) -> void;
-	auto onFocusLost() -> void;
+	auto zeroInput() -> void;
 
 	Keyboard m_keyboard;
 	Mouse m_mouse;

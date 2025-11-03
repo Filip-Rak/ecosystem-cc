@@ -5,7 +5,6 @@
 #include <entt/entt.hpp>
 
 #include "Engine/ContextEntity/InputMap.hpp"
-#include "Engine/Events/WindowEvents.hpp"
 
 namespace cc
 {
@@ -39,18 +38,21 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 
 InputService::InputService( entt::registry& registry )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );
-
-	// clang-format off
-	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-	dispatcher.sink< event::MouseButtonChanged >().connect< &InputService::onButtonChanged >(*this );
-	dispatcher.sink< event::KeyChanged >().connect< &InputService::onKeyChanged >( *this );
-	dispatcher.sink< event::LostFocus >().connect< &InputService::onFocusLost >( *this );
-	// clang-format on
 }
 
-auto InputService::beginFrame( entt::registry& registry ) -> void {}
+auto InputService::beginFrame( entt::registry& registry ) -> void
+{
+	if ( const auto& inputMap = registry.ctx().get< InputMap >(); !inputMap.windowInFocus )
+	{
+		zeroInput();
+	}
+	else
+	{
+		m_keyboard.current = inputMap.keySates;
+		m_mouse.current = inputMap.buttonSates;
+	}
+}
 
 auto InputService::endFrame( entt::registry& /*registry*/ ) -> void
 {
@@ -111,20 +113,7 @@ auto InputService::getLastMousePos() const -> glm::vec2
 	return m_mouse.lastPosition;
 }
 
-auto InputService::onButtonChanged( const event::MouseButtonChanged& event ) -> void
-{
-	const auto buttonIndex = toButtonIndex( event.button );
-	m_mouse.current[ buttonIndex ] = event.pressed;
-	m_mouse.lastPosition = event.position;
-}
-
-auto InputService::onKeyChanged( const event::KeyChanged& event ) -> void
-{
-	const auto keyIndex = toKeyIndex( event.key );
-	m_keyboard.current[ keyIndex ] = event.pressed;
-}
-
-auto InputService::onFocusLost() -> void
+auto InputService::zeroInput() -> void
 {
 	m_keyboard.current.fill( false );
 	m_keyboard.previous.fill( false );
