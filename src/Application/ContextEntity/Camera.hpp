@@ -11,6 +11,7 @@ struct Camera
 	glm::vec2 position{ 0.f };
 
 	float keyboardZoomInput = 0.f;
+	float mouseZoomInput = 0.f;
 	float zoomLevel = 1.f;
 };
 }  // namespace cc::app

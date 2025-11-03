@@ -84,6 +84,12 @@ auto SFWindowService::beginFrame( entt::registry& registry ) -> void
 	dispatcher.update();
 }
 
+auto SFWindowService::endFrame( entt::registry& registry ) -> void
+{
+	auto& inputMap = registry.ctx().get< InputMap >();
+	inputMap.mouseScrollDelta = 0.f;
+}
+
 auto SFWindowService::isOpen() const -> bool
 {
 	return m_window.isOpen();
@@ -204,6 +210,14 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher, InputMa
 
 			dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
 			updateInputMap( inputMap, ccButton, Pressed );
+		}
+		else if ( const auto* mouseScrolled = event.getIf< sf::Event::MouseWheelScrolled >() )
+		{
+			if ( !m_inFocus ) return;
+
+			inputMap.mouseScrollDelta = mouseScrolled->delta;
+			dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ),
+			                                              mouseScrolled->delta );
 		}
 	}
 }

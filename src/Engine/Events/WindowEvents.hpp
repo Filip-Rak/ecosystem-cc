@@ -32,7 +32,13 @@ struct KeyChanged
 struct MouseButtonChanged
 {
 	mouse::Button button;
-	glm::vec2 position;
+	glm::ivec2 position;
 	bool pressed;
+};
+
+struct MouseWheelMoved
+{
+	glm::ivec2 position{ 0 };
+	float scrollDelta = 0;
 };
 }  // namespace cc::event

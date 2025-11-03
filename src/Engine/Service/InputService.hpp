@@ -32,6 +32,7 @@ public:
 	[[nodiscard]] auto getCurrentMousePos() const -> glm::ivec2;
 	[[nodiscard]] auto getLastMousePos() const -> glm::ivec2;
 	[[nodiscard]] auto getMouseMoveDelta() const -> glm::ivec2;
+	[[nodiscard]] auto getMouseScrollDelta() const -> float;
 
 private:
 	struct Keyboard
@@ -48,6 +49,7 @@ private:
 		std::array< bool, ButtonCount > previous{};
 		glm::ivec2 currentPosition{ 0 };
 		glm::ivec2 lastPosition{ 0 };
+		float scrollDelta = 0.f;
 	};
 
 	auto zeroInput() -> void;

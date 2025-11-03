@@ -17,7 +17,7 @@ enum class Key : uint8_t;
 namespace cc
 {
 struct InputMap;
-class SFWindowService : public IBeginFrameService
+class SFWindowService : public IFrameService
 {
 public:
 	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
@@ -26,6 +26,7 @@ public:
 	~SFWindowService();
 
 	auto beginFrame( entt::registry& registry ) -> void override;
+	auto endFrame( entt::registry& registry ) -> void override;
 
 	[[nodiscard]] auto isOpen() const -> bool;
 	[[nodiscard]] auto inFocus() const -> bool;

@@ -53,6 +53,7 @@ auto InputService::beginFrame( entt::registry& registry ) -> void
 		m_keyboard.current = inputMap.keySates;
 		m_mouse.current = inputMap.buttonSates;
 		m_mouse.currentPosition = inputMap.mousePos;
+		m_mouse.scrollDelta = inputMap.mouseScrollDelta;
 	}
 }
 
@@ -124,6 +125,11 @@ auto InputService::getLastMousePos() const -> glm::ivec2
 auto InputService::getMouseMoveDelta() const -> glm::ivec2
 {
 	return m_mouse.lastPosition - m_mouse.currentPosition;
+}
+
+auto InputService::getMouseScrollDelta() const -> float
+{
+	return m_mouse.scrollDelta;
 }
 
 auto InputService::zeroInput() -> void

@@ -13,6 +13,7 @@ namespace
 {
 constexpr float MovementSpeed = 100.f;
 constexpr float ZoomSpeed = 0.1f;
+constexpr float ScrollSpeed = 0.05f;
 }  // namespace
 CameraMovementSystem::CameraMovementSystem( entt::registry& registry )
 {
@@ -29,5 +30,6 @@ auto CameraMovementSystem::update( entt::registry& registry ) -> void
 	camera.position += camera.mouseMovementInput;
 
 	camera.zoomLevel += camera.keyboardZoomInput * time.DeltaTime * ZoomSpeed;
+	camera.zoomLevel += camera.mouseZoomInput * ScrollSpeed;  // TODO: Consider smoothing.
 }
 }  // namespace cc::app

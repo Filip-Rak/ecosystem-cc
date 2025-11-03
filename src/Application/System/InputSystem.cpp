@@ -57,10 +57,14 @@ auto InputSystem::update( entt::registry& registry ) -> void
 
 	if ( input.isDown( mouse::Button::Left ) )
 		camera.mouseMovementInput = input.getMouseMoveDelta();
+	else
+		camera.mouseMovementInput = glm::ivec2{ 0 };
 
 	camera.keyboardZoomInput = 0.f;
 	if ( input.isDown( keyboard::Key::Up ) ) camera.keyboardZoomInput -= 1.f;
 	if ( input.isDown( keyboard::Key::Down ) ) camera.keyboardZoomInput += 1.f;
+
+	camera.mouseZoomInput = input.getMouseScrollDelta();
 
 	updateDebug( registry, input, time );
 }
