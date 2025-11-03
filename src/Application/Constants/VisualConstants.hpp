@@ -49,8 +49,12 @@ struct Visual_t
 		const std::array< VisMode_t, 4 > Array = { Vegetation, Elevation, Humidity, Temperature };
 	} VisModes;
 
+	const float MovementSpeed = 100.f;
+
 	const float MinZoom = 0.1f;
 	const float MaxZoom = 3.f;
+	const float ZoomKeyboardSpeed = 0.1f;
+	const float ZoomScrollSpeed = 0.05f;
 
 } inline constexpr Visual;
 

@@ -10,13 +10,6 @@
 
 namespace cc::app
 {
-namespace
-{
-// TODO: Move to visual constants
-constexpr float MovementSpeed = 100.f;
-constexpr float ZoomSpeed = 0.1f;
-constexpr float ScrollSpeed = 0.05f;
-}  // namespace
 CameraMovementSystem::CameraMovementSystem( entt::registry& registry )
 {
 	assert( registry.ctx().contains< Camera >() && "Camera is not initialized" );
@@ -25,15 +18,16 @@ CameraMovementSystem::CameraMovementSystem( entt::registry& registry )
 
 auto CameraMovementSystem::update( entt::registry& registry ) -> void
 {
-	constexpr const auto Constants = constant::Visual;
+	constexpr const auto& Constants = constant::Visual;
 	auto& camera = registry.ctx().get< Camera >();
 	auto& time = registry.ctx().get< Time >();
 
-	camera.position += camera.keyboardMovementInput * time.DeltaTime * MovementSpeed;
+	camera.position += camera.keyboardMovementInput * time.DeltaTime * Constants.MovementSpeed;
 	camera.position += camera.mouseMovementInput;
 
-	camera.zoomLevel += camera.keyboardZoomInput * time.DeltaTime * ZoomSpeed;
-	camera.zoomLevel += camera.mouseZoomInput * ScrollSpeed;  // TODO: Consider smoothing.
+	// TODO: Consider smoothing.
+	camera.zoomLevel += camera.keyboardZoomInput * time.DeltaTime * Constants.ZoomKeyboardSpeed;
+	camera.zoomLevel += camera.mouseZoomInput * Constants.ZoomScrollSpeed;
 	camera.zoomLevel = std::clamp( camera.zoomLevel, Constants.MinZoom, Constants.MaxZoom );
 }
 }  // namespace cc::app
