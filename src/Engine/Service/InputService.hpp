@@ -5,10 +5,17 @@
 #include <magic_enum/magic_enum.hpp>
 
 #include "Engine/ContextEntity/InputMap.hpp"
+#include "Engine/Events/WindowEvents.hpp"
 #include "Engine/Interface/IService.hpp"
 
 namespace cc
 {
+namespace event
+{
+// struct LostFocus;
+// struct GainedFocus;
+}  // namespace event
+
 class InputService : public IFrameService
 {
 public:
@@ -53,8 +60,10 @@ private:
 	};
 
 	auto zeroInput() -> void;
+	auto onLoseFocus( const event::LostFocus& lostFocus ) -> void;
 
 	Keyboard m_keyboard;
 	Mouse m_mouse;
+	bool m_wasIsInFocus = false;
 };
 }  // namespace cc

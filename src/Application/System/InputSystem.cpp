@@ -46,7 +46,6 @@ auto InputSystem::update( entt::registry& registry ) -> void
 {
 	const auto& input = registry.ctx().get< InputService >();
 	const auto& time = registry.ctx().get< Time >();
-
 	auto& camera = registry.ctx().get< Camera >();
 
 	camera.keyboardMovementInput = { 0.f, 0.f };

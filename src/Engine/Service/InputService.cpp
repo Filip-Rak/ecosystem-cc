@@ -38,23 +38,32 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 
 InputService::InputService( entt::registry& registry )
 {
+	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );
+
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::LostFocus >().connect< &InputService::onLoseFocus >( *this );
 }
 
 auto InputService::beginFrame( entt::registry& registry ) -> void
 {
 	// TODO: Copy or ref?
-	if ( const auto& inputMap = registry.ctx().get< InputMap >(); !inputMap.windowInFocus )
-	{
-		zeroInput();
-	}
-	else
+	const auto& inputMap = registry.ctx().get< InputMap >();
+	if ( inputMap.windowInFocus )
 	{
 		m_keyboard.current = inputMap.keySates;
 		m_mouse.current = inputMap.buttonSates;
 		m_mouse.currentPosition = inputMap.mousePos;
 		m_mouse.scrollDelta = inputMap.mouseScrollDelta;
+
+		if ( !m_wasIsInFocus )
+		{
+			m_mouse.lastPosition = m_mouse.currentPosition;
+			m_wasIsInFocus = true;
+		}
 	}
+
+	m_wasIsInFocus = inputMap.windowInFocus;
 }
 
 auto InputService::endFrame( entt::registry& /*registry*/ ) -> void
@@ -134,10 +143,17 @@ auto InputService::getMouseScrollDelta() const -> float
 
 auto InputService::zeroInput() -> void
 {
+	// TODO: Rebuild structs instead?
 	m_keyboard.current.fill( false );
 	m_keyboard.previous.fill( false );
 
 	m_mouse.current.fill( false );
 	m_mouse.previous.fill( false );
+	m_mouse.scrollDelta = 0.f;
+}
+
+auto InputService::onLoseFocus( const event::LostFocus& /*lostFocus*/ ) -> void
+{
+	zeroInput();
 }
 }  // namespace cc
