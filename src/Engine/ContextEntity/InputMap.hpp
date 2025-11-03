@@ -1,13 +1,19 @@
 // Copied from SFML/Window/Keyboard.hpp
 #pragma once
 
+#include <array>
 #include <cstdint>
 
-namespace cc::keyboard
+#include <glm/vec2.hpp>
+#include <magic_enum/magic_enum.hpp>
+
+namespace cc
+{
+namespace keyboard
 {
 enum class Key : std::uint8_t
 {
-	Unknown,
+	Unknown = 0,
 	A,
 	B,
 	C,
@@ -108,17 +114,24 @@ enum class Key : std::uint8_t
 	F13,
 	F14,
 	F15,
-	Pause,
+	Pause
 };
-}  // namespace cc::keyboard
-
-namespace cc::mouse
+}  // namespace keyboard
+namespace mouse
 {
 enum Button : uint8_t
 {
-	Left,
+	Left = 0,
 	Right,
 	Middle,
 	Unknown
 };
 }
+
+struct InputMap
+{
+	std::array< bool, magic_enum::enum_count< keyboard::Key >() > keySates{ false };
+	std::array< bool, magic_enum::enum_count< mouse::Button >() > buttonSates{ false };
+	glm::vec2 mousePos{ 0.f };
+};
+}  // namespace cc

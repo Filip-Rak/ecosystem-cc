@@ -1,5 +1,8 @@
 #include "Engine/Engine.hpp"
 
+#include <cassert>
+
+#include "Engine/ContextEntity/InputMap.hpp"
 #include "Engine/Events/SystemEvents.hpp"
 #include "Engine/Service/GUIService.hpp"
 #include "Engine/Service/InputService.hpp"
@@ -11,11 +14,13 @@ namespace cc
 {
 Engine::Engine( const Args& args )
 {
+	initWindowEntities();
 	setupDispatcher();
 	createCoreServices();
 
 	if ( args.EnableGUI )
 	{
+		initWindowEntities();
 		createWindowServices( args );
 	}
 };
@@ -33,6 +38,11 @@ auto Engine::run() -> void
 auto Engine::registry() -> entt::registry&
 {
 	return m_registry;
+}
+
+auto Engine::initWindowEntities() -> void
+{
+	m_registry.ctx().emplace< InputMap >();
 }
 
 auto Engine::setupDispatcher() -> void

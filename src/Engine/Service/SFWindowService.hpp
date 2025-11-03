@@ -16,6 +16,7 @@ enum class Key : uint8_t;
 
 namespace cc
 {
+struct InputMap;
 class SFWindowService : public IBeginFrameService
 {
 public:
@@ -32,7 +33,7 @@ public:
 
 private:
 	auto onExit( const event::Exit& exitEvent ) -> void;
-	auto publishWindowEvents( entt::dispatcher& ) -> void;
+	auto publishWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap ) -> void;
 	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
 
 	sf::RenderWindow m_window;

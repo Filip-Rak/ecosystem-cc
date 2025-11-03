@@ -57,6 +57,7 @@ private:
 		return ref;
 	}
 
+	auto initWindowEntities() -> void;
 	auto setupDispatcher() -> void;
 	auto createCoreServices() -> void;
 	auto createWindowServices( const Args& args ) -> void;
