@@ -35,14 +35,14 @@ private:
 	struct Keyboard
 	{
 		static constexpr int KeyCount = magic_enum::enum_count< keyboard::Key >();
-		std::array< bool, KeyCount >& current;
+		std::array< bool, KeyCount > current;
 		std::array< bool, KeyCount > previous{};
 	};
 
 	struct Mouse
 	{
 		static constexpr int ButtonCount = magic_enum::enum_count< mouse::Button >();
-		std::array< bool, ButtonCount >& current;
+		std::array< bool, ButtonCount > current;
 		std::array< bool, ButtonCount > previous{};
 		glm::vec2 lastPosition{ 0.f };
 	};

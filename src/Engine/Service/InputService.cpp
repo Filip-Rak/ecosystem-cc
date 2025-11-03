@@ -11,13 +11,14 @@ namespace cc
 {
 namespace
 {
+// TODO: Remove if unused.
 auto initKeyboardVector( entt::registry& registry )
     -> std::array< bool, magic_enum::enum_count< keyboard::Key >() >&
 {
 	auto& inputMap = registry.ctx().get< InputMap >();
 	return inputMap.keySates;
 }
-
+// TODO: Remove if unused.
 auto initMouseVector( entt::registry& registry )
     -> std::array< bool, magic_enum::enum_count< mouse::Button >() >&
 {
@@ -37,8 +38,6 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 }  // namespace
 
 InputService::InputService( entt::registry& registry )
-    : m_keyboard( { .current = initKeyboardVector( registry ) } ),
-      m_mouse( { .current = initMouseVector( registry ) } )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );

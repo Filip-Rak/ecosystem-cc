@@ -133,5 +133,6 @@ struct InputMap
 	std::array< bool, magic_enum::enum_count< keyboard::Key >() > keySates{ false };
 	std::array< bool, magic_enum::enum_count< mouse::Button >() > buttonSates{ false };
 	glm::vec2 mousePos{ 0.f };
+	bool windowInFocus = true;
 };
 }  // namespace cc

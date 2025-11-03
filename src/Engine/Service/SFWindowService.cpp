@@ -45,6 +45,10 @@ auto updateInputMap( InputMap& inputMap, mouse::Button ccButton, bool pressed,
 	inputMap.buttonSates[ buttonIndex ] = pressed;
 	inputMap.mousePos = glmPosition;
 }
+auto updateInputMap( InputMap& inputMap, bool inFocus ) -> void
+{
+	inputMap.windowInFocus = inFocus;
+}
 }  // namespace
 
 SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
@@ -137,10 +141,12 @@ auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher, InputMa
 		}
 		else if ( const auto* lostFocus = event.getIf< sf::Event::FocusLost >() )
 		{
+			updateInputMap( inputMap, false );
 			dispatcher.enqueue< event::LostFocus >();
 		}
 		else if ( const auto* gainedFocus = event.getIf< sf::Event::FocusGained >() )
 		{
+			updateInputMap( inputMap, true );
 			dispatcher.enqueue< event::GainedFocus >();
 		}
 		else if ( const auto* windowResized = event.getIf< sf::Event::Resized >() )
