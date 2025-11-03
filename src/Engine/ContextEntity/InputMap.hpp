@@ -11,7 +11,7 @@ namespace cc
 {
 namespace keyboard
 {
-enum class Key : std::uint8_t
+enum class Key : uint8_t
 {
 	Unknown = 0,
 	A,

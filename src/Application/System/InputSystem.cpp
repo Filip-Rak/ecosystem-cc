@@ -49,15 +49,18 @@ auto InputSystem::update( entt::registry& registry ) -> void
 
 	auto& camera = registry.ctx().get< Camera >();
 
-	camera.movementInput = { 0.f, 0.f };
-	if ( input.isDown( keyboard::Key::W ) ) camera.movementInput.y -= 1;
-	if ( input.isDown( keyboard::Key::S ) ) camera.movementInput.y += 1;
-	if ( input.isDown( keyboard::Key::A ) ) camera.movementInput.x -= 1;
-	if ( input.isDown( keyboard::Key::D ) ) camera.movementInput.x += 1;
+	camera.keyboardMovementInput = { 0.f, 0.f };
+	if ( input.isDown( keyboard::Key::W ) ) camera.keyboardMovementInput.y -= 1;
+	if ( input.isDown( keyboard::Key::S ) ) camera.keyboardMovementInput.y += 1;
+	if ( input.isDown( keyboard::Key::A ) ) camera.keyboardMovementInput.x -= 1;
+	if ( input.isDown( keyboard::Key::D ) ) camera.keyboardMovementInput.x += 1;
 
-	camera.zoomInput = 0.f;
-	if ( input.isDown( keyboard::Key::Up ) ) camera.zoomInput -= 1.f;
-	if ( input.isDown( keyboard::Key::Down ) ) camera.zoomInput += 1.f;
+	if ( input.isDown( mouse::Button::Left ) )
+		camera.mouseMovementInput = input.getMouseMoveDelta();
+
+	camera.keyboardZoomInput = 0.f;
+	if ( input.isDown( keyboard::Key::Up ) ) camera.keyboardZoomInput -= 1.f;
+	if ( input.isDown( keyboard::Key::Down ) ) camera.keyboardZoomInput += 1.f;
 
 	updateDebug( registry, input, time );
 }

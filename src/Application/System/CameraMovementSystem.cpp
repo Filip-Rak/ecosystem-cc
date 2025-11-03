@@ -25,7 +25,9 @@ auto CameraMovementSystem::update( entt::registry& registry ) -> void
 	auto& camera = registry.ctx().get< Camera >();
 	auto& time = registry.ctx().get< Time >();
 
-	camera.position += camera.movementInput * time.DeltaTime * MovementSpeed;
-	camera.zoomLevel += camera.zoomInput * time.DeltaTime * ZoomSpeed;
+	camera.position += camera.keyboardMovementInput * time.DeltaTime * MovementSpeed;
+	camera.position += camera.mouseMovementInput;
+
+	camera.zoomLevel += camera.keyboardZoomInput * time.DeltaTime * ZoomSpeed;
 }
 }  // namespace cc::app
