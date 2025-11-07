@@ -33,9 +33,12 @@ public:
 	[[nodiscard]] auto getWindow() -> sf::RenderWindow&;
 
 private:
-	auto onExit( const event::Exit& exitEvent ) -> void;
-	auto publishWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap ) -> void;
+	auto handleWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap ) -> void;
 	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
+	auto adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher,
+	                 InputMap& inputMap ) const -> void;
+
+	auto onExit( const event::Exit& exitEvent ) -> void;
 
 	sf::RenderWindow m_window;
 	sf::Clock m_imguiClock;

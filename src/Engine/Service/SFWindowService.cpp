@@ -76,12 +76,10 @@ auto SFWindowService::beginFrame( entt::registry& registry ) -> void
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	auto& inputMap = registry.ctx().get< InputMap >();
 
-	publishWindowEvents( dispatcher, inputMap );
+	handleWindowEvents( dispatcher, inputMap );
 
 	const sf::Vector2i mousePos = sf::Mouse::getPosition( m_window );
 	updateInputMap( inputMap, mousePos );
-
-	dispatcher.update();
 }
 
 auto SFWindowService::endFrame( entt::registry& registry ) -> void
@@ -105,9 +103,13 @@ auto SFWindowService::getWindow() -> sf::RenderWindow&
 	return m_window;
 }
 
-auto SFWindowService::onExit( const event::Exit& /*exitEvent*/ ) -> void
+auto SFWindowService::handleWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap ) -> void
 {
-	m_window.close();
+	const auto events = pollEvents();
+	for ( auto event : events )
+	{
+		adaptEvent( event, dispatcher, inputMap );
+	}
 }
 
 auto SFWindowService::pollEvents() -> std::vector< sf::Event >
@@ -141,84 +143,85 @@ auto SFWindowService::pollEvents() -> std::vector< sf::Event >
 	return events;
 }
 
-auto SFWindowService::publishWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap )
-    -> void
+auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher,
+                                  InputMap& inputMap ) const -> void
 {
-	const auto events = pollEvents();
-	for ( auto event : events )
+	if ( const auto* closed = event.getIf< sf::Event::Closed >() )
 	{
-		if ( const auto* closed = event.getIf< sf::Event::Closed >() )
-		{
-			// TODO: Make into one event?
-			dispatcher.enqueue< event::WindowClosed >();
-			dispatcher.enqueue< event::Exit >();
-		}
-		else if ( const auto* lostFocus = event.getIf< sf::Event::FocusLost >() )
-		{
-			updateInputMap( inputMap, false );
-			dispatcher.enqueue< event::LostFocus >();
-		}
-		else if ( const auto* gainedFocus = event.getIf< sf::Event::FocusGained >() )
-		{
-			updateInputMap( inputMap, true );
-			dispatcher.enqueue< event::GainedFocus >();
-		}
-		else if ( const auto* windowResized = event.getIf< sf::Event::Resized >() )
-		{
-			const auto width = static_cast< uint16_t >( windowResized->size.x );
-			const auto height = static_cast< uint16_t >( windowResized->size.y );
-			dispatcher.enqueue< event::WindowResized >( width, height );
-		}
-		else if ( const auto* keyPressed = event.getIf< sf::Event::KeyPressed >() )
-		{
-			if ( !m_inFocus ) return;
-
-			constexpr bool pressed = true;
-			const keyboard::Key ccKey = toCcKey( keyPressed->code );
-
-			dispatcher.enqueue< event::KeyChanged >( ccKey, pressed );
-			updateInputMap( inputMap, ccKey, pressed );
-		}
-		else if ( const auto* keyReleased = event.getIf< sf::Event::KeyReleased >() )
-		{
-			if ( !m_inFocus ) return;
-
-			constexpr bool Pressed = false;
-			const keyboard::Key ccKey = toCcKey( keyReleased->code );
-
-			dispatcher.enqueue< event::KeyChanged >( ccKey, Pressed );
-			updateInputMap( inputMap, ccKey, Pressed );
-		}
-		else if ( const auto* mousePressed = event.getIf< sf::Event::MouseButtonPressed >() )
-		{
-			if ( !m_inFocus ) return;
-
-			constexpr bool Pressed = true;
-			const auto glmPosition = toGlm( mousePressed->position );
-			const auto ccButton = toCcButton( mousePressed->button );
-
-			dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
-			updateInputMap( inputMap, ccButton, Pressed );
-		}
-		else if ( const auto* mouseReleased = event.getIf< sf::Event::MouseButtonReleased >() )
-		{
-			if ( !m_inFocus ) return;
-
-			constexpr bool Pressed = false;
-			const auto glmPosition = toGlm( mouseReleased->position );
-			const auto ccButton = toCcButton( mouseReleased->button );
-
-			dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
-			updateInputMap( inputMap, ccButton, Pressed );
-		}
-		else if ( const auto* mouseScrolled = event.getIf< sf::Event::MouseWheelScrolled >() )
-		{
-			if ( !m_inFocus ) return;
-
-			inputMap.mouseScrollDelta = mouseScrolled->delta;
-			dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ),
-			                                              mouseScrolled->delta );
-		}
+		// TODO: Make into one event?
+		dispatcher.enqueue< event::WindowClosed >();
+		dispatcher.enqueue< event::Exit >();
 	}
+	else if ( const auto* lostFocus = event.getIf< sf::Event::FocusLost >() )
+	{
+		updateInputMap( inputMap, false );
+		dispatcher.enqueue< event::LostFocus >();
+	}
+	else if ( const auto* gainedFocus = event.getIf< sf::Event::FocusGained >() )
+	{
+		updateInputMap( inputMap, true );
+		dispatcher.enqueue< event::GainedFocus >();
+	}
+	else if ( const auto* windowResized = event.getIf< sf::Event::Resized >() )
+	{
+		const auto width = static_cast< uint16_t >( windowResized->size.x );
+		const auto height = static_cast< uint16_t >( windowResized->size.y );
+		dispatcher.enqueue< event::WindowResized >( width, height );
+	}
+	else if ( const auto* keyPressed = event.getIf< sf::Event::KeyPressed >() )
+	{
+		if ( !m_inFocus ) return;
+
+		constexpr bool pressed = true;
+		const keyboard::Key ccKey = toCcKey( keyPressed->code );
+
+		dispatcher.enqueue< event::KeyChanged >( ccKey, pressed );
+		updateInputMap( inputMap, ccKey, pressed );
+	}
+	else if ( const auto* keyReleased = event.getIf< sf::Event::KeyReleased >() )
+	{
+		if ( !m_inFocus ) return;
+
+		constexpr bool Pressed = false;
+		const keyboard::Key ccKey = toCcKey( keyReleased->code );
+
+		dispatcher.enqueue< event::KeyChanged >( ccKey, Pressed );
+		updateInputMap( inputMap, ccKey, Pressed );
+	}
+	else if ( const auto* mousePressed = event.getIf< sf::Event::MouseButtonPressed >() )
+	{
+		if ( !m_inFocus ) return;
+
+		constexpr bool Pressed = true;
+		const auto glmPosition = toGlm( mousePressed->position );
+		const auto ccButton = toCcButton( mousePressed->button );
+
+		dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
+		updateInputMap( inputMap, ccButton, Pressed );
+	}
+	else if ( const auto* mouseReleased = event.getIf< sf::Event::MouseButtonReleased >() )
+	{
+		if ( !m_inFocus ) return;
+
+		constexpr bool Pressed = false;
+		const auto glmPosition = toGlm( mouseReleased->position );
+		const auto ccButton = toCcButton( mouseReleased->button );
+
+		dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
+		updateInputMap( inputMap, ccButton, Pressed );
+	}
+	else if ( const auto* mouseScrolled = event.getIf< sf::Event::MouseWheelScrolled >() )
+	{
+		if ( !m_inFocus ) return;
+
+		inputMap.mouseScrollDelta = mouseScrolled->delta;
+		dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ),
+		                                              mouseScrolled->delta );
+	}
+}
+
+auto SFWindowService::onExit( const event::Exit& /*exitEvent*/ ) -> void
+{
+	m_window.close();
 }
 }  // namespace cc

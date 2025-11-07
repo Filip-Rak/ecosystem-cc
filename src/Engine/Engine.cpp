@@ -27,11 +27,15 @@ Engine::Engine( const Args& args )
 
 auto Engine::run() -> void
 {
+	auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
+
 	while ( m_isRunning )
 	{
 		for ( auto& service : m_services ) service->beginFrame( m_registry );
 		for ( auto& system : m_systems ) system->update( m_registry );
 		for ( auto& service : m_services ) service->endFrame( m_registry );
+
+		dispatcher.update();
 	}
 }
 

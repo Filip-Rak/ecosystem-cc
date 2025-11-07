@@ -32,8 +32,6 @@ public:
 
 	auto run() -> void;
 
-	[[nodiscard]] auto registry() -> entt::registry&;
-
 	template < typename T, typename... Args >
 	requires std::derived_from< T, ISystem >
 	auto addSystem( Args&&... args ) -> T&
@@ -43,6 +41,8 @@ public:
 		m_systems.push_back( std::move( ptr ) );
 		return ref;
 	}
+
+	[[nodiscard]] auto registry() -> entt::registry&;
 
 private:
 	template < typename T, typename... Args >
