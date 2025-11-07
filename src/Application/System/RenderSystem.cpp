@@ -22,7 +22,12 @@ auto initGridHandle( entt::registry& /*registry*/, IRenderService& renderer ) ->
 	// TODO: Base visual grid on data from registry.
 	// WARN: Same as App.
 	constexpr uint16_t FixedDim = 100;
-	return renderer.createGrid( FixedDim, FixedDim, glm::vec2{ 0.f }, 4.f );
+	constexpr float CellSize = 4.f;
+	constexpr float VerticalSize = FixedDim * CellSize;
+	constexpr float HorizontalSize = FixedDim * CellSize;
+	constexpr glm::vec2 Position{ -( VerticalSize / 2.f ), -( HorizontalSize / 2.f ) };
+
+	return renderer.createGrid( FixedDim, FixedDim, Position, CellSize );
 }
 
 template < auto CellPropertyPtr >

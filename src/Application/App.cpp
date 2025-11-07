@@ -6,6 +6,7 @@
 #include <entt/fwd.hpp>
 
 #include "Application/CLI/CLIOptions.hpp"
+#include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
@@ -49,7 +50,10 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 
 	if ( !headless )
 	{
-		registry.ctx().emplace< Camera >();
+		auto& camera = registry.ctx().emplace< Camera >();
+		constexpr const glm::vec2 CameraPosition{ constant::SidePanel.InitialWidth / 2.f, 0.f };
+		camera.position = glm::vec2{ CameraPosition };
+
 		registry.ctx().emplace< UIConfig >();
 	}
 }
