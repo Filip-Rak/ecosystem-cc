@@ -71,7 +71,6 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	}
 
 	camera.isSpeedUp = input.isDown( Key::LShift );
-
 	updateDebug( registry, input, time );
 }
 }  // namespace cc::app

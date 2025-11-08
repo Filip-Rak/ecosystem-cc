@@ -10,6 +10,7 @@
 #include <imgui.h>
 
 #include "Engine/Events/GUIEvents.hpp"
+#include "Engine/Events/WindowEvents.hpp"
 #include "Engine/Utility/SFMath.hpp"
 
 namespace cc
@@ -37,14 +38,40 @@ auto rebuildFont() -> void
 		std::cerr << "SFRenderService::rebuildFont() -> Font update failed\n";
 	}
 }
+
+auto letterboxViewport( float windowWidth, float windowHeight, float viewWidth, float viewHeight ) -> sf::FloatRect
+{
+	const float windowRatio = windowWidth / windowHeight;
+	const float viewRatio = viewWidth / viewHeight;
+
+	float sizeX = 1.f;
+	float sizeY = 1.f;
+	float posX = 0.f;
+	float posY = 0.f;
+
+	constexpr float half = 0.5f;
+
+	if ( windowRatio > viewRatio )
+	{
+		sizeX = viewRatio / windowRatio;
+		posX = ( 1.f - sizeX ) * half;
+	}
+	else
+	{
+		sizeY = windowRatio / viewRatio;
+		posY = ( 1.f - sizeY ) * half;
+	}
+
+	return { { posX, posY }, { sizeX, sizeY } };
+}
 }  // namespace
 
-SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window )
-    : m_window( window )
+SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window ) : m_window( window )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::RebuildFont >().connect< &SFRenderService::onRebuildFont >( *this );
+	dispatcher.sink< event::WindowResized >().connect< &SFRenderService::onWindowResized >( *this );
 }
 
 auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
@@ -91,8 +118,7 @@ auto SFRenderService::setZoom( CameraHandle handle, float level ) -> void
 	camera.view.setSize( newSize );
 }
 
-auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position,
-                                  float cellSize ) -> GridHandle
+auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize ) -> GridHandle
 {
 	const std::size_t cellNumber = width * height;
 
@@ -138,8 +164,7 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 	return { static_cast< uint16_t >( m_gridDataVector.size() - 1 ) };
 }
 
-auto SFRenderService::setGridColors( GridHandle& handle, const std::vector< Color >& colors )
-    -> void
+auto SFRenderService::setGridColors( GridHandle& handle, const std::vector< Color >& colors ) -> void
 {
 	auto& grid = m_gridDataVector[ handle.index ];
 	assert( grid.cellNumber == colors.size() && "Grid and color size mismatch" );
@@ -169,5 +194,14 @@ auto SFRenderService::draw( GridHandle handle ) -> void
 auto SFRenderService::onRebuildFont( const event::RebuildFont& /*event*/ ) -> void
 {
 	m_updatedFont = false;
+}
+
+auto SFRenderService::onWindowResized( const event::WindowResized& event ) -> void
+{
+	for ( auto& cam : m_cameraVector )
+	{
+		const sf::Vector2f size = cam.view.getSize();
+		cam.view.setViewport( letterboxViewport( event.width, event.height, size.x, size.y ) );
+	}
 }
 }  // namespace cc

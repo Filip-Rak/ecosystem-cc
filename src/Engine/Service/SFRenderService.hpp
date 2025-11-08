@@ -12,7 +12,8 @@ namespace cc
 namespace event
 {
 struct RebuildFont;
-}
+struct WindowResized;
+}  // namespace event
 
 struct Color;
 
@@ -29,8 +30,7 @@ public:
 	auto setActiveCamera( CameraHandle handle ) -> void override;
 	auto setZoom( CameraHandle handle, float level ) -> void override;
 
-	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
-	    -> GridHandle override;
+	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize ) -> GridHandle override;
 	auto setGridColors( GridHandle& handle, const std::vector< Color >& colors ) -> void override;
 
 	auto draw( GridHandle handle ) -> void override;
@@ -51,6 +51,7 @@ private:
 	};
 
 	auto onRebuildFont( const event::RebuildFont& event ) -> void;
+	auto onWindowResized( const event::WindowResized& event ) -> void;
 
 	std::vector< GridData > m_gridDataVector;
 	std::vector< CameraData > m_cameraVector;
