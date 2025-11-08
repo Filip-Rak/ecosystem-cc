@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: Move to contextEntity
 namespace cc
 {
 struct Time

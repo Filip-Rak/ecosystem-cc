@@ -4,16 +4,15 @@
 #include <glm/vec2.hpp>
 #include <magic_enum/magic_enum.hpp>
 
-#include "Engine/ContextEntity/InputMap.hpp"
-#include "Engine/Events/WindowEvents.hpp"
 #include "Engine/Interface/IService.hpp"
+#include "Engine/Utility/InputEnums.hpp"
 
 namespace cc
 {
 namespace event
 {
-// struct LostFocus;
-// struct GainedFocus;
+struct LostFocus;
+struct GainedFocus;
 }  // namespace event
 
 class InputService : public IFrameService

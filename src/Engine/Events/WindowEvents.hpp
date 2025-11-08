@@ -4,7 +4,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "Engine/ContextEntity/InputMap.hpp"  // TODO: Remove
+#include "Engine/Utility/InputEnums.hpp"
 
 namespace cc::event
 {

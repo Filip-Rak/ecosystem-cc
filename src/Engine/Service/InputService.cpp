@@ -5,6 +5,7 @@
 #include <entt/entt.hpp>
 
 #include "Engine/ContextEntity/InputMap.hpp"
+#include "Engine/Events/WindowEvents.hpp"
 
 namespace cc
 {
