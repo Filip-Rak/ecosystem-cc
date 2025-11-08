@@ -7,10 +7,10 @@
 #include <glm/vec2.hpp>
 
 #include "Application/ContextEntity/Camera.hpp"
+#include "Engine/ContextEntity/Time.hpp"
 #include "Engine/Events/SystemEvents.hpp"
 #include "Engine/Service/GUIService.hpp"
 #include "Engine/Service/InputService.hpp"
-#include "Engine/Utility/Time.hpp"
 
 namespace cc::app
 {

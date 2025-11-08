@@ -4,7 +4,7 @@
 #include <imgui.h>
 
 #include "Application/Constants/UIConstants.hpp"
-#include "Engine/Utility/Time.hpp"
+#include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
 {
@@ -22,8 +22,7 @@ auto setProperties() -> void
 	const ImVec2 ScaledPadding{ Constants.Padding.x * UiScale, Constants.Padding.y * UiScale };
 
 	const ImVec2 NextWindowSize{ viewport->WorkSize.x, ScaledHeight };
-	const ImVec2 NextWindowPos{ viewport->WorkPos.x,
-	                            viewport->WorkPos.y + viewport->WorkSize.y - ScaledHeight };
+	const ImVec2 NextWindowPos{ viewport->WorkPos.x, viewport->WorkPos.y + viewport->WorkSize.y - ScaledHeight };
 
 	ImGui::SetNextWindowSize( NextWindowSize );
 	ImGui::SetNextWindowPos( NextWindowPos );

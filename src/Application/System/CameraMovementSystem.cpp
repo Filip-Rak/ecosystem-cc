@@ -6,7 +6,7 @@
 
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
-#include "Engine/Utility/Time.hpp"
+#include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
 {
