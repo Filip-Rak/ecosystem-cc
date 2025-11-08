@@ -8,8 +8,8 @@ namespace cc::app
 {
 struct SidePanel
 {
-	float width{ constant::SidePanel.InitialWidth };
-	std::string pauseButtonLabel{ constant::SidePanel.WidgetLabels.PauseButtonPaused };
+	float width{ constant::UI.SidePanel.InitialWidth };
+	std::string pauseButtonLabel{ constant::UI.SidePanel.WidgetLabels.PauseButtonPaused };
 };
 
 struct UIConfig

@@ -51,7 +51,7 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 	if ( !headless )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
-		constexpr const glm::vec2 CameraPosition{ constant::SidePanel.InitialWidth / 2.f, 0.f };
+		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
 		camera.position = glm::vec2{ CameraPosition };
 
 		registry.ctx().emplace< UIConfig >();

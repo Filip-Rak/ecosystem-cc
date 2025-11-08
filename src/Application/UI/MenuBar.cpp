@@ -10,7 +10,7 @@ namespace cc::app
 {
 namespace
 {
-constexpr const auto& Labels = constant::MenuBar.WidgetLabels;
+constexpr const auto& Labels = constant::UI.MenuBar.WidgetLabels;
 
 auto drawFileMenu() -> void
 {

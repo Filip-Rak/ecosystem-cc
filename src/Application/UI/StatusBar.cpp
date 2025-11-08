@@ -10,7 +10,7 @@ namespace cc::app
 {
 namespace
 {
-constexpr const auto& Constants = constant::StatusBar;
+constexpr const auto& Constants = constant::UI.StatusBar;
 constexpr const auto& Labels = Constants.Labels;
 
 auto setProperties() -> void

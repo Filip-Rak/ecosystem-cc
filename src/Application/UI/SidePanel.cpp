@@ -16,7 +16,7 @@ namespace cc::app
 {
 namespace
 {
-constexpr const auto& Constants = constant::SidePanel;
+constexpr const auto& Constants = constant::UI.SidePanel;
 constexpr const auto& Labels = Constants.WidgetLabels;
 
 auto setProperties( entt::registry& registry )
@@ -25,7 +25,7 @@ auto setProperties( entt::registry& registry )
 	const auto& panelWidth = panelConfig.width;
 	const auto* const ViewPort = ImGui::GetMainViewport();
 
-	constexpr float StatusBarHeight = constant::StatusBar.Height;
+	constexpr float StatusBarHeight = constant::UI.StatusBar.Height;
 	const float PanelTop = ViewPort->WorkPos.y;
 	const float PanelLeft = ViewPort->WorkPos.x + ViewPort->WorkSize.x - panelWidth;
 	const float UiScale = ImGui::GetIO().FontGlobalScale;
