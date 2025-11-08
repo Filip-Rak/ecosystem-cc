@@ -127,13 +127,8 @@ auto InputService::getMouseScrollDelta() const -> float
 
 auto InputService::zeroInput() -> void
 {
-	// TODO: Rebuild structs instead?
-	m_keyboard.current.fill( false );
-	m_keyboard.previous.fill( false );
-
-	m_mouse.current.fill( false );
-	m_mouse.previous.fill( false );
-	m_mouse.scrollDelta = 0.f;
+	m_keyboard = {};
+	m_mouse = {};
 }
 
 auto InputService::onLoseFocus( const event::LostFocus& /*lostFocus*/ ) -> void
