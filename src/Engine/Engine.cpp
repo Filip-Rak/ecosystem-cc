@@ -61,8 +61,7 @@ auto Engine::createCoreServices() -> void
 
 auto Engine::createWindowServices( const Args& args ) -> void
 {
-	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight,
-	                                              args.Title );
+	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight, args.Title );
 	addService< InputService >( m_registry );
 	addService< GUIService >();
 	addService< SFRenderService >( m_registry, window.getWindow() );

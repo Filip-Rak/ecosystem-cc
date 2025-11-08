@@ -20,5 +20,5 @@ struct Cell_t
 	const float TemperatureRange = MinTemperature - MaxTemperature;
 	const float HumidityRange = MinHumidity - MaxHumidity;
 	const float ElevationRange = MinElevation - MaxElevation;
-} constexpr Cell;
+} inline constexpr Cell;
 }  // namespace cc::app::constant

@@ -28,8 +28,7 @@ struct UI_t
 	struct SidePanel_t
 	{
 		float InitialWidth = 300.f;
-		ImGuiWindowFlags MainWindowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
-		                                   ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags MainWindowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus |
 		                                   ImGuiWindowFlags_NoSavedSettings;
 
 		struct Contents_t
@@ -58,8 +57,7 @@ struct UI_t
 		struct ScrollablePanel_t
 		{
 			ImGuiWindowFlags ChildFlags = ImGuiChildFlags_None;
-			ImGuiWindowFlags WindowFlags =
-			    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+			ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 			ImVec2 Size = ImVec2( -1, -1 );
 		} ScrollablePanel;
 	} const SidePanel;
@@ -68,8 +66,7 @@ struct UI_t
 	{
 		float Height = 25.f;
 		ImVec2 Padding{ 10.f, 5.f };
-		ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-		                         ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags Flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
 		                         ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 		struct Labels_t
@@ -84,5 +81,5 @@ struct UI_t
 			std::string_view RunTime = "Run time: %.0fs";
 		} Labels;
 	} const StatusBar;
-} constexpr UI;
+} inline constexpr UI;
 }  // namespace cc::app::constant

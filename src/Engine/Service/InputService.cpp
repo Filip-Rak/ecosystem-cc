@@ -10,21 +10,6 @@ namespace cc
 {
 namespace
 {
-// TODO: Remove if unused.
-auto initKeyboardVector( entt::registry& registry )
-    -> std::array< bool, magic_enum::enum_count< keyboard::Key >() >&
-{
-	auto& inputMap = registry.ctx().get< InputMap >();
-	return inputMap.keySates;
-}
-// TODO: Remove if unused.
-auto initMouseVector( entt::registry& registry )
-    -> std::array< bool, magic_enum::enum_count< mouse::Button >() >&
-{
-	auto& inputMap = registry.ctx().get< InputMap >();
-	return inputMap.buttonSates;
-}
-
 auto toKeyIndex( keyboard::Key key ) -> uint8_t
 {
 	return static_cast< uint8_t >( key );

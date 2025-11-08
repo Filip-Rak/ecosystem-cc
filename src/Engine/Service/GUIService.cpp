@@ -4,14 +4,9 @@
 
 namespace cc
 {
-GUIService::GUIService()
+GUIService::GUIService() : m_IO( ImGui::GetIO() )
 {
-	ImGui::GetIO().IniFilename = nullptr;
-}
-
-void GUIService::addToDraw( DrawFunction drawFunction )
-{
-	m_drawFunctions.push_back( std::move( drawFunction ) );
+	m_IO.IniFilename = nullptr;
 }
 
 void GUIService::endFrame( entt::registry& registry )
@@ -20,5 +15,15 @@ void GUIService::endFrame( entt::registry& registry )
 	{
 		drawFunction( registry );
 	}
+}
+
+void GUIService::addToDraw( DrawFunction drawFunction )
+{
+	m_drawFunctions.push_back( std::move( drawFunction ) );
+}
+
+auto GUIService::nowHandlesMouse() const -> bool
+{
+	return m_IO.WantCaptureMouse;
 }
 }  // namespace cc

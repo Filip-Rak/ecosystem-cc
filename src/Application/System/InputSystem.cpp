@@ -4,9 +4,11 @@
 #include <iostream>  // FIXME: Debug
 
 #include <entt/entt.hpp>
+#include <glm/vec2.hpp>
 
 #include "Application/ContextEntity/Camera.hpp"
 #include "Engine/Events/SystemEvents.hpp"
+#include "Engine/Service/GUIService.hpp"
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Utility/Time.hpp"
 
@@ -37,6 +39,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 InputSystem::InputSystem( entt::registry& registry )
 {
 	assert( registry.ctx().contains< InputService >() && "InputService not initialized" );
+	assert( registry.ctx().contains< GUIService >() && "InputService not initialized" );
 	assert( registry.ctx().contains< Time >() && "Time not initialized" );
 	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
 }
@@ -44,6 +47,7 @@ InputSystem::InputSystem( entt::registry& registry )
 auto InputSystem::update( entt::registry& registry ) -> void
 {
 	const auto& input = registry.ctx().get< InputService >();
+	const auto& gui = registry.ctx().get< GUIService >();
 	const auto& time = registry.ctx().get< Time >();
 	auto& camera = registry.ctx().get< Camera >();
 
@@ -56,16 +60,15 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	if ( input.isDown( Key::A ) ) camera.keyboardMovementInput.x -= 1;
 	if ( input.isDown( Key::D ) ) camera.keyboardMovementInput.x += 1;
 
-	if ( input.isDown( Button::Left ) )
-		camera.mouseMovementInput = input.getMouseMoveDelta();
-	else
-		camera.mouseMovementInput = glm::ivec2{ 0 };
-
 	camera.keyboardZoomInput = 0.f;
 	if ( input.isDown( Key::Up ) ) camera.keyboardZoomInput -= 1.f;
 	if ( input.isDown( Key::Down ) ) camera.keyboardZoomInput += 1.f;
 
-	camera.mouseZoomInput = -input.getMouseScrollDelta();
+	if ( !gui.nowHandlesMouse() )
+	{
+		camera.mouseZoomInput = -input.getMouseScrollDelta();
+		camera.mouseMovementInput = ( input.isDown( Button::Left ) ) ? input.getMouseMoveDelta() : glm::ivec2{ 0 };
+	}
 
 	camera.isSpeedUp = input.isDown( Key::LShift );
 

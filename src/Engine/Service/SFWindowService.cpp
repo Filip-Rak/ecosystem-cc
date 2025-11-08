@@ -25,8 +25,7 @@ constexpr uint8_t KeyboardOffset = 1;
 
 [[nodiscard]] auto toCcButton( const sf::Mouse::Button button ) -> mouse::Button
 {
-	if ( magic_enum::enum_index< sf::Mouse::Button >( button ) <=
-	     magic_enum::enum_index< sf::Mouse::Button >( sf::Mouse::Button::Middle ) )
+	if ( magic_enum::enum_index< sf::Mouse::Button >( button ) <= magic_enum::enum_index< sf::Mouse::Button >( sf::Mouse::Button::Middle ) )
 		return static_cast< mouse::Button >( button );
 
 	return mouse::Button::Unknown;
@@ -54,8 +53,7 @@ auto updateInputMap( InputMap& inputMap, sf::Vector2i mousePos ) -> void
 }
 }  // namespace
 
-SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
-                                  const std::string& title )
+SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint16_t height, const std::string& title )
     : m_window( sf::VideoMode( { width, height } ), title )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
@@ -143,8 +141,7 @@ auto SFWindowService::pollEvents() -> std::vector< sf::Event >
 	return events;
 }
 
-auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher,
-                                  InputMap& inputMap ) const -> void
+auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher, InputMap& inputMap ) const -> void
 {
 	if ( const auto* closed = event.getIf< sf::Event::Closed >() )
 	{
@@ -215,8 +212,7 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 		if ( !m_inFocus ) return;
 
 		inputMap.mouseScrollDelta = mouseScrolled->delta;
-		dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ),
-		                                              mouseScrolled->delta );
+		dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ), mouseScrolled->delta );
 	}
 }
 
