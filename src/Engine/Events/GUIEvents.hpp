@@ -2,6 +2,6 @@
 
 namespace cc::event
 {
-struct RebuildFont
+struct GUIResized
 {};
 }  // namespace cc::event

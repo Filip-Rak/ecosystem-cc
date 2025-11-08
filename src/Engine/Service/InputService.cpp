@@ -32,7 +32,6 @@ InputService::InputService( entt::registry& registry )
 
 auto InputService::beginFrame( entt::registry& registry ) -> void
 {
-	// TODO: Copy or ref?
 	const auto& inputMap = registry.ctx().get< InputMap >();
 	if ( inputMap.windowInFocus )
 	{

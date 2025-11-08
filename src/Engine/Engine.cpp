@@ -4,6 +4,7 @@
 
 #include "Engine/ContextEntity/InputMap.hpp"
 #include "Engine/Events/SystemEvents.hpp"
+#include "Engine/Events/WindowEvents.hpp"
 #include "Engine/Service/GUIService.hpp"
 #include "Engine/Service/InputService.hpp"
 #include "Engine/Service/SFRenderService.hpp"
@@ -52,6 +53,7 @@ auto Engine::setupDispatcher() -> void
 {
 	auto& dispatcher = m_registry.ctx().emplace< entt::dispatcher >();
 	dispatcher.sink< event::Exit >().connect< &Engine::onExit >( *this );
+	dispatcher.sink< event::WindowClosed >().connect< &Engine::onWindowClosed >( *this );
 }
 
 auto Engine::createCoreServices() -> void
@@ -68,6 +70,11 @@ auto Engine::createWindowServices( const Args& args ) -> void
 }
 
 auto Engine::onExit( const event::Exit& /*exitEvent*/ ) -> void
+{
+	m_isRunning = false;
+}
+
+auto Engine::onWindowClosed( const event::WindowClosed& /*event*/ ) -> void
 {
 	m_isRunning = false;
 }

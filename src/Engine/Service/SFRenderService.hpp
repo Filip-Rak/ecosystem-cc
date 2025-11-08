@@ -11,7 +11,7 @@ namespace cc
 {
 namespace event
 {
-struct RebuildFont;
+struct GUIResized;
 struct WindowResized;
 }  // namespace event
 
@@ -50,7 +50,7 @@ private:
 		float zoomLevel = 1.f;
 	};
 
-	auto onRebuildFont( const event::RebuildFont& event ) -> void;
+	auto onGUIResized( const event::GUIResized& event ) -> void;
 	auto onWindowResized( const event::WindowResized& event ) -> void;
 
 	std::vector< GridData > m_gridDataVector;

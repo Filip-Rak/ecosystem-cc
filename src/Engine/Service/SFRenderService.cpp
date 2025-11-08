@@ -70,7 +70,7 @@ SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& wi
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-	dispatcher.sink< event::RebuildFont >().connect< &SFRenderService::onRebuildFont >( *this );
+	dispatcher.sink< event::GUIResized >().connect< &SFRenderService::onGUIResized >( *this );
 	dispatcher.sink< event::WindowResized >().connect< &SFRenderService::onWindowResized >( *this );
 }
 
@@ -191,7 +191,7 @@ auto SFRenderService::draw( GridHandle handle ) -> void
 	m_window.draw( grid.vertices );
 }
 
-auto SFRenderService::onRebuildFont( const event::RebuildFont& /*event*/ ) -> void
+auto SFRenderService::onGUIResized( const event::GUIResized& /*event*/ ) -> void
 {
 	m_updatedFont = false;
 }

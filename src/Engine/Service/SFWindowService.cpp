@@ -145,9 +145,7 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 {
 	if ( const auto* closed = event.getIf< sf::Event::Closed >() )
 	{
-		// TODO: Make into one event?
 		dispatcher.enqueue< event::WindowClosed >();
-		dispatcher.enqueue< event::Exit >();
 	}
 	else if ( const auto* lostFocus = event.getIf< sf::Event::FocusLost >() )
 	{

@@ -15,7 +15,8 @@ namespace cc
 namespace event
 {
 struct Exit;
-}
+struct WindowClosed;
+}  // namespace event
 
 struct Args
 {
@@ -63,6 +64,7 @@ private:
 	auto createWindowServices( const Args& args ) -> void;
 
 	auto onExit( const event::Exit& exitEvent ) -> void;
+	auto onWindowClosed( const event::WindowClosed& event ) -> void;
 
 	entt::registry m_registry;
 	std::vector< std::unique_ptr< IFrameService > > m_services;

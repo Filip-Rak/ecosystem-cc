@@ -44,17 +44,15 @@ auto drawContents( entt::registry& registry ) -> void
 
 	static int speed = 5.f;
 
-	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
-	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
-	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d",
-	                  ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom, Contents.sliderPrecision.data(),
+	                    ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d", ImGuiSliderFlags_AlwaysClamp );
 
 	static bool toggle = true;
 	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
 	{
 		// TODO: Ask the sim instead of toggle.
-		panelConfig.pauseButtonLabel =
-		    ( toggle ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
+		panelConfig.pauseButtonLabel = ( toggle ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
 		toggle = !toggle;
 	}
 
@@ -73,20 +71,18 @@ auto drawContents( entt::registry& registry ) -> void
 	ImGui::EndDisabled();
 
 	float& uiScale = ImGui::GetIO().FontGlobalScale;
-	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale,
-	                         Contents.maxUIScale, Contents.sliderPrecision.data(),
-	                         ImGuiSliderFlags_AlwaysClamp ) )
+	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale, Contents.maxUIScale,
+	                         Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::RebuildFont >();
+		dispatcher.enqueue< event::GUIResized >();
 	}
 
 	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
 	auto currentVisModeInt = static_cast< int >( currentVisMode );
 	constexpr const auto& VisModesArr = app::constant::Visual.VisModes.Array;
 
-	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(),
-	                        app::constant::getVisModeData( currentVisMode ).Name.data() ) )
+	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(), app::constant::getVisModeData( currentVisMode ).Name.data() ) )
 	{
 		// TODO: WHAT - THIS BRILLIANT. Make more like this!
 		for ( int index = 0; const auto& mode : VisModesArr )
@@ -113,8 +109,7 @@ auto drawPanel( entt::registry& registry ) -> void
 		panelConfig.width = ImGui::GetWindowSize().x;
 
 		constexpr const auto& ScrollPanel = Constants.ScrollablePanel;
-		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size,
-		                        ScrollPanel.ChildFlags, ScrollPanel.WindowFlags ) )
+		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags, ScrollPanel.WindowFlags ) )
 		{
 			drawContents( registry );
 		}
