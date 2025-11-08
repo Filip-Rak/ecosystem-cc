@@ -18,8 +18,9 @@ public:
 	GUIService();
 
 	auto endFrame( entt::registry& registry ) -> void override;
-
 	auto addToDraw( DrawFunction drawFunction ) -> void;
+	auto rebuildFont() const -> void;
+
 	[[nodiscard]] auto nowHandlesMouse() const -> bool;
 
 private:

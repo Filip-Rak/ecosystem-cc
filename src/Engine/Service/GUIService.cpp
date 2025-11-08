@@ -22,6 +22,21 @@ void GUIService::addToDraw( DrawFunction drawFunction )
 	m_drawFunctions.push_back( std::move( drawFunction ) );
 }
 
+auto GUIService::rebuildFont() const -> void
+{
+	// TODO: Use font config instead.
+	m_IO.Fonts->Clear();
+
+	// const float UiScale = m_IO.FontGlobalScale;
+	// constexpr float BaseFontSize = 13.f;
+
+	ImFontConfig cfg;
+	// cfg.SizePixels = BaseFontSize * UiScale;
+
+	m_IO.Fonts->AddFontDefault( &cfg );
+	m_IO.Fonts->Build();
+}
+
 auto GUIService::nowHandlesMouse() const -> bool
 {
 	return m_IO.WantCaptureMouse;

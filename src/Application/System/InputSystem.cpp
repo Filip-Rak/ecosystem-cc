@@ -31,8 +31,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 	if ( input.isPressed( keyboard::Key::Escape ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::Exit >();  // FIXME: Should this be a trigger, should .update be
-		                                      // in the loop?
+		dispatcher.enqueue< event::Exit >();
 	}
 }
 }  // namespace

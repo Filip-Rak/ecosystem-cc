@@ -11,27 +11,17 @@
 
 #include "Engine/Events/GUIEvents.hpp"
 #include "Engine/Events/WindowEvents.hpp"
+#include "Engine/Service/GUIService.hpp"
 #include "Engine/Utility/SFMath.hpp"
 
 namespace cc
 {
 namespace
 {
-// TODO: Figure out a better place for this -> should be part of the base.
-auto rebuildFont() -> void
+auto rebuildFont( entt::registry& registry ) -> void
 {
-	ImGuiIO& io = ImGui::GetIO();
-
-	io.Fonts->Clear();
-
-	const float UiScale = io.FontGlobalScale;
-	constexpr float BaseFontSize = 13.f;
-
-	ImFontConfig cfg;
-	// cfg.SizePixels = BaseFontSize * UiScale;  // FIXME: Do something about this stupidity.
-
-	io.Fonts->AddFontDefault( &cfg );
-	io.Fonts->Build();
+	auto& gui = registry.ctx().get< GUIService >();
+	gui.rebuildFont();
 
 	if ( !ImGui::SFML::UpdateFontTexture() )
 	{
@@ -69,6 +59,8 @@ auto letterboxViewport( float windowWidth, float windowHeight, float viewWidth, 
 SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window ) : m_window( window )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
+	assert( registry.ctx().contains< GUIService >() && "GUIService not initialized" );
+
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::GUIResized >().connect< &SFRenderService::onGUIResized >( *this );
 	dispatcher.sink< event::WindowResized >().connect< &SFRenderService::onWindowResized >( *this );
@@ -79,14 +71,14 @@ auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
 	m_window.clear();
 }
 
-auto SFRenderService::endFrame( entt::registry& /*registry*/ ) -> void
+auto SFRenderService::endFrame( entt::registry& registry ) -> void
 {
 	ImGui::SFML::Render( m_window );
 	m_window.display();
 
 	if ( !m_updatedFont )
 	{
-		rebuildFont();
+		rebuildFont( registry );
 		m_updatedFont = true;
 	}
 }
@@ -114,7 +106,7 @@ auto SFRenderService::setZoom( CameraHandle handle, float level ) -> void
 {
 	auto& camera = m_cameraVector[ handle.index ];
 
-	const sf::Vector2f newSize = camera.BaseSize * level;
+	const sf::Vector2f newSize = camera.BaseSize / level;
 	camera.view.setSize( newSize );
 }
 

@@ -33,15 +33,14 @@ auto CameraMovementSystem::update( entt::registry& registry ) -> void
 		movementSpeed = Constants.FastMovementSpeed;
 	}
 
-	// TODO: Consider smoothing.
 	const float keyboardZoom = camera.keyboardZoomInput * time.DeltaTime * zoomKeyboardSpeed;
 	const float mouseZoom = camera.mouseZoomInput * zoomScrollSpeed;
 
 	const float newZoom = camera.zoomLevel + keyboardZoom + mouseZoom;
 	camera.zoomLevel = std::clamp( newZoom, Constants.MinZoom, Constants.MaxZoom );
 
-	const glm::vec2 keyboardMove = camera.keyboardMovementInput * time.DeltaTime * movementSpeed * camera.zoomLevel;
-	const glm::vec2 mouseMove = camera.mouseMovementInput * camera.zoomLevel;
+	const glm::vec2 keyboardMove = camera.keyboardMovementInput * time.DeltaTime * movementSpeed / camera.zoomLevel;
+	const glm::vec2 mouseMove = camera.mouseMovementInput / camera.zoomLevel;
 	camera.position += keyboardMove + mouseMove;
 }
 }  // namespace cc::app
