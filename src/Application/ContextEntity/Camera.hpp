@@ -13,5 +13,7 @@ struct Camera
 	float keyboardZoomInput = 0.f;
 	float mouseZoomInput = 0.f;
 	float zoomLevel = 1.f;
+
+	bool isSpeedUp = false;
 };
 }  // namespace cc::app

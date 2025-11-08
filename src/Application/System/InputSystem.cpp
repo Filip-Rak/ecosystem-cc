@@ -23,8 +23,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 		std::cout << "Run time: " << time.RunTime << "\n";
 		std::cout << "FPS: " << time.FPS << "\n";
 		std::cout << "DeltaTime: " << time.DeltaTime << "\n";
-		std::cout << "Mouse Position { " << input.getCurrentMousePos().x << ", "
-		          << input.getCurrentMousePos().y << " }\n";
+		std::cout << "Mouse Position { " << input.getCurrentMousePos().x << ", " << input.getCurrentMousePos().y << " }\n";
 	}
 
 	if ( input.isPressed( keyboard::Key::Escape ) )
@@ -48,22 +47,27 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	const auto& time = registry.ctx().get< Time >();
 	auto& camera = registry.ctx().get< Camera >();
 
-	camera.keyboardMovementInput = { 0.f, 0.f };
-	if ( input.isDown( keyboard::Key::W ) ) camera.keyboardMovementInput.y -= 1;
-	if ( input.isDown( keyboard::Key::S ) ) camera.keyboardMovementInput.y += 1;
-	if ( input.isDown( keyboard::Key::A ) ) camera.keyboardMovementInput.x -= 1;
-	if ( input.isDown( keyboard::Key::D ) ) camera.keyboardMovementInput.x += 1;
+	using namespace keyboard;
+	using namespace mouse;
 
-	if ( input.isDown( mouse::Button::Left ) )
+	camera.keyboardMovementInput = { 0.f, 0.f };
+	if ( input.isDown( Key::W ) ) camera.keyboardMovementInput.y -= 1;
+	if ( input.isDown( Key::S ) ) camera.keyboardMovementInput.y += 1;
+	if ( input.isDown( Key::A ) ) camera.keyboardMovementInput.x -= 1;
+	if ( input.isDown( Key::D ) ) camera.keyboardMovementInput.x += 1;
+
+	if ( input.isDown( Button::Left ) )
 		camera.mouseMovementInput = input.getMouseMoveDelta();
 	else
 		camera.mouseMovementInput = glm::ivec2{ 0 };
 
 	camera.keyboardZoomInput = 0.f;
-	if ( input.isDown( keyboard::Key::Up ) ) camera.keyboardZoomInput -= 1.f;
-	if ( input.isDown( keyboard::Key::Down ) ) camera.keyboardZoomInput += 1.f;
+	if ( input.isDown( Key::Up ) ) camera.keyboardZoomInput -= 1.f;
+	if ( input.isDown( Key::Down ) ) camera.keyboardZoomInput += 1.f;
 
-	camera.mouseZoomInput = input.getMouseScrollDelta();
+	camera.mouseZoomInput = -input.getMouseScrollDelta();
+
+	camera.isSpeedUp = input.isDown( Key::LShift );
 
 	updateDebug( registry, input, time );
 }

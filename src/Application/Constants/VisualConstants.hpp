@@ -50,11 +50,16 @@ struct Visual_t
 	} VisModes;
 
 	const float MovementSpeed = 100.f;
+	const float FastMovementSpeed = 250.f;
 
 	const float MinZoom = 0.1f;
 	const float MaxZoom = 3.f;
+
 	const float ZoomKeyboardSpeed = 0.1f;
+	const float FastZoomKeyboardSpeed = 0.25f;
+
 	const float ZoomScrollSpeed = 0.05f;
+	const float FastZoomScrollSpeed = 0.10f;
 
 } inline constexpr Visual;
 
