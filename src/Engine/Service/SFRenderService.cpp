@@ -1,6 +1,6 @@
 #include "Engine/Service/SFRenderService.hpp"
 
-#include <iostream>
+#include <print>
 
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -25,7 +25,7 @@ auto rebuildFont( entt::registry& registry ) -> void
 
 	if ( !ImGui::SFML::UpdateFontTexture() )
 	{
-		std::cerr << "SFRenderService::rebuildFont() -> Font update failed\n";
+		std::println( stderr, "SFRenderService::rebuildFont() -> Font update failed" );
 	}
 }
 

@@ -1,6 +1,6 @@
 #include "Application/UI/SidePanel.hpp"
 
-#include <iostream>  // TODO: Debug
+#include <print>  // TODO: Debug
 
 #include <entt/entt.hpp>
 #include <imgui.h>
@@ -59,14 +59,14 @@ auto drawContents( entt::registry& registry ) -> void
 	ImGui::SameLine();
 	if ( ImGui::Button( Labels.IncrementButton.data() ) )
 	{
-		std::cout << Labels.IncrementButton.data() << "\n";
+		std::println( "{}", Labels.IncrementButton.data() );
 	}
 
 	ImGui::SameLine();
 	ImGui::BeginDisabled( toggle );
 	if ( ImGui::Button( Labels.RestartButton.data() ) )
 	{
-		std::cout << Labels.RestartButton.data() << "\n";
+		std::println( "{}", Labels.RestartButton.data() );
 	}
 	ImGui::EndDisabled();
 
@@ -84,7 +84,6 @@ auto drawContents( entt::registry& registry ) -> void
 
 	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(), app::constant::getVisModeData( currentVisMode ).Name.data() ) )
 	{
-		// TODO: WHAT - THIS BRILLIANT. Make more like this!
 		for ( int index = 0; const auto& mode : VisModesArr )
 		{
 			bool isSelected = ( currentVisModeInt == index );

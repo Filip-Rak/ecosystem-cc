@@ -24,9 +24,9 @@ void GUIService::addToDraw( DrawFunction drawFunction )
 
 auto GUIService::rebuildFont() const -> void
 {
-	// TODO: Use font config instead.
 	m_IO.Fonts->Clear();
 
+	// TODO: Use font config instead.
 	// const float UiScale = m_IO.FontGlobalScale;
 	// constexpr float BaseFontSize = 13.f;
 

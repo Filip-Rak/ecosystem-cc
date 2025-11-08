@@ -20,7 +20,7 @@ UISystem::UISystem( entt::registry& registry )
 	gui.addToDraw(
 	    []( entt::registry& registry ) -> void
 	    {
-		    drawMenuBar();
+		    drawMenuBar( registry );
 		    drawSidePanel( registry );
 		    drawStatusBar( registry );
 	    } );
