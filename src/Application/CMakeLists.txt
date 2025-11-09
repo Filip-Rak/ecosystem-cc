@@ -8,5 +8,6 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadGrid.cpp
     PARENT_SCOPE
 )

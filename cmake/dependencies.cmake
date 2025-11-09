@@ -52,6 +52,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(imgui-sfml)
 
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG f1c79c02822848a9bed4315b12c8c8f3761e1296
+)
+FetchContent_MakeAvailable(stb)
+
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
+
 set(DEPENDENCIES
     CLI11::CLI11
     EnTT::EnTT
@@ -61,4 +71,5 @@ set(DEPENDENCIES
     sfml-graphics
     sfml-system 
     sfml-window 
+    stb 
 )

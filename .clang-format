@@ -6,7 +6,7 @@ TabWidth: 4
 UseTab: ForIndentation   # Never | ForIndentation | Always
 
 # Column / Line breaking
-ColumnLimit: 140
+ColumnLimit: 120
 BinPackParameters: true
 
 # Braces

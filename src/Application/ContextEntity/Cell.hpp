@@ -6,15 +6,12 @@ struct Cell
 {
 	float vegetation;
 
+	const float Temperature;
 	const float Elevation;
 	const float Humidity;
-	const float Temperature;
 
-	Cell( float vegetation, float elevation, float humidity, float temperature )
-	    : vegetation( vegetation ),
-	      Elevation( elevation ),
-	      Humidity( humidity ),
-	      Temperature( temperature )
+	Cell( float vegetation, float temperature, float elevation, float humidity )
+	    : vegetation( vegetation ), Temperature( temperature ), Elevation( elevation ), Humidity( humidity )
 	{}
 };
 }  // namespace cc::app

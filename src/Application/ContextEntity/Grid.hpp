@@ -22,8 +22,9 @@ struct Grid
 	Grid( uint16_t width, uint16_t height ) : Width( width ), Height( height )
 	{
 		const auto CellCount = static_cast< std::size_t >( width ) * height;
-		spatialGrid.reserve( CellCount );
+
 		cells.reserve( CellCount );
+		spatialGrid.reserve( CellCount );
 	}
 };
 }  // namespace cc::app
