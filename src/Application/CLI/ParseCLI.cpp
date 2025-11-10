@@ -14,7 +14,7 @@ auto parse( int argc, char** argv ) -> Options
 
 	CLI::App app{ "Ecosystem" };
 	app.add_option( "--preset", options.presetPath, "Simulation preset to run" );
-	app.add_flag( "--headless", options.headless, "Run without GUI" );
+	app.add_flag( "--gui", options.gui, "Run without GUI" );
 
 	try
 	{

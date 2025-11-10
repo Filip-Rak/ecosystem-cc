@@ -38,7 +38,7 @@ constexpr std::string_view Title = "Ecosystem";
 
 	const auto& grid = registry.ctx().get< Grid >();
 
-	if ( !options.headless )
+	if ( options.gui )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
@@ -57,7 +57,7 @@ App::App( const cli::Options& options )
       m_engine( { .Title = Title.data(),
                   .WindowWidth = WindowWidth,
                   .WindowHeight = WindowHeight,
-                  .EnableGUI = !options.headless } )
+                  .EnableGUI = options.gui } )
 {}
 
 auto App::init() -> std::optional< InitError >
@@ -89,7 +89,7 @@ auto App::initSystems() -> void
 {
 	auto& registry = m_engine.registry();
 
-	if ( !m_options.headless )
+	if ( m_options.gui )
 	{
 		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
 		auto& renderer = registry.ctx().get< SFRenderService >();

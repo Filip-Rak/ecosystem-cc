@@ -6,7 +6,7 @@ namespace cc::cli
 {
 struct Options
 {
-	bool headless{ false };
+	bool gui{ false };
 	std::filesystem::path presetPath;
 };
 }  // namespace cc::cli
