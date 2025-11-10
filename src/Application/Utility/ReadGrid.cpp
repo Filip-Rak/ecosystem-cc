@@ -30,6 +30,14 @@ const std::filesystem::path HumidityPath = "humidity.png";
 constexpr std::size_t GrayscaleChannel = 1;
 constexpr float GrayscaleRange = 1.f;
 
+[[nodiscard]] auto error( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
+{
+	const std::string absPath = std::filesystem::absolute( path ).string();
+	const std::string errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
+
+	return errorMsg;
+}
+
 [[nodiscard]] auto readGridLayer( const std::filesystem::path& path, float mappingRange, float mappingMin,
                                   std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
 {
@@ -38,15 +46,11 @@ constexpr float GrayscaleRange = 1.f;
 
 	if ( data == nullptr )
 	{
-		const std::string reason = stbi_failure_reason();
-		const std::string absPath = std::filesystem::absolute( path ).string();
-		const std::string errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
-
-		return std::unexpected( errorMsg );
+		return std::unexpected( error( path, stbi_failure_reason() ) );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
 	{
-		return std::unexpected( "-> Invalid layer dimensions" );
+		return std::unexpected( error( path, "Invalid layer dimensions" ) );
 	}
 
 	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
