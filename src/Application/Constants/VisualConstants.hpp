@@ -25,7 +25,7 @@ struct Visual_t
 		const VisMode_t Vegetation{ .Name = "Vegetation",
 		                            .LowEndName = "Barren",
 		                            .HighEndName = "Lush",
-		                            .LowEndColor = Color{ .red = 255, .green = 255, .blue = 255 },
+		                            .LowEndColor = Color{ .red = 139, .green = 69, .blue = 19 },
 		                            .HighEndColor = Color{ .green = 255 } };
 
 		const VisMode_t Elevation{ .Name = "Elevation",
