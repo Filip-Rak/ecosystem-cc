@@ -16,6 +16,7 @@
 #include "Application/System/RenderSystem.hpp"
 #include "Application/System/UISystem.hpp"
 #include "Application/Utility/ReadGrid.hpp"
+#include "Application/Utility/ReadPreset.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 
 namespace cc::app
@@ -26,10 +27,10 @@ constexpr uint16_t WindowWidth = 1280u;
 constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
 
-[[nodiscard]] auto initializeEntities( entt::registry& registry, const cli::Options& options )
+[[nodiscard]] auto initializeEntities( entt::registry& registry, const cli::Options& options, const Preset& preset )
     -> std::optional< InitError >
 {
-	const auto readingError = readGridFromDirectory( registry, "resources/Grid/" );
+	const auto readingError = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( readingError )
 	{
 		return "-> Couldn't load the grid\n" + *readingError;
@@ -61,10 +62,17 @@ App::App( const cli::Options& options )
 
 auto App::init() -> std::optional< InitError >
 {
-	auto& registry = m_engine.registry();
-	if ( auto initError = initializeEntities( registry, m_options ); initError )
+	// TODO: Use path from CLI
+	auto readResult = readPreset( m_options.presetPath );
+	if ( !readResult )
 	{
-		return initError;
+		return "-> Failed to load preset\n" + readResult.error();
+	}
+
+	auto& registry = m_engine.registry();
+	if ( auto initError = initializeEntities( registry, m_options, readResult.value() ); initError )
+	{
+		return "-> Failed to initialize entities\n" + *initError;
 	}
 
 	initSystems();

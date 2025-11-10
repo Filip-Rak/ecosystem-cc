@@ -28,6 +28,7 @@ const std::filesystem::path ElevationPath = "elevation.png";
 const std::filesystem::path HumidityPath = "humidity.png";
 
 constexpr std::size_t GrayscaleChannel = 1;
+constexpr float GrayscaleRange = 1.f;
 
 [[nodiscard]] auto readGridLayer( const std::filesystem::path& path, float mappingRange, float mappingMin,
                                   std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
@@ -52,7 +53,7 @@ constexpr std::size_t GrayscaleChannel = 1;
 	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float intensity = data[ index ];
-		const float propertyValue = ( ( 1.f - intensity ) * mappingRange ) + mappingMin;
+		const float propertyValue = ( ( GrayscaleRange - intensity ) * mappingRange ) + mappingMin;
 		layer.values.emplace_back( propertyValue );
 	}
 
