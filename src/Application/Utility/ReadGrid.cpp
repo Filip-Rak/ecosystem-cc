@@ -1,8 +1,6 @@
 #include "Application/Utility/ReadGrid.hpp"
 
 #include <expected>
-#include <filesystem>  // TODO: Use instead of strings
-#include <string_view>
 #include <vector>
 
 #include <entt/entt.hpp>
@@ -25,24 +23,23 @@ struct Layer
 
 using ReadingResult = std::expected< Layer, ReadError >;
 
-constexpr std::string_view TemperatureFilename = "temperature.png";
-constexpr std::string_view ElevationFilename = "elevation.png";
-constexpr std::string_view HumidityFilename = "humidity.png";
+const std::filesystem::path TemperaturePath = "temperature.png";
+const std::filesystem::path ElevationPath = "elevation.png";
+const std::filesystem::path HumidityPath = "humidity.png";
 
 constexpr std::size_t GrayscaleChannel = 1;
 
-[[nodiscard]] auto readGridLayer( const std::string& path, float mappingRange, float mappingMin,
+[[nodiscard]] auto readGridLayer( const std::filesystem::path& path, float mappingRange, float mappingMin,
                                   std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
 {
 	Layer layer;
-	std::filesystem::path absolutePath = std::filesystem::absolute( path );
-	auto* const data = stbi_loadf( path.c_str(), &layer.width, &layer.height, nullptr, GrayscaleChannel );
+	auto* const data = stbi_loadf( path.string().c_str(), &layer.width, &layer.height, nullptr, GrayscaleChannel );
 
 	if ( data == nullptr )
 	{
 		std::string reason = stbi_failure_reason();
-		std::string errorMsg = absolutePath.string() + "': " + reason;
-		return std::unexpected( stbi_failure_reason() + errorMsg );
+		std::string errorMsg = reason + ". file: " + path.string();
+		return std::unexpected( errorMsg );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
 	{
@@ -53,7 +50,6 @@ constexpr std::size_t GrayscaleChannel = 1;
 	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float intensity = data[ index ];
-
 		const float propertyValue = ( ( 1.f - intensity ) * mappingRange ) + mappingMin;
 		layer.values.emplace_back( propertyValue );
 	}
@@ -62,14 +58,14 @@ constexpr std::size_t GrayscaleChannel = 1;
 	return layer;
 }
 }  // namespace
-auto readGridFromDirectory( entt::registry& registry, const std::string& path ) -> std::optional< ReadError >
+auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path ) -> std::optional< ReadError >
 {
 	constexpr const auto& Constant = constant::Cell;
 
 	// clang-format off
 	const auto temperatureLayer =
 	    readGridLayer( 
-			path + TemperatureFilename.data(), 
+			path / TemperaturePath, 
 			Constant.TemperatureRange, 
 			Constant.MinTemperature
 		);
@@ -82,7 +78,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::string& path ) 
 
 	const auto elevationLayer =
 	    readGridLayer( 
-			path + ElevationFilename.data(), 
+			path / ElevationPath, 
 			Constant.ElevationRange, 
 			Constant.MinElevation,
 			validDimensions
@@ -94,7 +90,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::string& path ) 
 
 	const auto humidityLayer =
 	    readGridLayer( 
-			path + HumidityFilename.data(), 
+			path / HumidityPath, 
 			Constant.HumidityRange, 
 			Constant.MinHumidity,
 			validDimensions
