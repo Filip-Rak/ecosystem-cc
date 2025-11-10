@@ -27,14 +27,24 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 	Njson json;
 	try
 	{
-		json = Njson::parse( file, nullptr, true, true );
+		constexpr bool AllowExceptions = true;
+		constexpr bool AllowComments = true;
+		json = Njson::parse( file, nullptr, AllowExceptions, AllowComments );
 	}
 	catch ( const Njson::parse_error& exception )
 	{
 		return std::unexpected( "-> " + std::string( exception.what() ) );
 	}
 
-	constexpr const auto& Keys = constant::JsonKeys;
-	return Preset{ .gridDirectoryPath = json[ Keys.GridDirectoryPath ] };
+	// TODO: When adding more options run this try catch for each property via function for good log accuracy
+	try
+	{
+		constexpr const auto& Keys = constant::JsonKeys;
+		return Preset{ .gridDirectoryPath = json[ Keys.GridDirectoryPath ] };
+	}
+	catch ( const nlohmann::json::exception& exception )
+	{
+		return std::unexpected( "-> " + std::string( exception.what() ) );
+	}
 }
 }  // namespace cc::app

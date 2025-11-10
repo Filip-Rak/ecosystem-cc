@@ -32,10 +32,10 @@ constexpr float GrayscaleRange = 1.f;
 
 [[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
 {
-	const ReadError absPath = std::filesystem::absolute( path ).string();
-	const ReadError errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
+	const ReadError absolutePath = std::filesystem::absolute( path ).string();
+	const ReadError errorMessage = "-> Affected file: " + absolutePath + "\n-> Issue: " + reason;
 
-	return errorMsg;
+	return errorMessage;
 }
 
 [[nodiscard]] auto readGridLayer( const std::filesystem::path& path, float mappingRange, float mappingMin,
