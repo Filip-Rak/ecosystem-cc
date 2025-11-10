@@ -40,6 +40,7 @@ constexpr std::size_t GrayscaleChannel = 1;
 		const std::string reason = stbi_failure_reason();
 		const std::string absPath = std::filesystem::absolute( path ).string();
 		const std::string errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
+
 		return std::unexpected( errorMsg );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )

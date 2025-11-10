@@ -59,6 +59,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(stb)
 
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0 
+)
+FetchContent_MakeAvailable(json)
+
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 
@@ -68,6 +75,7 @@ set(DEPENDENCIES
     glm::glm
     ImGui-SFML::ImGui-SFML
     magic_enum::magic_enum
+    nlohmann_json::nlohmann_json
     sfml-graphics
     sfml-system 
     sfml-window 

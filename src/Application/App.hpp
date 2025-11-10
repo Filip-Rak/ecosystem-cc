@@ -25,6 +25,8 @@ public:
 	auto run() -> void;
 
 private:
+	auto initSystems() -> void;
+
 	const cli::Options m_options;
 	Engine m_engine;
 };

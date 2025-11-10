@@ -57,9 +57,7 @@ App::App( const cli::Options& options )
                   .WindowWidth = WindowWidth,
                   .WindowHeight = WindowHeight,
                   .EnableGUI = !options.headless } )
-{
-	auto& registry = m_engine.registry();
-}
+{}
 
 auto App::init() -> std::optional< InitError >
 {
@@ -68,6 +66,20 @@ auto App::init() -> std::optional< InitError >
 	{
 		return initError;
 	}
+
+	initSystems();
+
+	return std::nullopt;
+}
+
+auto App::run() -> void
+{
+	m_engine.run();
+}
+
+auto App::initSystems() -> void
+{
+	auto& registry = m_engine.registry();
 
 	if ( !m_options.headless )
 	{
@@ -79,12 +91,5 @@ auto App::init() -> std::optional< InitError >
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}
-
-	return std::nullopt;
-}
-
-auto App::run() -> void
-{
-	m_engine.run();
 }
 }  // namespace cc::app
