@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstdint>
-#include <print>  // FIXME: Debug
 #include <string_view>
 
 #include <entt/fwd.hpp>
@@ -28,22 +27,18 @@ constexpr uint16_t WindowWidth = 1280u;
 constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
 
-auto initializeEntities( entt::registry& registry, bool headless ) -> void
+[[nodiscard]] auto initializeEntities( entt::registry& registry, const cli::Options& options )
+    -> std::optional< InitError >
 {
-	// TODO: Pass path from options
-	// TODO: Setup should be a separate public method that can return false so main can terminate everything
-	// immediately.
 	const auto readingError = readGridFromDirectory( registry, "resources/Grid/" );
 	if ( readingError )
 	{
-		// TODO: Handle outside the constructor.
-		std::println( stderr, "Failed to load the grid: {}", *readingError );
-		assert( false );
+		return "-> Couldn't load the grid\n" + *readingError;
 	}
 
 	const auto& grid = registry.ctx().get< Grid >();
 
-	if ( !headless )
+	if ( !options.headless )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
@@ -52,6 +47,8 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
 		registry.ctx().emplace< UIConfig >();
 	}
+
+	return std::nullopt;
 }
 }  // namespace
 
@@ -63,8 +60,15 @@ App::App( const cli::Options& options )
 {
 	auto& registry = m_engine.registry();
 	assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
+}
 
-	initializeEntities( registry, options.headless );
+auto App::init( const cli::Options& options ) -> std::optional< InitError >
+{
+	auto& registry = m_engine.registry();
+	if ( auto initError = initializeEntities( registry, options ); initError )
+	{
+		return initError;
+	}
 
 	if ( !options.headless )
 	{
@@ -75,6 +79,8 @@ App::App( const cli::Options& options )
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}
+
+	return std::nullopt;
 }
 
 auto App::run() -> void

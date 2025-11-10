@@ -37,13 +37,14 @@ constexpr std::size_t GrayscaleChannel = 1;
 
 	if ( data == nullptr )
 	{
-		std::string reason = stbi_failure_reason();
-		std::string errorMsg = reason + ". file: " + path.string();
+		const std::string reason = stbi_failure_reason();
+		const std::string absPath = std::filesystem::absolute( path ).string();
+		const std::string errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
 		return std::unexpected( errorMsg );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
 	{
-		return std::unexpected( "Invalid layer dimensions" );
+		return std::unexpected( "-> Invalid layer dimensions" );
 	}
 
 	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
