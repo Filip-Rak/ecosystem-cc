@@ -30,10 +30,10 @@ const std::filesystem::path HumidityPath = "humidity.png";
 constexpr std::size_t GrayscaleChannel = 1;
 constexpr float GrayscaleRange = 1.f;
 
-[[nodiscard]] auto error( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
+[[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
 {
-	const std::string absPath = std::filesystem::absolute( path ).string();
-	const std::string errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
+	const ReadError absPath = std::filesystem::absolute( path ).string();
+	const ReadError errorMsg = "-> Affected file: " + absPath + "\n-> Issue: " + reason;
 
 	return errorMsg;
 }
@@ -46,11 +46,11 @@ constexpr float GrayscaleRange = 1.f;
 
 	if ( data == nullptr )
 	{
-		return std::unexpected( error( path, stbi_failure_reason() ) );
+		return std::unexpected( layerReadError( path, stbi_failure_reason() ) );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
 	{
-		return std::unexpected( error( path, "Invalid layer dimensions" ) );
+		return std::unexpected( layerReadError( path, "Invalid layer dimensions" ) );
 	}
 
 	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
