@@ -1,5 +1,7 @@
 #include "Application/CLI/ParseCLI.hpp"
 
+#include <cstdlib>
+
 #include <CLI/CLI.hpp>
 
 #include "Application/CLI/CLIOptions.hpp"

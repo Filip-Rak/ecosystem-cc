@@ -5,72 +5,108 @@
 #include <vector>
 
 #include <entt/entt.hpp>
+#include <glm/vec2.hpp>
 #include <stb_image.h>
 
+#include "Application/Constants/CellConstants.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 
 namespace cc::app
 {
 namespace
 {
-struct LayerMap
+struct Layer
 {
-	const uint16_t width;
-	const uint16_t height;
+	int width;
+	int height;
 	std::vector< float > values;
 };
 
-using ReadingResult = std::expected< LayerMap, ReadError >;
-using ValidationResult = std::optional< ReadError >;
+using ReadingResult = std::expected< Layer, ReadError >;
 
 constexpr std::string_view TemperatureFilename = "temperature.png";
 constexpr std::string_view ElevationFilename = "elevation.png";
 constexpr std::string_view HumidityFilename = "humidity.png";
 
-[[nodiscard]] auto readTemperatureMap( const std::string& /*path*/ ) -> ReadingResult
-{
-	return LayerMap{};
-}
+constexpr std::size_t GrayscaleChannel = 1;
 
-[[nodiscard]] auto readElevationMap( const std::string& /*path*/ ) -> ReadingResult
+[[nodiscard]] auto readGridLayer( const std::string& path, float mappingRange, float mappingMin,
+                                  std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
 {
-	return LayerMap{};
-}
+	Layer layer;
+	auto* const data = stbi_loadf( path.c_str(), &layer.width, &layer.height, nullptr, GrayscaleChannel );
 
-[[nodiscard]] auto readHumidityMap( const std::string& /*path*/ ) -> ReadingResult
-{
-	return LayerMap{};
-}
+	if ( data == nullptr )
+	{
+		return std::unexpected( stbi_failure_reason() );
+	}
+	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
+	{
+		return std::unexpected( "Invalid layer dimensions" );
+	}
 
-[[nodiscard]] auto invalidRead( const uint16_t validWidth, const uint16_t validHeight, const ReadingResult& read )
-    -> ValidationResult
-{
-	if ( !read ) return read.error();
-	if ( read->width != validWidth || read->height != validHeight ) return std::string( "Layer dimension mismatch" );
+	const std::size_t size = layer.width + layer.height;
+	for ( std::size_t index = 0; index < size; index++ )
+	{
+		const float intensity = data[ index ];
 
-	return std::nullopt;
+		const float propertyValue = ( intensity * mappingRange ) + mappingMin;
+		layer.values.emplace_back( propertyValue );
+	}
+
+	stbi_image_free( data );
+	return layer;
 }
 }  // namespace
-auto readGridFromDirectory( entt::registry& registry, const std::string& path ) -> ValidationResult
+auto readGridFromDirectory( entt::registry& registry, const std::string& path ) -> std::optional< ReadError >
 {
-	const auto temperatureLayer = readTemperatureMap( path + TemperatureFilename.data() );
-	if ( !temperatureLayer ) return temperatureLayer.error();
+	constexpr const auto& Constant = constant::Cell;
 
-	const uint16_t validWidth = temperatureLayer->width;
-	const uint16_t validHeight = temperatureLayer->height;
+	// clang-format off
+	const auto temperatureLayer =
+	    readGridLayer( 
+			path + TemperatureFilename.data(), 
+			Constant.TemperatureRange, 
+			Constant.MinTemperature
+		);
+	if ( !temperatureLayer )
+	{
+		return temperatureLayer.error();
+	}
 
-	const auto elevationLayer = readElevationMap( path + ElevationFilename.data() );
-	if ( auto isInvalid = invalidRead( validWidth, validHeight, elevationLayer ); isInvalid ) return isInvalid;
+	const glm::ivec2 validDimensions = { temperatureLayer->height, temperatureLayer->width };
 
-	const auto humidityLayer = readHumidityMap( path + HumidityFilename.data() );
-	if ( auto isInvalid = invalidRead( validWidth, validHeight, humidityLayer ); isInvalid ) return isInvalid;
+	const auto elevationLayer =
+	    readGridLayer( 
+			path + ElevationFilename.data(), 
+			Constant.ElevationRange, 
+			Constant.MinElevation,
+			validDimensions
+		);
+	if ( !elevationLayer )
+	{
+		return elevationLayer.error();
+	}
 
-	auto& grid = registry.ctx().emplace< Grid >( validWidth, validHeight );
+	const auto humidityLayer =
+	    readGridLayer( 
+			path + HumidityFilename.data(), 
+			Constant.HumidityRange, 
+			Constant.MinHumidity,
+			validDimensions
+		);
+	if ( !humidityLayer )
+	{
+		return humidityLayer.error();
+	}
+	// clang-format on
+
+	auto& grid = registry.ctx().emplace< Grid >( validDimensions.x, validDimensions.y );
 	for ( std::size_t index = 0; index < grid.cells.size(); index++ )
 	{
-		const auto cellTemperature = temperatureLayer->values[ index ];
-		const auto cellElevation = elevationLayer->values[ index ];
-		const auto cellHumidity = humidityLayer->values[ index ];
+		const float cellTemperature = temperatureLayer->values[ index ];
+		const float cellElevation = elevationLayer->values[ index ];
+		const float cellHumidity = humidityLayer->values[ index ];
 
 		grid.cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity );
 	}

@@ -1,5 +1,6 @@
 #include "Application/App.hpp"
 
+#include <cassert>
 #include <cstdint>
 #include <string_view>
 
@@ -66,13 +67,14 @@ App::App( const cli::Options& options )
                   .EnableGUI = !options.headless } )
 {
 	auto& registry = m_engine.registry();
+	assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
+
 	initializeEntities( registry, options.headless );
 
 	if ( !options.headless )
 	{
-		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
-
 		auto& renderer = registry.ctx().get< SFRenderService >();
+
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
 		m_engine.addSystem< UISystem >( registry );
