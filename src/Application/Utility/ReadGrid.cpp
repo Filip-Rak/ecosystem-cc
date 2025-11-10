@@ -1,6 +1,7 @@
 #include "Application/Utility/ReadGrid.hpp"
 
 #include <expected>
+#include <filesystem>  // TODO: Use instead of strings
 #include <string_view>
 #include <vector>
 
@@ -34,18 +35,21 @@ constexpr std::size_t GrayscaleChannel = 1;
                                   std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
 {
 	Layer layer;
+	std::filesystem::path absolutePath = std::filesystem::absolute( path );
 	auto* const data = stbi_loadf( path.c_str(), &layer.width, &layer.height, nullptr, GrayscaleChannel );
 
 	if ( data == nullptr )
 	{
-		return std::unexpected( stbi_failure_reason() );
+		std::string reason = stbi_failure_reason();
+		std::string errorMsg = absolutePath.string() + "': " + reason;
+		return std::unexpected( stbi_failure_reason() + errorMsg );
 	}
 	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
 	{
 		return std::unexpected( "Invalid layer dimensions" );
 	}
 
-	const std::size_t size = layer.width + layer.height;
+	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
 	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float intensity = data[ index ];
@@ -102,7 +106,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::string& path ) 
 	// clang-format on
 
 	auto& grid = registry.ctx().emplace< Grid >( validDimensions.x, validDimensions.y );
-	for ( std::size_t index = 0; index < grid.cells.size(); index++ )
+	for ( std::size_t index = 0; index < grid.cells.capacity(); index++ )
 	{
 		const float cellTemperature = temperatureLayer->values[ index ];
 		const float cellElevation = elevationLayer->values[ index ];

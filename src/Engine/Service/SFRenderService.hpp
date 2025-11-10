@@ -38,7 +38,7 @@ public:
 private:
 	struct GridData
 	{
-		float cellNumber;
+		std::size_t cellNumber;
 		sf::VertexArray vertices;
 		static const std::size_t VertsPerCell = 6;
 	};

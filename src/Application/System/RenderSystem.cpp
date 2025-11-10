@@ -17,17 +17,20 @@ namespace cc::app
 {
 namespace
 {
-auto initGridHandle( entt::registry& /*registry*/, IRenderService& renderer ) -> GridHandle
+auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> GridHandle
 {
-	// TODO: Base visual grid on data from registry.
-	// WARN: Same as App.
-	constexpr uint16_t FixedDim = 100;
-	constexpr float CellSize = 4.f;
-	constexpr float VerticalSize = FixedDim * CellSize;
-	constexpr float HorizontalSize = FixedDim * CellSize;
-	constexpr glm::vec2 Position{ -( VerticalSize / 2.f ), -( HorizontalSize / 2.f ) };
+	assert( registry.ctx().contains< Grid >() && "Grid not initialized" );
+	const auto& logicalGrid = registry.ctx().get< Grid >();
 
-	return renderer.createGrid( FixedDim, FixedDim, Position, CellSize );
+	const uint16_t width = logicalGrid.Width;
+	const uint16_t height = logicalGrid.Height;
+
+	constexpr float CellSize = 4.f;
+	const float verticalSize = static_cast< float >( width ) * CellSize;
+	const float horizontalSize = static_cast< float >( height ) * CellSize;
+	const glm::vec2 position{ -( verticalSize / 2.f ), -( horizontalSize / 2.f ) };
+
+	return renderer.createGrid( width, height, position, CellSize );
 }
 
 template < auto CellPropertyPtr >
@@ -51,7 +54,6 @@ RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
       m_cameraHandle( renderer.createCamera() )
 {
 	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
-	assert( registry.ctx().contains< Grid >() && "Grid not initialized" );
 	assert( registry.ctx().contains< VisualGrid >() && "VisualGrid not initialized" );
 }
 
@@ -75,20 +77,16 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	switch ( visualGrid.visMode )
 	{
 	case Vegetation:
-		colorizeCells< &Cell::vegetation >( colors, grid, constant::Cell.VegetationRange,
-		                                    VisModes.Vegetation );
+		colorizeCells< &Cell::vegetation >( colors, grid, constant::Cell.VegetationRange, VisModes.Vegetation );
 		break;
 	case Elevation:
-		colorizeCells< &Cell::Elevation >( colors, grid, constant::Cell.ElevationRange,
-		                                   VisModes.Elevation );
+		colorizeCells< &Cell::Elevation >( colors, grid, constant::Cell.ElevationRange, VisModes.Elevation );
 		break;
 	case Humidity:
-		colorizeCells< &Cell::Humidity >( colors, grid, constant::Cell.HumidityRange,
-		                                  VisModes.Humidity );
+		colorizeCells< &Cell::Humidity >( colors, grid, constant::Cell.HumidityRange, VisModes.Humidity );
 		break;
 	case Temperature:
-		colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.TemperatureRange,
-		                                     VisModes.Temperature );
+		colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.TemperatureRange, VisModes.Temperature );
 		break;
 
 	default: assert( false && "Unhandled VisMode selected" );

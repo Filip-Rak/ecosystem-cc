@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <print>  // FIXME: Debug
 #include <string_view>
 
 #include <entt/fwd.hpp>
@@ -16,6 +17,7 @@
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
 #include "Application/System/UISystem.hpp"
+#include "Application/Utility/ReadGrid.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 
 namespace cc::app
@@ -47,7 +49,20 @@ auto initializeGrid( entt::registry& registry, bool headless ) -> void
 
 auto initializeEntities( entt::registry& registry, bool headless ) -> void
 {
-	initializeGrid( registry, headless );
+	// initializeGrid( registry, headless );
+	// TODO: Pass path from options
+	// TODO: Setup should be a separate public method that can return false so main can terminate everything
+	// immediately.
+
+	const auto readingError = readGridFromDirectory( registry, "resources/Grid/" );
+	if ( readingError )
+	{
+		// TODO: For now this will likely just crash.
+		std::println( stderr, "Failed to load the grid: {}", *readingError );
+		assert( false );
+	}
+
+	const auto& grid = registry.ctx().get< Grid >();
 
 	if ( !headless )
 	{
@@ -55,6 +70,7 @@ auto initializeEntities( entt::registry& registry, bool headless ) -> void
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
 		camera.position = glm::vec2{ CameraPosition };
 
+		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
 		registry.ctx().emplace< UIConfig >();
 	}
 }
