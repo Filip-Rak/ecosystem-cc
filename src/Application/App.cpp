@@ -28,36 +28,15 @@ constexpr uint16_t WindowWidth = 1280u;
 constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
 
-auto initializeGrid( entt::registry& registry, bool headless ) -> void
-{
-	// TODO: Load grid properties from file.
-	constexpr uint16_t FixedDim = 100;  // WARN: Same as RenderSystem.
-	auto& grid = registry.ctx().emplace< Grid >( FixedDim, FixedDim );
-
-	const auto count = FixedDim * FixedDim;
-
-	// TODO: Assume all properties range from 0.f to 1.f
-	const float offset = 1.f / static_cast< float >( count );
-	for ( std::size_t i = 0; i < count; i++ )
-	{
-		const float Value = static_cast< float >( i + 1 ) * offset;
-		grid.cells.emplace_back( Value, Value, Value, Value );
-	}
-
-	if ( !headless ) registry.ctx().emplace< VisualGrid >( count );
-}
-
 auto initializeEntities( entt::registry& registry, bool headless ) -> void
 {
-	// initializeGrid( registry, headless );
 	// TODO: Pass path from options
 	// TODO: Setup should be a separate public method that can return false so main can terminate everything
 	// immediately.
-
 	const auto readingError = readGridFromDirectory( registry, "resources/Grid/" );
 	if ( readingError )
 	{
-		// TODO: For now this will likely just crash.
+		// TODO: Handle outside the constructor.
 		std::println( stderr, "Failed to load the grid: {}", *readingError );
 		assert( false );
 	}

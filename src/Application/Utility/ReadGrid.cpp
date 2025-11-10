@@ -54,7 +54,7 @@ constexpr std::size_t GrayscaleChannel = 1;
 	{
 		const float intensity = data[ index ];
 
-		const float propertyValue = ( intensity * mappingRange ) + mappingMin;
+		const float propertyValue = ( ( 1.f - intensity ) * mappingRange ) + mappingMin;
 		layer.values.emplace_back( propertyValue );
 	}
 
