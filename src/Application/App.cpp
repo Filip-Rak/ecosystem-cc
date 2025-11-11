@@ -9,11 +9,13 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
+#include "Application/System/SimulationRunnerSystem.hpp"
 #include "Application/System/UISystem.hpp"
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
@@ -46,6 +48,7 @@ constexpr std::string_view Title = "Ecosystem";
 
 		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
 		registry.ctx().emplace< UIConfig >();
+		registry.ctx().emplace< SimRunnerData >();
 	}
 
 	return std::nullopt;
@@ -93,6 +96,9 @@ auto App::initSystems() -> void
 
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
+
+		m_engine.addSystem< SimulationRunnerSystem >( registry );
+
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}

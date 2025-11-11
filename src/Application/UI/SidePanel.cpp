@@ -8,6 +8,7 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/Events/GUIEvents.hpp"
@@ -42,18 +43,18 @@ auto drawContents( entt::registry& registry ) -> void
 	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
 	auto& Cam = registry.ctx().get< Camera >();
 
-	static int speed = 5.f;
+	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
+	ImGui::LabelText( Labels.IterationLabel.data(), "%zu", simRunnerData.iteration );
 
-	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom, Contents.sliderPrecision.data(),
-	                    ImGuiSliderFlags_AlwaysClamp );
-	ImGui::SliderInt( Labels.SpeedSlider.data(), &speed, Contents.minSpeed, Contents.maxSpeed, "%d", ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
+	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, Contents.minSpeed, Contents.maxSpeed, "%d",
+	                  ImGuiSliderFlags_AlwaysClamp );
 
-	static bool toggle = true;
 	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
 	{
-		// TODO: Ask the sim instead of toggle.
-		panelConfig.pauseButtonLabel = ( toggle ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
-		toggle = !toggle;
+		panelConfig.pauseButtonLabel = ( simRunnerData.paused ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
+		simRunnerData.paused = !simRunnerData.paused;
 	}
 
 	ImGui::SameLine();
@@ -63,6 +64,8 @@ auto drawContents( entt::registry& registry ) -> void
 	}
 
 	ImGui::SameLine();
+
+	static bool toggle = true;
 	ImGui::BeginDisabled( toggle );
 	if ( ImGui::Button( Labels.RestartButton.data() ) )
 	{
@@ -108,7 +111,8 @@ auto drawPanel( entt::registry& registry ) -> void
 		panelConfig.width = ImGui::GetWindowSize().x;
 
 		constexpr const auto& ScrollPanel = Constants.ScrollablePanel;
-		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags, ScrollPanel.WindowFlags ) )
+		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags,
+		                        ScrollPanel.WindowFlags ) )
 		{
 			drawContents( registry );
 		}
