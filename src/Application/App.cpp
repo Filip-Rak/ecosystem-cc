@@ -53,7 +53,7 @@ constexpr std::string_view Title = "Ecosystem";
 }  // namespace
 
 App::App( const cli::Options& options )
-    : m_options( options ),
+    : m_CliOptions( options ),
       m_engine( { .Title = Title.data(),
                   .WindowWidth = WindowWidth,
                   .WindowHeight = WindowHeight,
@@ -62,21 +62,19 @@ App::App( const cli::Options& options )
 
 auto App::init() -> std::optional< InitError >
 {
-	// TODO: Use path from CLI
-	auto readResult = readPreset( m_options.presetPath );
+	auto readResult = readPreset( m_CliOptions.presetPath );
 	if ( !readResult )
 	{
 		return "-> Failed to load preset\n" + readResult.error();
 	}
 
 	auto& registry = m_engine.registry();
-	if ( auto initError = initializeEntities( registry, m_options, readResult.value() ); initError )
+	if ( auto initError = initializeEntities( registry, m_CliOptions, readResult.value() ); initError )
 	{
 		return "-> Failed to initialize entities\n" + *initError;
 	}
 
 	initSystems();
-
 	return std::nullopt;
 }
 
@@ -88,8 +86,7 @@ auto App::run() -> void
 auto App::initSystems() -> void
 {
 	auto& registry = m_engine.registry();
-
-	if ( m_options.gui )
+	if ( m_CliOptions.gui )
 	{
 		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
 		auto& renderer = registry.ctx().get< SFRenderService >();

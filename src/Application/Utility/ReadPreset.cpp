@@ -36,15 +36,17 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		return std::unexpected( "-> " + std::string( exception.what() ) );
 	}
 
-	// TODO: When adding more options run this try catch for each property via function for good log accuracy
+	constexpr const auto& Keys = constant::JsonKeys;
+	std::string lastKey = Keys.GridDirectoryPath.data();
 	try
 	{
-		constexpr const auto& Keys = constant::JsonKeys;
-		return Preset{ .gridDirectoryPath = json[ Keys.GridDirectoryPath ] };
+		lastKey = Keys.GridDirectoryPath.data();
+		return Preset{ .gridDirectoryPath = json[ lastKey ] };
 	}
 	catch ( const nlohmann::json::exception& exception )
 	{
-		return std::unexpected( "-> " + std::string( exception.what() ) );
+		return std::unexpected( "-> Couldn't parse preset\n-> Affected key: " + lastKey +
+		                        "\n-> Issue: " + std::string( exception.what() ) );
 	}
 }
 }  // namespace cc::app

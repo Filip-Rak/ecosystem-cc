@@ -20,14 +20,14 @@ class App : NonMoveable, NonCopyable
 {
 public:
 	App( const cli::Options& options );
-	auto init() -> std::optional< InitError >;
+	[[nodiscard]] auto init() -> std::optional< InitError >;
 
 	auto run() -> void;
 
 private:
 	auto initSystems() -> void;
 
-	const cli::Options m_options;
+	const cli::Options m_CliOptions;
 	Engine m_engine;
 };
 }  // namespace cc::app
