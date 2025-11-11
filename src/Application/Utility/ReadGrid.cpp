@@ -1,6 +1,8 @@
 #include "Application/Utility/ReadGrid.hpp"
 
+#include <cstddef>
 #include <expected>
+#include <format>
 #include <vector>
 
 #include <entt/entt.hpp>
@@ -33,7 +35,7 @@ constexpr float GrayscaleRange = 1.f;
 [[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
 {
 	const ReadError absolutePath = std::filesystem::absolute( path ).string();
-	const ReadError errorMessage = "-> Affected file: " + absolutePath + "\n-> Issue: " + reason;
+	const ReadError errorMessage = std::format( "-> Affected file: {}\n-> Issue: {}", absolutePath, reason );
 
 	return errorMessage;
 }
@@ -48,9 +50,11 @@ constexpr float GrayscaleRange = 1.f;
 	{
 		return std::unexpected( layerReadError( path, stbi_failure_reason() ) );
 	}
-	if ( validDimensions && ( layer.height != validDimensions->x || layer.width != validDimensions->y ) )
+	if ( validDimensions && ( layer.width != validDimensions->x || layer.height != validDimensions->y ) )
 	{
-		return std::unexpected( layerReadError( path, "Invalid layer dimensions" ) );
+		std::string reason = std::format( "Invalid layer dimensions: {{ {}, {} }} should be {{ {}, {} }}", layer.width,
+		                                  layer.height, validDimensions->x, validDimensions->y );
+		return std::unexpected( layerReadError( path, reason ) );
 	}
 
 	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
@@ -81,7 +85,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		return temperatureLayer.error();
 	}
 
-	const glm::ivec2 validDimensions = { temperatureLayer->height, temperatureLayer->width };
+	const glm::ivec2 validDimensions = { temperatureLayer->width, temperatureLayer->height };
 
 	const auto elevationLayer =
 	    readGridLayer( 
@@ -109,7 +113,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	// clang-format on
 
 	auto& grid = registry.ctx().emplace< Grid >( validDimensions.x, validDimensions.y );
-	for ( std::size_t index = 0; index < grid.cells.capacity(); index++ )
+	const auto size = static_cast< const std::size_t >( grid.Height * grid.Width );
+
+	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float cellTemperature = temperatureLayer->values[ index ];
 		const float cellElevation = elevationLayer->values[ index ];

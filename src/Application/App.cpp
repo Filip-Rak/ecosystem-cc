@@ -65,7 +65,7 @@ auto App::init() -> std::optional< InitError >
 	auto readResult = readPreset( m_CliOptions.presetPath );
 	if ( !readResult )
 	{
-		return "-> Failed to load preset\n" + readResult.error();
+		return "-> Failed to read preset\n" + readResult.error();
 	}
 
 	auto& registry = m_engine.registry();
