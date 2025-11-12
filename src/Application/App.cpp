@@ -15,7 +15,7 @@
 #include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
-#include "Application/System/SimulationRunnerSystem.hpp"
+#include "Application/System/SimRunnerSystem.hpp"
 #include "Application/System/UISystem.hpp"
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
@@ -38,18 +38,19 @@ constexpr std::string_view Title = "Ecosystem";
 		return "-> Couldn't load the grid\n" + *readingError;
 	}
 
-	const auto& grid = registry.ctx().get< Grid >();
-
 	if ( options.gui )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
 		camera.position = glm::vec2{ CameraPosition };
 
+		const auto& grid = registry.ctx().get< Grid >();
 		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
+
 		registry.ctx().emplace< UIConfig >();
-		registry.ctx().emplace< SimRunnerData >();
 	}
+
+	registry.ctx().emplace< SimRunnerData >();
 
 	return std::nullopt;
 }
@@ -96,11 +97,13 @@ auto App::initSystems() -> void
 
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
-
-		m_engine.addSystem< SimulationRunnerSystem >( registry );
-
+		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions.gui );
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
+	}
+	else
+	{
+		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions.gui );
 	}
 }
 }  // namespace cc::app

@@ -11,6 +11,7 @@
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
+#include "Application/Events/RunnerEvents.hpp"
 #include "Engine/Events/GUIEvents.hpp"
 
 namespace cc::app
@@ -41,12 +42,12 @@ auto drawContents( entt::registry& registry ) -> void
 	constexpr const auto& Contents = Constants.Contents;
 	constexpr const auto& Visual = constant::Visual;
 	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	auto& Cam = registry.ctx().get< Camera >();
+	auto& cam = registry.ctx().get< Camera >();
 
 	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
 	ImGui::LabelText( Labels.IterationLabel.data(), "%zu", simRunnerData.iteration );
 
-	ImGui::SliderFloat( Labels.ZoomSlider.data(), &Cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
+	ImGui::SliderFloat( Labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
 	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
 	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, Contents.minSpeed, Contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
@@ -65,10 +66,15 @@ auto drawContents( entt::registry& registry ) -> void
 
 	ImGui::SameLine();
 
-	static bool toggle = true;
-	ImGui::BeginDisabled( toggle );
+	ImGui::BeginDisabled( simRunnerData.iteration == 0 );
 	if ( ImGui::Button( Labels.RestartButton.data() ) )
 	{
+		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+		dispatcher.enqueue< event::ResetGrid >();
+
+		simRunnerData.paused = true;
+		panelConfig.pauseButtonLabel = Labels.PauseButtonPaused;
+
 		std::println( "{}", Labels.RestartButton.data() );
 	}
 	ImGui::EndDisabled();
@@ -78,7 +84,7 @@ auto drawContents( entt::registry& registry ) -> void
 	                         Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::GUIResized >();
+		dispatcher.enqueue< cc::event::GUIResized >();
 	}
 
 	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
