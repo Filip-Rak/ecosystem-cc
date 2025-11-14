@@ -11,6 +11,7 @@
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
+#include "Engine/Interface/IRenderService.hpp"
 #include "Engine/Utility/Color.hpp"
 
 namespace cc::app

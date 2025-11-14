@@ -1,8 +1,14 @@
 #pragma once
 
-#include "Engine/Interface/IRenderService.hpp"
+#include <entt/fwd.hpp>
+
 #include "Engine/Interface/ISystem.hpp"
 #include "Engine/Utility/RenderHandles.hpp"
+
+namespace cc
+{
+struct IRenderService;
+}
 
 namespace cc::app
 {

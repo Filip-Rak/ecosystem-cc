@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <entt/fwd.hpp>
 
 #include "Engine/Interface/IRenderService.hpp"
 

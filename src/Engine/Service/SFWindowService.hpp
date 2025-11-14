@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <entt/fwd.hpp>
 
 #include "Engine/Events/SystemEvents.hpp"
 #include "Engine/Interface/IService.hpp"

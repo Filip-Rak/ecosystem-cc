@@ -1,5 +1,6 @@
 #pragma once
 
+#include <entt/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <magic_enum/magic_enum.hpp>

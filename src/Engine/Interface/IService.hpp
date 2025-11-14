@@ -1,7 +1,5 @@
 #pragma once
 
-#include <entt/fwd.hpp>
-
 #include "Engine/Utility/Traits.hpp"
 
 namespace cc
