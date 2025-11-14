@@ -39,17 +39,17 @@ auto letterboxViewport( float windowWidth, float windowHeight, float viewWidth, 
 	float posX = 0.f;
 	float posY = 0.f;
 
-	constexpr float half = 0.5f;
+	constexpr float Half = 0.5f;
 
 	if ( windowRatio > viewRatio )
 	{
 		sizeX = viewRatio / windowRatio;
-		posX = ( 1.f - sizeX ) * half;
+		posX = ( 1.f - sizeX ) * Half;
 	}
 	else
 	{
 		sizeY = windowRatio / viewRatio;
-		posY = ( 1.f - sizeY ) * half;
+		posY = ( 1.f - sizeY ) * Half;
 	}
 
 	return { { posX, posY }, { sizeX, sizeY } };
@@ -92,6 +92,16 @@ auto SFRenderService::createCamera() -> CameraHandle
 	return { static_cast< uint16_t >( m_cameraVector.size() - 1 ) };
 }
 
+auto SFRenderService::getMousePosRelativeToCamera( CameraHandle handle ) const -> glm::vec2
+{
+	const sf::Vector2i mousePos = sf::Mouse::getPosition( m_window );
+
+	const sf::View cameraView = m_cameraVector[ handle.index ].view;
+	const sf::Vector2f sfCamPos = m_window.mapPixelToCoords( mousePos, cameraView );
+
+	return toGlm( sfCamPos );
+}
+
 auto SFRenderService::setPosition( CameraHandle handle, glm::vec2 position ) -> void
 {
 	auto& view = m_cameraVector[ handle.index ].view;
@@ -116,7 +126,11 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 {
 	const std::size_t cellNumber = width * height;
 
-	auto& gridData = m_gridDataVector.emplace_back( cellNumber );
+	auto& gridData = m_gridDataVector.emplace_back( GridData{ .cellNumber = cellNumber,
+	                                                          .rows = width,
+	                                                          .columns = height,
+	                                                          .cellSize = cellSize,
+	                                                          .position = toSf( position ) } );
 	auto& vertices = gridData.vertices;
 
 	vertices.setPrimitiveType( sf::PrimitiveType::Triangles );
@@ -158,7 +172,26 @@ auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::ve
 	return { static_cast< uint16_t >( m_gridDataVector.size() - 1 ) };
 }
 
-auto SFRenderService::setGridColors( GridHandle& handle, const std::vector< Color >& colors ) -> void
+auto SFRenderService::getGridCellUnderMouse( GridHandle gridHandle, CameraHandle cameraHandle ) const
+    -> std::optional< glm::vec2 >
+{
+	const sf::Vector2i mousePos = sf::Mouse::getPosition( m_window );
+
+	const sf::View cameraView = m_cameraVector[ cameraHandle.index ].view;
+	const sf::Vector2f posInCam = m_window.mapPixelToCoords( mousePos, cameraView );
+
+	const GridData& grid = m_gridDataVector[ gridHandle.index ];
+	const sf::Vector2f posInGrid = posInCam - grid.position;
+
+	const auto cellIndices = glm::ivec2{ posInGrid.x, posInGrid.y } / static_cast< int >( grid.cellSize );
+
+	if ( cellIndices.x < 0 || cellIndices.y < 0 || cellIndices.x >= grid.rows || cellIndices.y >= grid.columns )
+		return std::nullopt;
+
+	return cellIndices;
+}
+
+auto SFRenderService::setGridColors( GridHandle handle, const std::vector< Color >& colors ) -> void
 {
 	auto& grid = m_gridDataVector[ handle.index ];
 	assert( grid.cellNumber == colors.size() && "Grid and color size mismatch" );

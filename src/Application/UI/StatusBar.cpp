@@ -1,10 +1,13 @@
 #include "Application/UI/StatusBar.hpp"
 
+#include <string>
+
 #include <entt/entt.hpp>
 #include <imgui.h>
 
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
+#include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -42,7 +45,18 @@ auto createWidgets( entt::registry& registry ) -> void
     ImGui::Text( "%s", (runnerData.paused) ?  StoppedAltStatusLabel.data() :Labels.StatusRunning.data()   );
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 
-    ImGui::SameLine(); ImGui::Text( Labels.Mouse.data(), 34, 24 );
+	const auto& visualGrid = registry.ctx().get<VisualGrid>();
+	if (const auto mousePos = visualGrid.cellPositionUnderMouse; mousePos)
+	{
+		std::string MouseLabel = Labels.HoveredCell.data() + std::string(" ( %d, %d )");
+		ImGui::SameLine(); ImGui::Text( MouseLabel.c_str(), mousePos->x, mousePos->y );
+	}
+	else 
+	{
+		std::string MouseLabel = Labels.HoveredCell.data() + std::string(" ( Outside grid )");
+		ImGui::SameLine(); ImGui::Text( "%s", MouseLabel.c_str() );
+	}
+
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), 720472);

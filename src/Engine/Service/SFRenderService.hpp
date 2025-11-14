@@ -26,22 +26,29 @@ public:
 	auto beginFrame() -> void override;
 	auto endFrame() -> void override;
 
-	auto createCamera() -> CameraHandle override;
+	[[nodiscard]] auto createCamera() -> CameraHandle override;
+	[[nodiscard]] auto getMousePosRelativeToCamera( CameraHandle handle ) const -> glm::vec2 override;
 	auto setPosition( CameraHandle handle, glm::vec2 position ) -> void override;
 	auto setActiveCamera( CameraHandle handle ) -> void override;
 	auto setZoom( CameraHandle handle, float level ) -> void override;
 
-	auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize ) -> GridHandle override;
-	auto setGridColors( GridHandle& handle, const std::vector< Color >& colors ) -> void override;
-
+	[[nodiscard]] auto createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
+	    -> GridHandle override;
+	[[nodiscard]] auto getGridCellUnderMouse( GridHandle gridHandle, CameraHandle cameraHandle ) const
+	    -> std::optional< glm::vec2 > override;
+	auto setGridColors( GridHandle handle, const std::vector< Color >& colors ) -> void override;
 	auto draw( GridHandle handle ) -> void override;
 
 private:
 	struct GridData
 	{
-		std::size_t cellNumber;
-		sf::VertexArray vertices;
 		static const std::size_t VertsPerCell = 6;
+		const std::size_t cellNumber;
+		const std::size_t rows;
+		const std::size_t columns;
+		const float cellSize;
+		sf::Vector2f position;
+		sf::VertexArray vertices;
 	};
 
 	struct CameraData

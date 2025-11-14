@@ -1,4 +1,4 @@
 {
-    "gridDirectoryPath": "resources/Grid",
-    "iterationTarget": 3E1
+    "gridDirectoryPath": "resources/Grid100x100",
+    "iterationTarget": 3E3
 }

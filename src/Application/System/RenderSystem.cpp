@@ -65,6 +65,7 @@ auto RenderSystem::update() -> void
 	auto& visualGrid = m_registry.ctx().get< VisualGrid >();
 
 	updateGridHandle( grid, visualGrid );
+	visualGrid.cellPositionUnderMouse = m_renderer.getGridCellUnderMouse( m_gridHandle, m_cameraHandle );
 
 	const auto& camera = m_registry.ctx().get< Camera >();
 	updateCameraHandle( camera );
