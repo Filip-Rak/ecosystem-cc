@@ -24,17 +24,17 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, bool speedLimited )
 	m_nestedSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
 }
 
-auto SimRunnerSystem::update( entt::registry& registry ) -> void
+auto SimRunnerSystem::update() -> void
 {
-	auto& data = registry.ctx().get< SimRunnerData >();
-	if ( m_speedLimited && !shouldUpdate( data, registry.ctx().get< Time >() ) )
+	auto& data = m_registry.ctx().get< SimRunnerData >();
+	if ( m_speedLimited && !shouldUpdate( data, m_registry.ctx().get< Time >() ) )
 	{
 		return;
 	}
 
 	for ( auto& system : m_nestedSystems )
 	{
-		system->update( registry );
+		system->update();
 	}
 
 	m_timeSinceLastUpdate = 0.f;

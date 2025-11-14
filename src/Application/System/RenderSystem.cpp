@@ -49,7 +49,8 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 }
 }  // namespace
 RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
-    : m_renderer( renderer ),
+    : m_registry( registry ),
+      m_renderer( renderer ),
       m_gridHandle( initGridHandle( registry, renderer ) ),
       m_cameraHandle( renderer.createCamera() )
 {
@@ -57,14 +58,14 @@ RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
 	assert( registry.ctx().contains< VisualGrid >() && "VisualGrid not initialized" );
 }
 
-auto RenderSystem::update( entt::registry& registry ) -> void
+auto RenderSystem::update() -> void
 {
-	const auto& grid = registry.ctx().get< Grid >();
-	auto& visualGrid = registry.ctx().get< VisualGrid >();
+	const auto& grid = m_registry.ctx().get< Grid >();
+	auto& visualGrid = m_registry.ctx().get< VisualGrid >();
 
 	updateGridHandle( grid, visualGrid );
 
-	const auto& camera = registry.ctx().get< Camera >();
+	const auto& camera = m_registry.ctx().get< Camera >();
 	updateCameraHandle( camera );
 }
 

@@ -8,7 +8,7 @@ namespace cc
 {
 struct ISystem : NonCopyable, NonMoveable
 {
-	virtual auto update( entt::registry& registry ) -> void = 0;
+	virtual auto update() -> void = 0;
 	virtual ~ISystem() = default;
 };
 }  // namespace cc

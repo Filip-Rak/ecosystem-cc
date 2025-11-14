@@ -21,8 +21,8 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 {
 	if ( input.isPressed( keyboard::Key::Space ) )
 	{
-		std::print( "Run time: {}\nFPS: {}\nDeltaTime: {}\nMousePosition: {{ {}, {} }}\n", time.RunTime, time.FPS, time.DeltaTime,
-		            input.getCurrentMousePos().x, input.getCurrentMousePos().y );
+		std::print( "Run time: {}\nFPS: {}\nDeltaTime: {}\nMousePosition: {{ {}, {} }}\n", time.RunTime, time.FPS,
+		            time.DeltaTime, input.getCurrentMousePos().x, input.getCurrentMousePos().y );
 	}
 
 	if ( input.isPressed( keyboard::Key::Escape ) )
@@ -32,7 +32,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 	}
 }
 }  // namespace
-InputSystem::InputSystem( entt::registry& registry )
+InputSystem::InputSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< InputService >() && "InputService not initialized" );
 	assert( registry.ctx().contains< GUIService >() && "InputService not initialized" );
@@ -40,12 +40,12 @@ InputSystem::InputSystem( entt::registry& registry )
 	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
 }
 
-auto InputSystem::update( entt::registry& registry ) -> void
+auto InputSystem::update() -> void
 {
-	const auto& input = registry.ctx().get< InputService >();
-	const auto& gui = registry.ctx().get< GUIService >();
-	const auto& time = registry.ctx().get< Time >();
-	auto& camera = registry.ctx().get< Camera >();
+	const auto& input = m_registry.ctx().get< InputService >();
+	const auto& gui = m_registry.ctx().get< GUIService >();
+	const auto& time = m_registry.ctx().get< Time >();
+	auto& camera = m_registry.ctx().get< Camera >();
 
 	using namespace keyboard;
 	using namespace mouse;
@@ -67,6 +67,6 @@ auto InputSystem::update( entt::registry& registry ) -> void
 	}
 
 	camera.isSpeedUp = input.isDown( Key::LShift );
-	updateDebug( registry, input, time );
+	updateDebug( m_registry, input, time );
 }
 }  // namespace cc::app

@@ -8,6 +8,9 @@ class InputSystem : public ISystem
 {
 public:
 	InputSystem( entt::registry& registry );
-	auto update( entt::registry& registry ) -> void override;
+	auto update() -> void override;
+
+private:
+	entt::registry& m_registry;
 };
 }  // namespace cc::app

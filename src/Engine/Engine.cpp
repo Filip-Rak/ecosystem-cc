@@ -32,7 +32,7 @@ auto Engine::run() -> void
 	while ( m_isRunning )
 	{
 		for ( auto& service : m_services ) service->beginFrame( m_registry );
-		for ( auto& system : m_systems ) system->update( m_registry );
+		for ( auto& system : m_systems ) system->update();
 		for ( auto& service : m_services ) service->endFrame( m_registry );
 
 		dispatcher.update();

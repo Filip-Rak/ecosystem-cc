@@ -35,5 +35,5 @@ UISystem::UISystem( entt::registry& registry )
 	    } );
 }  // namespace
 
-auto UISystem::update( entt::registry& registry ) -> void {}
+auto UISystem::update() -> void {}
 }  // namespace cc::app

@@ -14,12 +14,13 @@ class RenderSystem : public ISystem
 {
 public:
 	RenderSystem( entt::registry& registry, IRenderService& renderer );
-	auto update( entt::registry& registry ) -> void override;
+	auto update() -> void override;
 
 private:
 	auto updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void;
 	auto updateCameraHandle( const Camera& camera ) -> void;
 
+	entt::registry& m_registry;
 	IRenderService& m_renderer;
 	GridHandle m_gridHandle;
 	CameraHandle m_cameraHandle;

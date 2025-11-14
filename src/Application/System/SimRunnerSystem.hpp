@@ -25,7 +25,7 @@ class SimRunnerSystem : public ISystem
 {
 public:
 	SimRunnerSystem( entt::registry& registry, bool speedLimited );
-	auto update( entt::registry& registry ) -> void override;
+	auto update() -> void override;
 
 private:
 	auto shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool;

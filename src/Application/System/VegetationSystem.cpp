@@ -8,14 +8,14 @@
 
 namespace cc::app
 {
-VegetationSystem::VegetationSystem( entt::registry& registry )
+VegetationSystem::VegetationSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< Grid >() && "Grid not initialized" );
 }
 
-auto VegetationSystem::update( entt::registry& registry ) -> void
+auto VegetationSystem::update() -> void
 {
-	auto& gridCells = registry.ctx().get< Grid >().cells;
+	auto& gridCells = m_registry.ctx().get< Grid >().cells;
 	for ( Cell& cell : gridCells )
 	{
 		auto& vegetation = cell.vegetation;

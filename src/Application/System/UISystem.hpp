@@ -9,6 +9,6 @@ class UISystem : public ISystem
 public:
 	UISystem( entt::registry& registry );
 
-	auto update( entt::registry& registry ) -> void override;
+	auto update() -> void override;
 };
 }  // namespace cc::app

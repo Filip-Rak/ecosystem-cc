@@ -10,17 +10,17 @@
 
 namespace cc::app
 {
-CameraMovementSystem::CameraMovementSystem( entt::registry& registry )
+CameraMovementSystem::CameraMovementSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< Camera >() && "Camera is not initialized" );
 	assert( registry.ctx().contains< Time >() && "Time is not initialized" );
 }
 
-auto CameraMovementSystem::update( entt::registry& registry ) -> void
+auto CameraMovementSystem::update() -> void
 {
 	constexpr const auto& Constants = constant::Visual;
-	auto& camera = registry.ctx().get< Camera >();
-	auto& time = registry.ctx().get< Time >();
+	auto& camera = m_registry.ctx().get< Camera >();
+	auto& time = m_registry.ctx().get< Time >();
 
 	float zoomKeyboardSpeed = Constants.ZoomKeyboardSpeed;
 	float zoomScrollSpeed = Constants.ZoomScrollSpeed;
