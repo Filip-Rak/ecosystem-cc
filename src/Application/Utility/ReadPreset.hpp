@@ -10,7 +10,8 @@ namespace cc::app
 {
 struct Preset
 {
-	std::filesystem::path gridDirectoryPath;
+	const std::filesystem::path gridDirectoryPath;
+	const std::size_t iterationTarget;
 };
 
 using ParsingError = std::string;

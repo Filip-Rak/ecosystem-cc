@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 #include "Application/Constants/UIConstants.hpp"
+#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -11,6 +12,7 @@ namespace cc::app
 namespace
 {
 constexpr const auto& Constants = constant::UI.StatusBar;
+constexpr const auto& Separator = Constants.Labels.Separator;
 constexpr const auto& Labels = Constants.Labels;
 
 auto setProperties() -> void
@@ -31,22 +33,31 @@ auto setProperties() -> void
 
 auto createWidgets( entt::registry& registry ) -> void
 {
+	const auto& runnerData = registry.ctx().get< SimRunnerData >();
+
 	// TODO: Implement.
 	// clang-format off
-    ImGui::Text( Labels.Running.data() );
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+
+	const auto& StoppedAltStatusLabel = ( runnerData.targetReached ) ? Labels.StatusFinished : Labels.StatusPaused;
+    ImGui::Text( "%s", (runnerData.paused) ?  StoppedAltStatusLabel.data() :Labels.StatusRunning.data()   );
+    ImGui::SameLine(); ImGui::Text( Separator.data() );
+
     ImGui::SameLine(); ImGui::Text( Labels.Mouse.data(), 34, 24 );
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+    ImGui::SameLine(); ImGui::Text( Separator.data() );
+
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), 720472);
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+    ImGui::SameLine(); ImGui::Text( Separator.data() );
+
     ImGui::SameLine(); ImGui::Text( Labels.INFile.data(), "input.json");
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+    ImGui::SameLine(); ImGui::Text( Separator.data() );
+
     ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), "output.csv");
+    ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
 	const auto& time = registry.ctx().get< Time >();
-    ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
     ImGui::SameLine(); ImGui::Text( Labels.RunTime.data(), time.RunTime );
-	ImGui::SameLine(); ImGui::Text( Labels.Separator.data() );
+	ImGui::SameLine(); ImGui::Text( Separator.data() );
+
     ImGui::SameLine(); ImGui::Text( Labels.FPS.data(), time.FPS );
 	// clang-format on
 }

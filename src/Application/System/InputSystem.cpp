@@ -35,7 +35,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 InputSystem::InputSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< InputService >() && "InputService not initialized" );
-	assert( registry.ctx().contains< GUIService >() && "InputService not initialized" );
+	assert( registry.ctx().contains< GUIService >() && "GUIService not initialized" );
 	assert( registry.ctx().contains< Time >() && "Time not initialized" );
 	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
 }

@@ -5,7 +5,7 @@
 #include <entt/entt.hpp>
 
 #include "Application/ContextEntity/SimRunnerData.hpp"
-#include "Application/Events/RunnerEvents.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/System/VegetationSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
@@ -39,6 +39,18 @@ auto SimRunnerSystem::update() -> void
 
 	m_timeSinceLastUpdate = 0.f;
 	data.iteration = ++m_iteration;
+
+	if ( data.iteration >= data.iterationTarget )
+	{
+		if ( !data.targetReached )
+		{
+			data.targetReached = true;
+			data.paused = true;
+
+			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
+			dispatcher.enqueue< event::ReachedTargetIteration >();
+		}
+	}
 }
 
 auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool
@@ -66,6 +78,7 @@ auto SimRunnerSystem::onResetGrid( const event::ResetGrid& /*event*/ ) -> void
 	m_registry.ctx().emplace< Grid >( m_initialGrid );
 
 	auto& data = m_registry.ctx().get< SimRunnerData >();
+	data.targetReached = false;
 	data.iteration = 0;
 	m_iteration = 0;
 }

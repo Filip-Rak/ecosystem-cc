@@ -50,6 +50,7 @@ struct UI_t
 			const std::string_view SpeedSlider = "Speed";
 			const std::string_view PauseButtonPaused = "Resume";
 			const std::string_view PauseButtonRunning = "Pause";
+			const std::string_view PauseButtonFinished = "Continue";
 			const std::string_view UIScaleSlider = "UI Scale";
 			const std::string_view IncrementButton = "Increment";
 			const std::string_view RestartButton = "Restart";
@@ -74,7 +75,9 @@ struct UI_t
 		struct Labels_t
 		{
 			const std::string_view Separator = "|";
-			const std::string_view Running = "Running";
+			const std::string_view StatusRunning = "Running";
+			const std::string_view StatusPaused = "Paused";
+			const std::string_view StatusFinished = "Finished";
 			const std::string_view Mouse = "Mouse: (%d, %d)";
 			const std::string_view Seed = "Seed: %u";
 			const std::string_view INFile = "IN File: %s";

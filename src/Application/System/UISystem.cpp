@@ -3,10 +3,12 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
+#include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/UI/MenuBar.hpp"
 #include "Application/UI/SidePanel.hpp"
 #include "Application/UI/StatusBar.hpp"
@@ -15,7 +17,7 @@
 
 namespace cc::app
 {
-UISystem::UISystem( entt::registry& registry )
+UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher uninitialized" );
 	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData uninitialized" );
@@ -24,6 +26,9 @@ UISystem::UISystem( entt::registry& registry )
 	assert( registry.ctx().contains< UIConfig >() && "UIConfig uninitialized" );
 	assert( registry.ctx().contains< Camera >() && "Camera uninitialized" );
 	assert( registry.ctx().contains< Time >() && "Time uninitialized" );
+
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::ReachedTargetIteration >().connect< &UISystem::onReachedTargetIteration >( *this );
 
 	auto& gui = registry.ctx().get< GUIService >();
 	gui.addToDraw(
@@ -36,4 +41,10 @@ UISystem::UISystem( entt::registry& registry )
 }  // namespace
 
 auto UISystem::update() -> void {}
+
+auto UISystem::onReachedTargetIteration( const event::ReachedTargetIteration& /*event*/ ) -> void
+{
+	auto& config = m_registry.ctx().get< UIConfig >();
+	config.askBeforeContinuing = true;
+}
 }  // namespace cc::app

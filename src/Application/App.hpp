@@ -14,6 +14,7 @@ struct Options;
 
 namespace cc::app
 {
+struct Preset;
 using InitError = std::string;
 
 class App : NonMoveable, NonCopyable
@@ -25,6 +26,8 @@ public:
 	auto run() -> void;
 
 private:
+	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const
+	    -> std::optional< InitError >;
 	auto initSystems() -> void;
 
 	const cli::Options m_CliOptions;

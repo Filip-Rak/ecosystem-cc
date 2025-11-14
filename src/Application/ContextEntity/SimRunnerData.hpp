@@ -11,8 +11,11 @@ constexpr int DefaultSpeed = 60;
 
 struct SimRunnerData
 {
-	bool paused = true;
-	int speed = constant::DefaultSpeed;
+	const std::size_t iterationTarget;
 	std::size_t iteration = 0;
+
+	int speed = constant::DefaultSpeed;
+	bool paused = true;
+	bool targetReached = false;
 };
 }  // namespace cc::app

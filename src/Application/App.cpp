@@ -28,32 +28,6 @@ namespace
 constexpr uint16_t WindowWidth = 1280u;
 constexpr uint16_t WindowHeight = 720u;
 constexpr std::string_view Title = "Ecosystem";
-
-[[nodiscard]] auto initializeEntities( entt::registry& registry, const cli::Options& options, const Preset& preset )
-    -> std::optional< InitError >
-{
-	const auto readingError = readGridFromDirectory( registry, preset.gridDirectoryPath );
-	if ( readingError )
-	{
-		return "-> Couldn't load the grid\n" + *readingError;
-	}
-
-	if ( options.gui )
-	{
-		auto& camera = registry.ctx().emplace< Camera >();
-		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
-		camera.position = glm::vec2{ CameraPosition };
-
-		const auto& grid = registry.ctx().get< Grid >();
-		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
-
-		registry.ctx().emplace< UIConfig >();
-	}
-
-	registry.ctx().emplace< SimRunnerData >();
-
-	return std::nullopt;
-}
 }  // namespace
 
 App::App( const cli::Options& options )
@@ -73,7 +47,7 @@ auto App::init() -> std::optional< InitError >
 	}
 
 	auto& registry = m_engine.registry();
-	if ( auto initError = initializeEntities( registry, m_CliOptions, readResult.value() ); initError )
+	if ( auto initError = initEntities( registry, readResult.value() ); initError )
 	{
 		return "-> Failed to initialize entities\n" + *initError;
 	}
@@ -85,6 +59,31 @@ auto App::init() -> std::optional< InitError >
 auto App::run() -> void
 {
 	m_engine.run();
+}
+
+auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >
+{
+	const auto readingError = readGridFromDirectory( registry, preset.gridDirectoryPath );
+	if ( readingError )
+	{
+		return "-> Couldn't load the grid\n" + *readingError;
+	}
+
+	if ( m_CliOptions.gui )
+	{
+		auto& camera = registry.ctx().emplace< Camera >();
+		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
+		camera.position = glm::vec2{ CameraPosition };
+
+		const auto& grid = registry.ctx().get< Grid >();
+		registry.ctx().emplace< VisualGrid >( grid.cells.size() );
+		registry.ctx().emplace< UIConfig >();
+	}
+
+	auto& runner = registry.ctx().emplace< SimRunnerData >(
+	    SimRunnerData{ .iterationTarget = preset.iterationTarget, .paused = m_CliOptions.gui } );
+
+	return std::nullopt;
 }
 
 auto App::initSystems() -> void

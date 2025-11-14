@@ -13,6 +13,7 @@ namespace constant
 struct JsonKeys_t
 {
 	const std::string_view GridDirectoryPath = "gridDirectoryPath";
+	const std::string_view IterationTarget = "iterationTarget";
 } inline constexpr JsonKeys;
 }  // namespace constant
 
@@ -41,7 +42,12 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 	try
 	{
 		lastKey = Keys.GridDirectoryPath.data();
-		return Preset{ .gridDirectoryPath = json[ lastKey ] };
+		const auto path = json[ lastKey ];
+
+		lastKey = Keys.IterationTarget.data();
+		const auto iterationTarget = json[ lastKey ];
+
+		return Preset{ .gridDirectoryPath = path, .iterationTarget = iterationTarget };
 	}
 	catch ( const nlohmann::json::exception& exception )
 	{

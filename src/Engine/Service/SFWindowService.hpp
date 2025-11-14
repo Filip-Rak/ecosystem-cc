@@ -22,7 +22,6 @@ class SFWindowService : public IFrameService
 {
 public:
 	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height, const std::string& title );
-
 	~SFWindowService();
 
 	auto beginFrame() -> void override;

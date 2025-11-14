@@ -11,7 +11,7 @@
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
-#include "Application/Events/RunnerEvents.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Engine/Events/GUIEvents.hpp"
 
 namespace cc::app
@@ -45,16 +45,27 @@ auto drawContents( entt::registry& registry ) -> void
 	auto& cam = registry.ctx().get< Camera >();
 
 	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
-	ImGui::LabelText( Labels.IterationLabel.data(), "%zu", simRunnerData.iteration );
+	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration,
+	                  simRunnerData.iterationTarget );
 
 	ImGui::SliderFloat( Labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
 	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
 	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, Contents.minSpeed, Contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
 
-	if ( ImGui::Button( panelConfig.pauseButtonLabel.c_str() ) )
+	auto& config = registry.ctx().get< UIConfig >();
+	const auto pauseButtonAltLabel =
+	    ( simRunnerData.targetReached ) ? Labels.PauseButtonFinished : Labels.PauseButtonPaused;
+	const auto pauseButtonLabel = ( simRunnerData.paused ) ? pauseButtonAltLabel : Labels.PauseButtonRunning;
+
+	if ( ImGui::Button( pauseButtonLabel.data() ) )
 	{
-		panelConfig.pauseButtonLabel = ( simRunnerData.paused ) ? Labels.PauseButtonRunning : Labels.PauseButtonPaused;
+		if ( config.askBeforeContinuing )
+		{
+			config.askBeforeContinuing = false;
+			std::println( "Continuing past target" );
+		}
+
 		simRunnerData.paused = !simRunnerData.paused;
 	}
 
@@ -71,9 +82,7 @@ auto drawContents( entt::registry& registry ) -> void
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< event::ResetGrid >();
-
 		simRunnerData.paused = true;
-		panelConfig.pauseButtonLabel = Labels.PauseButtonPaused;
 
 		std::println( "{}", Labels.RestartButton.data() );
 	}

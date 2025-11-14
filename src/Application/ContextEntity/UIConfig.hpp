@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Application/Constants/UIConstants.hpp"
 
 namespace cc::app
@@ -9,11 +7,11 @@ namespace cc::app
 struct SidePanel
 {
 	float width{ constant::UI.SidePanel.InitialWidth };
-	std::string pauseButtonLabel{ constant::UI.SidePanel.WidgetLabels.PauseButtonPaused };
 };
 
 struct UIConfig
 {
 	SidePanel sidePanel;
+	bool askBeforeContinuing = false;
 };
 }  // namespace cc::app
