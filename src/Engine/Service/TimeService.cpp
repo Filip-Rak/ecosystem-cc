@@ -8,18 +8,18 @@
 
 namespace cc
 {
-TimeService::TimeService( entt::registry& registry )
+TimeService::TimeService( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	publishTime( registry );
 }
 
-auto TimeService::beginFrame( entt::registry& registry ) -> void
+auto TimeService::beginFrame() -> void
 {
 	processDeltaTime();
 	processRunTime();
 	processFPS();
-	publishTime( registry );
+	publishTime( m_registry );
 }
 
 auto TimeService::processDeltaTime() -> void

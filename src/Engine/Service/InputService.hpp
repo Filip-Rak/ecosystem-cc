@@ -20,8 +20,8 @@ class InputService : public IFrameService
 public:
 	InputService( entt::registry& registry );
 
-	auto beginFrame( entt::registry& registry ) -> void override;
-	auto endFrame( entt::registry& registry ) -> void override;
+	auto beginFrame() -> void override;
+	auto endFrame() -> void override;
 
 	[[nodiscard]] auto isPressed( keyboard::Key key ) const -> bool;
 	[[nodiscard]] auto isPressed( mouse::Button button ) const -> bool;
@@ -61,6 +61,7 @@ private:
 	auto zeroInput() -> void;
 	auto onLoseFocus( const event::LostFocus& lostFocus ) -> void;
 
+	entt::registry& m_registry;
 	Keyboard m_keyboard;
 	Mouse m_mouse;
 	bool m_wasIsInFocus = false;

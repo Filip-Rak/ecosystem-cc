@@ -20,13 +20,12 @@ struct InputMap;
 class SFWindowService : public IFrameService
 {
 public:
-	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height,
-	                 const std::string& title );
+	SFWindowService( entt::registry& registry, uint16_t width, uint16_t height, const std::string& title );
 
 	~SFWindowService();
 
-	auto beginFrame( entt::registry& registry ) -> void override;
-	auto endFrame( entt::registry& registry ) -> void override;
+	auto beginFrame() -> void override;
+	auto endFrame() -> void override;
 
 	[[nodiscard]] auto isOpen() const -> bool;
 	[[nodiscard]] auto inFocus() const -> bool;
@@ -35,11 +34,11 @@ public:
 private:
 	auto handleWindowEvents( entt::dispatcher& dispatcher, InputMap& inputMap ) -> void;
 	[[nodiscard]] auto pollEvents() -> std::vector< sf::Event >;
-	auto adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher,
-	                 InputMap& inputMap ) const -> void;
+	auto adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher, InputMap& inputMap ) const -> void;
 
 	auto onExit( const event::Exit& exitEvent ) -> void;
 
+	entt::registry& m_registry;
 	sf::RenderWindow m_window;
 	sf::Clock m_imguiClock;
 	bool m_inFocus{ true };

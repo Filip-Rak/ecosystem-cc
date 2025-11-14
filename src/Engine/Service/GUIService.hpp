@@ -15,15 +15,16 @@ class GUIService : public IEndFrameService
 public:
 	using DrawFunction = std::function< void( entt::registry& registry ) >;
 
-	GUIService();
+	GUIService( entt::registry& registry );
 
-	auto endFrame( entt::registry& registry ) -> void override;
+	auto endFrame() -> void override;
 	auto addToDraw( DrawFunction drawFunction ) -> void;
 	auto rebuildFont() const -> void;
 
 	[[nodiscard]] auto nowHandlesMouse() const -> bool;
 
 private:
+	entt::registry& m_registry;
 	ImGuiIO& m_IO;
 	std::vector< DrawFunction > m_drawFunctions;
 };

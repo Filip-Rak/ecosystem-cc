@@ -56,7 +56,8 @@ auto letterboxViewport( float windowWidth, float windowHeight, float viewWidth, 
 }
 }  // namespace
 
-SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window ) : m_window( window )
+SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window )
+    : m_registry( registry ), m_window( window )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< GUIService >() && "GUIService not initialized" );
@@ -66,19 +67,19 @@ SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& wi
 	dispatcher.sink< event::WindowResized >().connect< &SFRenderService::onWindowResized >( *this );
 }
 
-auto SFRenderService::beginFrame( entt::registry& /*registry*/ ) -> void
+auto SFRenderService::beginFrame() -> void
 {
 	m_window.clear();
 }
 
-auto SFRenderService::endFrame( entt::registry& registry ) -> void
+auto SFRenderService::endFrame() -> void
 {
 	ImGui::SFML::Render( m_window );
 	m_window.display();
 
 	if ( !m_updatedFont )
 	{
-		rebuildFont( registry );
+		rebuildFont( m_registry );
 		m_updatedFont = true;
 	}
 }
@@ -110,7 +111,8 @@ auto SFRenderService::setZoom( CameraHandle handle, float level ) -> void
 	camera.view.setSize( newSize );
 }
 
-auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize ) -> GridHandle
+auto SFRenderService::createGrid( std::size_t width, std::size_t height, glm::vec2 position, float cellSize )
+    -> GridHandle
 {
 	const std::size_t cellNumber = width * height;
 

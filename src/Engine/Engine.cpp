@@ -31,9 +31,9 @@ auto Engine::run() -> void
 	auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
 	while ( m_isRunning )
 	{
-		for ( auto& service : m_services ) service->beginFrame( m_registry );
+		for ( auto& service : m_services ) service->beginFrame();
 		for ( auto& system : m_systems ) system->update();
-		for ( auto& service : m_services ) service->endFrame( m_registry );
+		for ( auto& service : m_services ) service->endFrame();
 
 		dispatcher.update();
 	}
@@ -65,7 +65,7 @@ auto Engine::createWindowServices( const Args& args ) -> void
 {
 	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight, args.Title );
 	addService< InputService >( m_registry );
-	addService< GUIService >();
+	addService< GUIService >( m_registry );
 	addService< SFRenderService >( m_registry, window.getWindow() );
 }
 

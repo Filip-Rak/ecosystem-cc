@@ -22,8 +22,8 @@ class SFRenderService : public IRenderService
 public:
 	SFRenderService( entt::registry& registry, sf::RenderWindow& window );
 
-	auto beginFrame( entt::registry& registry ) -> void override;
-	auto endFrame( entt::registry& registry ) -> void override;
+	auto beginFrame() -> void override;
+	auto endFrame() -> void override;
 
 	auto createCamera() -> CameraHandle override;
 	auto setPosition( CameraHandle handle, glm::vec2 position ) -> void override;
@@ -53,6 +53,7 @@ private:
 	auto onGUIResized( const event::GUIResized& event ) -> void;
 	auto onWindowResized( const event::WindowResized& event ) -> void;
 
+	entt::registry& m_registry;
 	std::vector< GridData > m_gridDataVector;
 	std::vector< CameraData > m_cameraVector;
 	sf::RenderWindow& m_window;

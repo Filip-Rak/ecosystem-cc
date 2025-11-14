@@ -18,7 +18,7 @@ class TimeService : public IBeginFrameService
 {
 public:
 	TimeService( entt::registry& registry );
-	auto beginFrame( entt::registry& registry ) -> void override;
+	auto beginFrame() -> void override;
 
 private:
 	struct FPS
@@ -35,6 +35,7 @@ private:
 	auto processFPS() -> void;
 	auto publishTime( entt::registry& registry ) -> void;
 
+	entt::registry& m_registry;
 	clock::time_point lastFrameTime = clock::now();
 	float m_deltaTime = CloseToZero;
 	float m_runTime = CloseToZero;

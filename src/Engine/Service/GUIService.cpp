@@ -4,16 +4,16 @@
 
 namespace cc
 {
-GUIService::GUIService() : m_IO( ImGui::GetIO() )
+GUIService::GUIService( entt::registry& registry ) : m_registry( registry ), m_IO( ImGui::GetIO() )
 {
 	m_IO.IniFilename = nullptr;
 }
 
-void GUIService::endFrame( entt::registry& registry )
+void GUIService::endFrame()
 {
 	for ( auto& drawFunction : m_drawFunctions )
 	{
-		drawFunction( registry );
+		drawFunction( m_registry );
 	}
 }
 

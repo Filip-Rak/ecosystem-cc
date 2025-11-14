@@ -25,7 +25,8 @@ constexpr uint8_t KeyboardOffset = 1;
 
 [[nodiscard]] auto toCcButton( const sf::Mouse::Button button ) -> mouse::Button
 {
-	if ( magic_enum::enum_index< sf::Mouse::Button >( button ) <= magic_enum::enum_index< sf::Mouse::Button >( sf::Mouse::Button::Middle ) )
+	if ( magic_enum::enum_index< sf::Mouse::Button >( button ) <=
+	     magic_enum::enum_index< sf::Mouse::Button >( sf::Mouse::Button::Middle ) )
 		return static_cast< mouse::Button >( button );
 
 	return mouse::Button::Unknown;
@@ -54,7 +55,7 @@ auto updateInputMap( InputMap& inputMap, sf::Vector2i mousePos ) -> void
 }  // namespace
 
 SFWindowService::SFWindowService( entt::registry& registry, uint16_t width, uint16_t height, const std::string& title )
-    : m_window( sf::VideoMode( { width, height } ), title )
+    : m_registry( registry ), m_window( sf::VideoMode( { width, height } ), title )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
 	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );
@@ -69,10 +70,10 @@ SFWindowService::~SFWindowService()
 	ImGui::SFML::Shutdown();
 }
 
-auto SFWindowService::beginFrame( entt::registry& registry ) -> void
+auto SFWindowService::beginFrame() -> void
 {
-	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-	auto& inputMap = registry.ctx().get< InputMap >();
+	auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
+	auto& inputMap = m_registry.ctx().get< InputMap >();
 
 	handleWindowEvents( dispatcher, inputMap );
 
@@ -80,9 +81,9 @@ auto SFWindowService::beginFrame( entt::registry& registry ) -> void
 	updateInputMap( inputMap, mousePos );
 }
 
-auto SFWindowService::endFrame( entt::registry& registry ) -> void
+auto SFWindowService::endFrame() -> void
 {
-	auto& inputMap = registry.ctx().get< InputMap >();
+	auto& inputMap = m_registry.ctx().get< InputMap >();
 	inputMap.mouseScrollDelta = 0.f;
 }
 
@@ -141,7 +142,8 @@ auto SFWindowService::pollEvents() -> std::vector< sf::Event >
 	return events;
 }
 
-auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher, InputMap& inputMap ) const -> void
+auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& dispatcher, InputMap& inputMap ) const
+    -> void
 {
 	if ( const auto* closed = event.getIf< sf::Event::Closed >() )
 	{

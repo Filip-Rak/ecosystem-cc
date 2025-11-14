@@ -22,7 +22,7 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 }
 }  // namespace
 
-InputService::InputService( entt::registry& registry )
+InputService::InputService( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );
@@ -31,9 +31,9 @@ InputService::InputService( entt::registry& registry )
 	dispatcher.sink< event::LostFocus >().connect< &InputService::onLoseFocus >( *this );
 }
 
-auto InputService::beginFrame( entt::registry& registry ) -> void
+auto InputService::beginFrame() -> void
 {
-	const auto& inputMap = registry.ctx().get< InputMap >();
+	const auto& inputMap = m_registry.ctx().get< InputMap >();
 	if ( inputMap.windowInFocus )
 	{
 		m_keyboard.current = inputMap.keySates;
@@ -51,7 +51,7 @@ auto InputService::beginFrame( entt::registry& registry ) -> void
 	m_wasIsInFocus = inputMap.windowInFocus;
 }
 
-auto InputService::endFrame( entt::registry& /*registry*/ ) -> void
+auto InputService::endFrame() -> void
 {
 	m_keyboard.previous = m_keyboard.current;
 	m_mouse.previous = m_mouse.current;
