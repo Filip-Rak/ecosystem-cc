@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <expected>
 #include <filesystem>
 #include <string>
@@ -12,6 +13,7 @@ struct Preset
 {
 	const std::filesystem::path gridDirectoryPath;
 	const std::size_t iterationTarget;
+	const std::uint16_t rngSeed;
 };
 
 using ParsingError = std::string;
