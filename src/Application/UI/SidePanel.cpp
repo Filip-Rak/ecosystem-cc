@@ -21,6 +21,11 @@ namespace
 constexpr const auto& Constants = constant::UI.SidePanel;
 constexpr const auto& Labels = Constants.WidgetLabels;
 
+auto toImGui( Color color ) -> ImU32
+{
+	return IM_COL32( color.red, color.green, color.blue, color.alpha );
+}
+
 auto setProperties( entt::registry& registry )
 {
 	const auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
@@ -115,6 +120,43 @@ auto drawContents( entt::registry& registry ) -> void
 			++index;
 		}
 		ImGui::EndCombo();
+	}
+
+	{
+		const auto visModeData = VisModesArr[ currentVisModeInt ];
+
+		const ImU32 leftColor = toImGui( visModeData.LowEndColor );
+		const ImU32 rightColor = toImGui( visModeData.HighEndColor );
+
+		const float boxWidth = ImGui::GetContentRegionAvail().x * Constants.ScrollablePanel.DefaultWidgetWidthFactor;
+		const ImVec2 boxSize( boxWidth, Contents.GradientBoxHeight * uiScale );
+		const ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		drawList->AddRectFilledMultiColor( cursorPos, ImVec2( cursorPos.x + boxSize.x, cursorPos.y + boxSize.y ),
+		                                   leftColor, rightColor, rightColor, leftColor );
+		ImGui::Dummy( boxSize );
+
+		const auto* const leftLabel = visModeData.LowEndName.data();
+		const auto* const rightLabel = visModeData.HighEndName.data();
+
+		ImGui::TextUnformatted( leftLabel );
+
+		const float leftTextWidth = ImGui::CalcTextSize( leftLabel ).x;
+		const float rightTextWidth = ImGui::CalcTextSize( rightLabel ).x;
+		const float rightTextBeginX = boxWidth - rightTextWidth;
+
+		const float minimumDistX = Contents.LegendLabelsMinDistX * uiScale;
+		if ( boxWidth >= rightTextWidth + leftTextWidth + minimumDistX )
+		{
+			ImGui::SameLine();
+		}
+		if ( rightTextBeginX > 0 )
+		{
+			ImGui::SetCursorPosX( rightTextBeginX );
+		}
+
+		ImGui::TextUnformatted( rightLabel );
 	}
 }
 

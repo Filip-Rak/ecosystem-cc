@@ -38,6 +38,8 @@ struct UI_t
 			const int maxSpeed = 240;
 			const float maxUIScale = 5.f;
 			const float minUIScale = 0.5f;
+			const float GradientBoxHeight = 40.f;
+			const float LegendLabelsMinDistX = 10.f;
 			const std::string_view sliderPrecision = "%.2f";
 		} const Contents;
 
@@ -62,6 +64,7 @@ struct UI_t
 			const ImGuiWindowFlags ChildFlags = ImGuiChildFlags_None;
 			const ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 			const ImVec2 Size = ImVec2( -1, -1 );
+			const float DefaultWidgetWidthFactor = 0.65;
 		} const ScrollablePanel;
 	} const SidePanel;
 

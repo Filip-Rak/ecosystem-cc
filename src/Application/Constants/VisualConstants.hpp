@@ -31,7 +31,7 @@ struct Visual_t
 		const VisMode_t Elevation{ .Name = "Elevation",
 		                           .LowEndName = "Lowland",
 		                           .HighEndName = "Highland",
-		                           .LowEndColor = Color{ .blue = 255 },
+		                           .LowEndColor = Color{ .red = 60, .green = 180, .blue = 74 },
 		                           .HighEndColor = Color{ .red = 139, .green = 69, .blue = 19 } };
 
 		const VisMode_t Humidity{ .Name = "Humidity",
