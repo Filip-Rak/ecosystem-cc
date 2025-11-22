@@ -1,11 +1,12 @@
-# Ignore IDEs
+# IDEs
 .vscode/
 
-# Ignore build directories
+# Build directories
 build/
 
-# Ignore clang
+# Clang configuration
 .cache
+.clangd
 
-# Ignore ImGUI
+# ImGUI configuration
 **/imgui.ini
