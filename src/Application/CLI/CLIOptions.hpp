@@ -4,9 +4,14 @@
 
 namespace cc::cli
 {
+namespace
+{
+constexpr int LogEvery10 = 10;
+}
 struct Options
 {
 	bool gui{ false };
 	std::filesystem::path presetPath;
+	int terminalLogInfrequency = LogEvery10;
 };
 }  // namespace cc::cli

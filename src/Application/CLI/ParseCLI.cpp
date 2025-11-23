@@ -14,6 +14,7 @@ auto parse( int argc, char** argv ) -> Options
 
 	CLI::App app{ "Ecosystem" };
 	app.add_option( "--preset", options.presetPath, "Simulation preset to run" );
+	app.add_option( "--tlog", options.terminalLogInfrequency, "Log progress to terminal every [tlog] iteration" );
 	app.add_flag( "--gui", options.gui, "Run with GUI" );
 
 	try

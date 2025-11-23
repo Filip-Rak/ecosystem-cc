@@ -10,7 +10,11 @@
 namespace cc
 {
 struct Time;
+namespace cli
+{
+struct Options;
 }
+}  // namespace cc
 
 namespace cc::app
 {
@@ -24,7 +28,7 @@ struct SimRunnerData;
 class SimRunnerSystem : public ISystem
 {
 public:
-	SimRunnerSystem( entt::registry& registry, bool speedLimited );
+	SimRunnerSystem( entt::registry& registry, const cli::Options& CLIOptions );
 	auto update() -> void override;
 
 private:

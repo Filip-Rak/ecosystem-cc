@@ -4,16 +4,18 @@
 
 #include <entt/entt.hpp>
 
+#include "Application/CLI/CLIOptions.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
+#include "Application/System/Sim/CLILoggerSystem.hpp"
 #include "Application/System/Sim/VegetationSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
 {
-SimRunnerSystem::SimRunnerSystem( entt::registry& registry, bool speedLimited )
-    : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( speedLimited ), m_registry( registry )
+SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& CLIOptions )
+    : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( CLIOptions.gui ), m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData not initialized" );
@@ -23,7 +25,13 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, bool speedLimited )
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );
 
+	// Execution -> order matters.
 	m_simSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
+
+	if ( !CLIOptions.gui )
+	{
+		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, CLIOptions.terminalLogInfrequency ) );
+	}
 }
 
 auto SimRunnerSystem::update() -> void
@@ -36,13 +44,13 @@ auto SimRunnerSystem::update() -> void
 		return;
 	}
 
+	m_timeSinceLastUpdate = 0.f;
+	data.iteration = ++m_iteration;
+
 	for ( auto& system : m_simSystems )
 	{
 		system->update();
 	}
-
-	m_timeSinceLastUpdate = 0.f;
-	data.iteration = ++m_iteration;
 
 	if ( data.iteration >= preset.iterationTarget )
 	{

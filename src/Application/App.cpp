@@ -97,13 +97,13 @@ auto App::initSystems() -> void
 
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
-		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions.gui );
+		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions );
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}
 	else
 	{
-		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions.gui );
+		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions );
 	}
 }
 }  // namespace cc::app
