@@ -3,8 +3,8 @@
 #include <entt/entt.hpp>
 #include <imgui.h>
 
-#include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -25,6 +25,7 @@ UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 	assert( registry.ctx().contains< GUIService >() && "GUIService uninitialized" );
 	assert( registry.ctx().contains< UIConfig >() && "UIConfig uninitialized" );
 	assert( registry.ctx().contains< Camera >() && "Camera uninitialized" );
+	assert( registry.ctx().contains< Preset >() && "Preset uninitialized" );
 	assert( registry.ctx().contains< Time >() && "Time uninitialized" );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();

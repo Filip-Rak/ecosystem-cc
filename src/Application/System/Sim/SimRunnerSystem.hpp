@@ -35,7 +35,7 @@ private:
 	const bool m_speedLimited;
 
 	entt::registry& m_registry;
-	std::vector< std::unique_ptr< ISystem > > m_nestedSystems;
+	std::vector< std::unique_ptr< ISystem > > m_simSystems;
 	std::size_t m_iteration = 0;
 	float m_timeSinceLastUpdate = 0.f;
 };

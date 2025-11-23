@@ -1,7 +1,6 @@
-#include "Application/System/VegetationSystem.hpp"
+#include "Application/System/Sim/VegetationSystem.hpp"
 
 #include <cassert>
-
 #include <entt/entt.hpp>
 
 #include "Application/ContextEntity/Grid.hpp"

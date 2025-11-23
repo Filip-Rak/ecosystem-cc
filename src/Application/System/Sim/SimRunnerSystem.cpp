@@ -1,4 +1,4 @@
-#include "Application/System/SimRunnerSystem.hpp"
+#include "Application/System/Sim/SimRunnerSystem.hpp"
 
 #include <cassert>
 
@@ -7,7 +7,7 @@
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
-#include "Application/System/VegetationSystem.hpp"
+#include "Application/System/Sim/VegetationSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -17,25 +17,26 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, bool speedLimited )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData not initialized" );
+	assert( registry.ctx().contains< Preset >() && "Preset not initialized" );
 	assert( registry.ctx().contains< Time >() && "Time not initialized" );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );
 
-	m_nestedSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
+	m_simSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
 }
 
 auto SimRunnerSystem::update() -> void
 {
+	const auto& preset = m_registry.ctx().get< Preset >();
 	auto& data = m_registry.ctx().get< SimRunnerData >();
-	auto& preset = m_registry.ctx().get< Preset >();
 
 	if ( m_speedLimited && !shouldUpdate( data, m_registry.ctx().get< Time >() ) )
 	{
 		return;
 	}
 
-	for ( auto& system : m_nestedSystems )
+	for ( auto& system : m_simSystems )
 	{
 		system->update();
 	}
