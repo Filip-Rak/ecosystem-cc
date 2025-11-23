@@ -4,6 +4,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Application/ContextEntity/Preset.hpp"
+
 namespace cc::app
 {
 using Njson = nlohmann::json;
@@ -43,7 +45,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 	try
 	{
 		lastKey = Keys.GridDirectoryPath.data();
-		const auto path = json[ lastKey ];
+		const auto gridPath = json[ lastKey ];
 
 		lastKey = Keys.IterationTarget.data();
 		const auto iterationTarget = json[ lastKey ];
@@ -51,7 +53,10 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		lastKey = Keys.RngSeed.data();
 		const auto RngSeed = json[ lastKey ];
 
-		return Preset{ .gridDirectoryPath = path, .iterationTarget = iterationTarget, .rngSeed = RngSeed };
+		return Preset{ .presetName = path.filename().string(),
+		               .gridDirectoryPath = gridPath,
+		               .iterationTarget = iterationTarget,
+		               .rngSeed = RngSeed };
 	}
 	catch ( const nlohmann::json::exception& exception )
 	{

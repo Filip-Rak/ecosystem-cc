@@ -8,6 +8,7 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -50,8 +51,9 @@ auto drawContents( entt::registry& registry ) -> void
 	auto& cam = registry.ctx().get< Camera >();
 
 	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
-	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration,
-	                  simRunnerData.iterationTarget );
+	auto& preset = registry.ctx().get< Preset >();
+
+	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
 
 	ImGui::SliderFloat( Labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
 	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );

@@ -6,6 +6,7 @@
 #include <imgui.h>
 
 #include "Application/Constants/UIConstants.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/ContextEntity/Time.hpp"
@@ -37,10 +38,9 @@ auto setProperties() -> void
 auto createWidgets( entt::registry& registry ) -> void
 {
 	const auto& runnerData = registry.ctx().get< SimRunnerData >();
+	const auto& preset = registry.ctx().get< Preset >();
 
-	// TODO: Implement.
 	// clang-format off
-
 	const auto& StoppedAltStatusLabel = ( runnerData.targetReached ) ? Labels.StatusFinished : Labels.StatusPaused;
     ImGui::Text( "%s", (runnerData.paused) ?  StoppedAltStatusLabel.data() :Labels.StatusRunning.data()   );
     ImGui::SameLine(); ImGui::Text( Separator.data() );
@@ -59,12 +59,14 @@ auto createWidgets( entt::registry& registry ) -> void
 
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 
-    ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), 720472);
+	
+    ImGui::SameLine(); ImGui::Text( Labels.Preset.data(), preset.presetName.c_str());
     ImGui::SameLine(); ImGui::Text( Separator.data() );
-
-    ImGui::SameLine(); ImGui::Text( Labels.INFile.data(), "input.json");
+	
+    ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), preset.rngSeed);
     ImGui::SameLine(); ImGui::Text( Separator.data() );
-
+	
+	// TODO: Implement.
     ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), "output.csv");
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	

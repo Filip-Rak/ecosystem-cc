@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <expected>
 #include <filesystem>
 #include <string>
@@ -9,13 +8,7 @@
 
 namespace cc::app
 {
-struct Preset
-{
-	const std::filesystem::path gridDirectoryPath;
-	const std::size_t iterationTarget;
-	const std::uint16_t rngSeed;
-};
-
+struct Preset;
 using ParsingError = std::string;
 
 [[nodiscard]] auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, ParsingError >;

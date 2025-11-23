@@ -11,7 +11,6 @@ constexpr int DefaultSpeed = 60;
 
 struct SimRunnerData
 {
-	const std::size_t iterationTarget;
 	std::size_t iteration = 0;
 
 	int speed = constant::DefaultSpeed;

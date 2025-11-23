@@ -4,6 +4,7 @@
 
 #include <entt/entt.hpp>
 
+#include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/System/VegetationSystem.hpp"
@@ -27,6 +28,8 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, bool speedLimited )
 auto SimRunnerSystem::update() -> void
 {
 	auto& data = m_registry.ctx().get< SimRunnerData >();
+	auto& preset = m_registry.ctx().get< Preset >();
+
 	if ( m_speedLimited && !shouldUpdate( data, m_registry.ctx().get< Time >() ) )
 	{
 		return;
@@ -40,7 +43,7 @@ auto SimRunnerSystem::update() -> void
 	m_timeSinceLastUpdate = 0.f;
 	data.iteration = ++m_iteration;
 
-	if ( data.iteration >= data.iterationTarget )
+	if ( data.iteration >= preset.iterationTarget )
 	{
 		if ( !data.targetReached )
 		{

@@ -9,6 +9,7 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -80,8 +81,8 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		registry.ctx().emplace< UIConfig >();
 	}
 
-	auto& runner = registry.ctx().emplace< SimRunnerData >(
-	    SimRunnerData{ .iterationTarget = preset.iterationTarget, .paused = m_CliOptions.gui } );
+	registry.ctx().emplace< Preset >( preset );
+	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_CliOptions.gui } );
 
 	return std::nullopt;
 }

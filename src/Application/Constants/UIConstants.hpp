@@ -83,7 +83,7 @@ struct UI_t
 			const std::string_view StatusFinished = "Finished";
 			const std::string_view HoveredCell = "Hovered Cell:";
 			const std::string_view Seed = "Seed: %u";
-			const std::string_view INFile = "IN File: %s";
+			const std::string_view Preset = "Preset: %s";
 			const std::string_view OUTFile = "OUT File: %s";
 			const std::string_view FPS = "FPS: %.0f";
 			const std::string_view RunTime = "Run time: %.0fs";
