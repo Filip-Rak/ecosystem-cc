@@ -42,7 +42,7 @@ auto createWidgets( entt::registry& registry ) -> void
 
 	// clang-format off
 	const auto& StoppedAltStatusLabel = ( runnerData.targetReached ) ? Labels.StatusFinished : Labels.StatusPaused;
-    ImGui::Text( "%s", (runnerData.paused) ?  StoppedAltStatusLabel.data() :Labels.StatusRunning.data()   );
+    ImGui::Text( "%s", (runnerData.paused) ?  StoppedAltStatusLabel.data() : Labels.StatusRunning.data()   );
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 
 	const auto& visualGrid = registry.ctx().get<VisualGrid>();

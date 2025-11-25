@@ -14,8 +14,8 @@
 
 namespace cc::app
 {
-SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& CLIOptions )
-    : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( CLIOptions.gui ), m_registry( registry )
+SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
+    : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( cliOptions.gui ), m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
 	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData not initialized" );
@@ -25,13 +25,10 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );
 
-	// Execution -> order matters.
 	m_simSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
 
-	if ( !CLIOptions.gui )
-	{
-		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, CLIOptions.terminalLogInfrequency ) );
-	}
+	if ( !cliOptions.gui )
+		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogInfrequency ) );
 }
 
 auto SimRunnerSystem::update() -> void

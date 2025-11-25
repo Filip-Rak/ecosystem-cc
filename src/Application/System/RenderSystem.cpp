@@ -48,6 +48,21 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 		color = lerpColor( visMode.LowEndColor, visMode.HighEndColor, multiplier );
 	}
 }
+
+auto colorizePopulationCells( std::vector< Color >& colors,
+                              const std::vector< std::vector< entt::entity > >& spatialGrid,
+                              float currentMaxPopulation ) -> void
+{
+	constexpr const auto& Constants = constant::Visual.VisModes.Population;
+	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
+	{
+		const std::size_t cellPopulation = spatialGrid[ index ].size();
+		Color& color = colors[ index ];
+
+		const float multiplier = static_cast< float >( cellPopulation ) / currentMaxPopulation;
+		color = lerpColor( Constants.LowEndColor, Constants.HighEndColor, multiplier );
+	}
+}
 }  // namespace
 RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
     : m_registry( registry ),
@@ -73,26 +88,41 @@ auto RenderSystem::update() -> void
 
 auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
 {
+	constexpr const auto& VisMode = constant::Visual.VisModes;
+	constexpr const auto& Cell = constant::Cell;
 	auto& colors = visualGrid.colors;
-	constexpr const auto& VisModes = constant::Visual.VisModes;
+
+	constexpr int TotalPopulationPlaceholder = 1;
 
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
 	{
 	case Vegetation:
-		colorizeCells< &Cell::vegetation >( colors, grid, constant::Cell.VegetationRange, VisModes.Vegetation );
+	{
+		colorizeCells< &Cell::vegetation >( colors, grid, Cell.VegetationRange, VisMode.Vegetation );
 		break;
+	}
 	case Elevation:
-		colorizeCells< &Cell::Elevation >( colors, grid, constant::Cell.ElevationRange, VisModes.Elevation );
+	{
+		colorizeCells< &Cell::Elevation >( colors, grid, Cell.ElevationRange, VisMode.Elevation );
 		break;
+	}
 	case Humidity:
-		colorizeCells< &Cell::Humidity >( colors, grid, constant::Cell.HumidityRange, VisModes.Humidity );
+	{
+		colorizeCells< &Cell::Humidity >( colors, grid, Cell.HumidityRange, VisMode.Humidity );
 		break;
+	}
 	case Temperature:
-		colorizeCells< &Cell::Temperature >( colors, grid, constant::Cell.TemperatureRange, VisModes.Temperature );
+	{
+		colorizeCells< &Cell::Temperature >( colors, grid, Cell.TemperatureRange, VisMode.Temperature );
 		break;
-
-	default: assert( false && "Unhandled VisMode selected" );
+	}
+	case Population:
+	{
+		colorizePopulationCells( colors, grid.spatialGrid, TotalPopulationPlaceholder );
+		break;
+	}
+	default: assert( false && "Unhandled VisMode" );
 	}
 
 	m_renderer.setGridColors( m_gridHandle, colors );

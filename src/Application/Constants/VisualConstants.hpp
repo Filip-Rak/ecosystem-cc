@@ -46,7 +46,13 @@ struct Visual_t
 		                             .LowEndColor = Color{ .blue = 255 },
 		                             .HighEndColor = Color{ .red = 255 } };
 
-		const std::array< VisMode_t, 4 > Array = { Vegetation, Elevation, Humidity, Temperature };
+		const VisMode_t Population{ .Name = "Population",
+		                            .LowEndName = "Low",
+		                            .HighEndName = "High",
+		                            .LowEndColor = Color{ .red = 100, .green = 100, .blue = 100 },
+		                            .HighEndColor = Color{ .red = 34, .green = 177, .blue = 76 } };
+
+		const std::array< VisMode_t, 5 > Array = { Vegetation, Elevation, Humidity, Temperature, Population };
 	} VisModes;
 
 	const float MovementSpeed = 100.f;

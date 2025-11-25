@@ -62,7 +62,7 @@ auto InputSystem::update() -> void
 
 	if ( !gui.nowHandlesMouse() )
 	{
-		camera.mouseZoomInput = -input.getMouseScrollDelta();
+		camera.mouseZoomInput = input.getMouseScrollDelta();
 		camera.mouseMovementInput = ( input.isDown( Button::Left ) ) ? input.getMouseMoveDelta() : glm::ivec2{ 0 };
 	}
 

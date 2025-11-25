@@ -10,5 +10,6 @@ enum class VisModeEnum : uint8_t
 	Elevation,
 	Humidity,
 	Temperature,
+	Population
 };
 }

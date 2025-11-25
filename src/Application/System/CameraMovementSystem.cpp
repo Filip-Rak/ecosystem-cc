@@ -19,8 +19,8 @@ CameraMovementSystem::CameraMovementSystem( entt::registry& registry ) : m_regis
 auto CameraMovementSystem::update() -> void
 {
 	constexpr const auto& Constants = constant::Visual;
+	const auto& time = m_registry.ctx().get< Time >();
 	auto& camera = m_registry.ctx().get< Camera >();
-	auto& time = m_registry.ctx().get< Time >();
 
 	float zoomKeyboardSpeed = Constants.ZoomKeyboardSpeed;
 	float zoomScrollSpeed = Constants.ZoomScrollSpeed;
