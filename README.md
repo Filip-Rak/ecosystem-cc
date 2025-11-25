@@ -1,7 +1,7 @@
 # Requirements
-- C++23 Compiller.
+- C++23 compiler.
 - CMake version 3.16 or higher.
-- Possibly backend libs for SFML on linux distibutions:  `libx11-dev libxrandr-dev libfreetype6-dev libglew-dev libopenal-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libxcursor-dev`.
+- Possibly backend libs for SFML on linux distributions:  `libx11-dev libxrandr-dev libfreetype6-dev libglew-dev libopenal-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libxcursor-dev`.
 
 # Installation
 - run `git clone https://github.com/Filip-Rak/ecosystem-cc.git` - download the source code.
