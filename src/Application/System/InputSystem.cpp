@@ -7,6 +7,8 @@
 #include <glm/vec2.hpp>
 
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 #include "Engine/Events/SystemEvents.hpp"
 #include "Engine/Service/GUIService.hpp"
@@ -30,12 +32,31 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< event::Exit >();
 	}
+
+	if ( input.isPressed( mouse::Button::Left ) )
+	{
+		auto& visualGrid = registry.ctx().get< VisualGrid >();
+		auto& logicalGrid = registry.ctx().get< Grid >();
+
+		if ( const auto cellPos = visualGrid.cellPositionUnderMouse; cellPos )
+		{
+			const auto cellIndex = ( cellPos->y * visualGrid.Height ) + cellPos->x;
+			const auto cellPopulation = logicalGrid.spatialGrid[ cellIndex ].size();
+			const Cell& cell = logicalGrid.cells[ cellIndex ];
+
+			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
+			            "Population: {}\n",
+			            cellIndex, cell.vegetation, cell.Temperature, cell.Humidity, cell.Elevation, cellPopulation );
+		}
+	}
 }
 }  // namespace
 InputSystem::InputSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< InputService >() );
 	assert( registry.ctx().contains< GUIService >() );
+	assert( registry.ctx().contains< VisualGrid >() );
+	assert( registry.ctx().contains< Grid >() );
 	assert( registry.ctx().contains< Time >() );
 	assert( registry.ctx().contains< Camera >() );
 }
@@ -66,7 +87,7 @@ auto InputSystem::update() -> void
 		camera.mouseMovementInput = ( input.isDown( Button::Left ) ) ? input.getMouseMoveDelta() : glm::ivec2{ 0 };
 	}
 
-	camera.isSpeedUp = input.isDown( Key::LShift );
+	camera.isSpedUp = input.isDown( Key::LShift );
 	updateDebug( m_registry, input, time );
 }
 }  // namespace cc::app

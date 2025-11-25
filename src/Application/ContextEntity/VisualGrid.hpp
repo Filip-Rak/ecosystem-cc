@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -13,10 +14,14 @@ namespace cc::app
 {
 struct VisualGrid
 {
+	const uint16_t Width;
+	const uint16_t Height;
+
 	VisModeEnum visMode = VisModeEnum::Vegetation;
 	std::optional< glm::ivec2 > cellPositionUnderMouse;
 	std::vector< Color > colors;
 
-	VisualGrid( std::size_t size ) : colors( size ) {};
+	VisualGrid( uint16_t width, uint16_t height, std::size_t size )
+	    : Width( width ), Height( height ), colors( size ) {};
 };
 }  // namespace cc::app

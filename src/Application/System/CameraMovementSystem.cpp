@@ -26,7 +26,7 @@ auto CameraMovementSystem::update() -> void
 	float zoomScrollSpeed = Constants.ZoomScrollSpeed;
 	float movementSpeed = Constants.MovementSpeed;
 
-	if ( camera.isSpeedUp )
+	if ( camera.isSpedUp )
 	{
 		zoomKeyboardSpeed = Constants.FastZoomKeyboardSpeed;
 		zoomScrollSpeed = Constants.FastZoomScrollSpeed;

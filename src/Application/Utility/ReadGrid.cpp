@@ -112,7 +112,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	}
 	// clang-format on
 
-	auto& grid = registry.ctx().emplace< Grid >( validDimensions.x, validDimensions.y );
+	auto& grid = registry.ctx().emplace< Grid >( registry, validDimensions.x, validDimensions.y );
 	const auto size = static_cast< const std::size_t >( grid.Height * grid.Width );
 
 	for ( std::size_t index = 0; index < size; index++ )
