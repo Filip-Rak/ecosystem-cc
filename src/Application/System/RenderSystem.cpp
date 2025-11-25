@@ -51,7 +51,7 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 
 auto colorizePopulationCells( std::vector< Color >& colors,
                               const std::vector< std::vector< entt::entity > >& spatialGrid,
-                              float currentMaxPopulation ) -> void
+                              std::size_t currentMaxPopulation ) -> void
 {
 	constexpr const auto& Constants = constant::Visual.VisModes.Population;
 	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
@@ -59,7 +59,7 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 		const std::size_t cellPopulation = spatialGrid[ index ].size();
 		Color& color = colors[ index ];
 
-		const float multiplier = static_cast< float >( cellPopulation ) / currentMaxPopulation;
+		const float multiplier = static_cast< float >( cellPopulation ) / static_cast< float >( currentMaxPopulation );
 		color = lerpColor( Constants.LowEndColor, Constants.HighEndColor, multiplier );
 	}
 }
@@ -92,7 +92,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	constexpr const auto& Cell = constant::Cell;
 	auto& colors = visualGrid.colors;
 
-	constexpr int TotalPopulationPlaceholder = 1;
+	const auto TotalPopulationPlaceholder = grid.cells.size();
 
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
@@ -122,7 +122,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 		colorizePopulationCells( colors, grid.spatialGrid, TotalPopulationPlaceholder );
 		break;
 	}
-	default: assert( false && "Unhandled VisMode" );
+	default: assert( false );
 	}
 
 	m_renderer.setGridColors( m_gridHandle, colors );
