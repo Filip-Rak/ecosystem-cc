@@ -12,8 +12,8 @@ namespace cc::app
 {
 CameraMovementSystem::CameraMovementSystem( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< Camera >() && "Camera is not initialized" );
-	assert( registry.ctx().contains< Time >() && "Time is not initialized" );
+	assert( registry.ctx().contains< Camera >() );
+	assert( registry.ctx().contains< Time >() );
 }
 
 auto CameraMovementSystem::update() -> void

@@ -59,8 +59,8 @@ auto letterboxViewport( float windowWidth, float windowHeight, float viewWidth, 
 SFRenderService::SFRenderService( entt::registry& registry, sf::RenderWindow& window )
     : m_registry( registry ), m_window( window )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
-	assert( registry.ctx().contains< GUIService >() && "GUIService not initialized" );
+	assert( registry.ctx().contains< entt::dispatcher >() );
+	assert( registry.ctx().contains< GUIService >() );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::GUIResized >().connect< &SFRenderService::onGUIResized >( *this );

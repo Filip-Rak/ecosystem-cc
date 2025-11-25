@@ -13,8 +13,8 @@ namespace cc::app
 CLILoggerSystem::CLILoggerSystem( entt::registry& registry, int logInfrequency )
     : m_registry( registry ), m_logInfrequency( logInfrequency )
 {
-	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData not initialized" );
-	assert( registry.ctx().contains< Preset >() && "Preset not initialized" );
+	assert( registry.ctx().contains< SimRunnerData >() );
+	assert( registry.ctx().contains< Preset >() );
 }
 
 auto CLILoggerSystem::update() -> void

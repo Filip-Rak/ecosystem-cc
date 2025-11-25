@@ -10,7 +10,7 @@ namespace cc
 {
 TimeService::TimeService( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "entt::dispatcher not initialized" );
+	assert( registry.ctx().contains< entt::dispatcher >() );
 	publishTime( registry );
 }
 

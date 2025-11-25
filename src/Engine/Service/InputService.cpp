@@ -24,8 +24,8 @@ auto toButtonIndex( mouse::Button button ) -> uint8_t
 
 InputService::InputService( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
-	assert( registry.ctx().contains< InputMap >() && "InputMap not initialized" );
+	assert( registry.ctx().contains< entt::dispatcher >() );
+	assert( registry.ctx().contains< InputMap >() );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::LostFocus >().connect< &InputService::onLoseFocus >( *this );

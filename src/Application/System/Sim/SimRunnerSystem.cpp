@@ -17,10 +17,10 @@ namespace cc::app
 SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
     : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( cliOptions.gui ), m_registry( registry )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher not initialized" );
-	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData not initialized" );
-	assert( registry.ctx().contains< Preset >() && "Preset not initialized" );
-	assert( registry.ctx().contains< Time >() && "Time not initialized" );
+	assert( registry.ctx().contains< entt::dispatcher >() );
+	assert( registry.ctx().contains< SimRunnerData >() );
+	assert( registry.ctx().contains< Preset >() );
+	assert( registry.ctx().contains< Time >() );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );

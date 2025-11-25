@@ -20,7 +20,7 @@ namespace
 {
 auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> GridHandle
 {
-	assert( registry.ctx().contains< Grid >() && "Grid not initialized" );
+	assert( registry.ctx().contains< Grid >() );
 	const auto& logicalGrid = registry.ctx().get< Grid >();
 
 	const uint16_t width = logicalGrid.Width;
@@ -70,8 +70,8 @@ RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
       m_gridHandle( initGridHandle( registry, renderer ) ),
       m_cameraHandle( renderer.createCamera() )
 {
-	assert( registry.ctx().contains< Camera >() && "Camera not initialized" );
-	assert( registry.ctx().contains< VisualGrid >() && "VisualGrid not initialized" );
+	assert( registry.ctx().contains< Camera >() );
+	assert( registry.ctx().contains< VisualGrid >() );
 }
 
 auto RenderSystem::update() -> void

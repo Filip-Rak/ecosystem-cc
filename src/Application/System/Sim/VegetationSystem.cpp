@@ -9,7 +9,7 @@ namespace cc::app
 {
 VegetationSystem::VegetationSystem( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< Grid >() && "Grid not initialized" );
+	assert( registry.ctx().contains< Grid >() );
 }
 
 auto VegetationSystem::update() -> void

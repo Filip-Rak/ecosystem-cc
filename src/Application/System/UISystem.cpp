@@ -19,14 +19,14 @@ namespace cc::app
 {
 UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< entt::dispatcher >() && "Dispatcher uninitialized" );
-	assert( registry.ctx().contains< SimRunnerData >() && "SimRunnerData uninitialized" );
-	assert( registry.ctx().contains< VisualGrid >() && "VisualGrid uninitialized" );
-	assert( registry.ctx().contains< GUIService >() && "GUIService uninitialized" );
-	assert( registry.ctx().contains< UIConfig >() && "UIConfig uninitialized" );
-	assert( registry.ctx().contains< Camera >() && "Camera uninitialized" );
-	assert( registry.ctx().contains< Preset >() && "Preset uninitialized" );
-	assert( registry.ctx().contains< Time >() && "Time uninitialized" );
+	assert( registry.ctx().contains< entt::dispatcher >() );
+	assert( registry.ctx().contains< SimRunnerData >() );
+	assert( registry.ctx().contains< VisualGrid >() );
+	assert( registry.ctx().contains< GUIService >() );
+	assert( registry.ctx().contains< UIConfig >() );
+	assert( registry.ctx().contains< Camera >() );
+	assert( registry.ctx().contains< Preset >() );
+	assert( registry.ctx().contains< Time >() );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ReachedTargetIteration >().connect< &UISystem::onReachedTargetIteration >( *this );
