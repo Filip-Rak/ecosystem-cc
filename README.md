@@ -19,7 +19,7 @@ alternatively:
   - run `cmake --build build` - compile the project.
 
 # Usage
-- run `ecosystem.exe` file. Location depended on the build system: `build\src` for Ninja, `build\src\Debug` for MSBuild.
+- run executable file e.g. `ecosystem.exe` on Windows. Location depended on selected CMake generator: `build\src` for Ninja, `build\src\Debug` for MSBuild.
 - run executable with the following options:
   ```
   OPTIONS:
@@ -31,4 +31,4 @@ alternatively:
 - modify and create presets. Example in `resources/presets`.
 - Feed the executable the preset to execute `ecosystem.exe --preset { path }`.
 - Run with gui `ecosystem.exe --preset { path } --gui`.
-- Executable and resource files are not bound to any other files and can be moved to any location for ease of use as long as the paths inside the preset and preset path are correct. 
+- Executable and resource files are not bound to any other files and can be moved to any location for ease of use as long as the paths inside the preset and given preset path are correct. 
