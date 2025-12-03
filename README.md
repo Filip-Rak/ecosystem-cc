@@ -9,7 +9,7 @@
 
 either:
 - from the root directory:
-  - run `cmake -B build` - Configure CMake. run this from root project dir.
+  - run `cmake -B build` - Configure CMake. Tun this from the root project dir.
   - run `cmake --build build` - Compile project.
 
 alternatively:
