@@ -14,5 +14,8 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadGrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadPreset.cpp
-    PARENT_SCOPE
 )
+
+add_library(Application ${APP_SOURCES})
+target_include_directories(Application PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(Application PUBLIC Engine)
