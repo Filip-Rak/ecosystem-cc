@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Application/ContextEntity/Preset.hpp"
+
 namespace cc::app
 {
 struct Cell
@@ -17,9 +19,11 @@ struct Cell
 	const float humidity;
 	const GrowthParameters growthParameters;
 
-	Cell( float vegetation, float temperature, float elevation, float humidity );
+	Cell( float vegetation, float temperature, float elevation, float humidity,
+	      const Preset::Vegetation& vegetationPreset );
 
 private:
-	[[nodiscard]] auto calculateGrowthParameters() const -> GrowthParameters;
+	[[nodiscard]] auto calculateGrowthParameters( const Preset::Vegetation& vegetationPreset ) const
+	    -> GrowthParameters;
 };
 }  // namespace cc::app

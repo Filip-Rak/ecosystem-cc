@@ -23,11 +23,11 @@ auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> Gri
 	assert( registry.ctx().contains< Grid >() );
 	const auto& logicalGrid = registry.ctx().get< Grid >();
 
-	const uint16_t width = logicalGrid.Width;
-	const uint16_t height = logicalGrid.Height;
+	const uint16_t width  = logicalGrid.width;
+	const uint16_t height = logicalGrid.height;
 
-	constexpr float CellSize = 4.f;
-	const float verticalSize = static_cast< float >( width ) * CellSize;
+	constexpr float CellSize   = 4.f;
+	const float verticalSize   = static_cast< float >( width ) * CellSize;
 	const float horizontalSize = static_cast< float >( height ) * CellSize;
 	const glm::vec2 position{ -( verticalSize / 2.f ), -( horizontalSize / 2.f ) };
 
@@ -42,10 +42,10 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 	for ( std::size_t index = 0; index < cells.size(); index++ )
 	{
 		const Cell& cell = cells[ index ];
-		Color& color = colors[ index ];
+		Color& color     = colors[ index ];
 
 		const float multiplier = cell.*CellPropertyPtr / propertyRange;
-		color = lerpColor( visMode.LowEndColor, visMode.HighEndColor, multiplier );
+		color                  = lerpColor( visMode.LowEndColor, visMode.HighEndColor, multiplier );
 	}
 }
 
@@ -57,10 +57,10 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
 	{
 		const std::size_t cellPopulation = spatialGrid[ index ].size();
-		Color& color = colors[ index ];
+		Color& color                     = colors[ index ];
 
 		const float multiplier = static_cast< float >( cellPopulation ) / static_cast< float >( currentMaxPopulation );
-		color = lerpColor( Constants.LowEndColor, Constants.HighEndColor, multiplier );
+		color                  = lerpColor( Constants.LowEndColor, Constants.HighEndColor, multiplier );
 	}
 }
 }  // namespace
@@ -89,8 +89,8 @@ auto RenderSystem::update() -> void
 auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
 {
 	constexpr const auto& VisMode = constant::Visual.VisModes;
-	constexpr const auto& Cell = constant::cell;
-	auto& colors = visualGrid.colors;
+	constexpr const auto& Cell    = constant::cell;
+	auto& colors                  = visualGrid.colors;
 
 	const auto TotalPopulationPlaceholder = grid.cells.size();
 

@@ -20,7 +20,7 @@ namespace
 using njson = nlohmann::json;
 
 template < class F >
-auto withPath( std::string_view path, F&& function ) -> decltype( auto )
+[[nodiscard]] auto withPath( std::string_view path, F&& function ) -> decltype( auto )
 {
 	try
 	{
@@ -34,7 +34,7 @@ auto withPath( std::string_view path, F&& function ) -> decltype( auto )
 }
 
 template < class T >
-auto get( const njson& root, std::string_view path ) -> T
+[[nodiscard]] auto get( const njson& root, std::string_view path ) -> T
 {
 	return withPath( path,
 	                 [ & ]() -> T
@@ -88,20 +88,20 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Vegetation - speed
 		Preset::Vegetation::Speed speed{
-		    .speedTempOptimal = get< float >( json, "vegetation/speed/tempOptimal" ),
-		    .speedTempWidth   = get< float >( json, "vegetation/speed/tempWidth" ),
-		    .speedHumOptimal  = get< float >( json, "vegetation/speed/humOptimal" ),
-		    .speedHumWidth    = get< float >( json, "vegetation/speed/humWidth" ),
+		    .tempOptimal = get< float >( json, "vegetation/speed/tempOptimal" ),
+		    .tempWidth   = get< float >( json, "vegetation/speed/tempWidth" ),
+		    .humOptimal  = get< float >( json, "vegetation/speed/humOptimal" ),
+		    .humWidth    = get< float >( json, "vegetation/speed/humWidth" ),
 		};
 
 		// Vegetation - limit
 		Preset::Vegetation::Limit limit{
-		    .limitTempOptimal   = get< float >( json, "vegetation/limit/tempOptimal" ),
-		    .limitTempWidth     = get< float >( json, "vegetation/limit/tempWidth" ),
-		    .limitHumOptimal    = get< float >( json, "vegetation/limit/humOptimal" ),
-		    .limitHumWidth      = get< float >( json, "vegetation/limit/humWidth" ),
-		    .limitElevHalf      = get< float >( json, "vegetation/limit/elevHalf" ),
-		    .limitElevSteepness = get< float >( json, "vegetation/limit/elevSteepness" ),
+		    .tempOptimal   = get< float >( json, "vegetation/limit/tempOptimal" ),
+		    .tempWidth     = get< float >( json, "vegetation/limit/tempWidth" ),
+		    .humOptimal    = get< float >( json, "vegetation/limit/humOptimal" ),
+		    .humWidth      = get< float >( json, "vegetation/limit/humWidth" ),
+		    .elevHalf      = get< float >( json, "vegetation/limit/elevHalf" ),
+		    .elevSteepness = get< float >( json, "vegetation/limit/elevSteepness" ),
 		};
 
 		return Preset{

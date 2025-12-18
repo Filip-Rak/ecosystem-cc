@@ -1,5 +1,6 @@
 #include "Application/Utility/ReadGrid.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <expected>
 #include <format>
@@ -11,6 +12,7 @@
 
 #include "Application/Constants/CellConstants.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
 {
@@ -26,11 +28,11 @@ struct Layer
 using ReadingResult = std::expected< Layer, ReadError >;
 
 const std::filesystem::path temperaturePath = "temperature.png";
-const std::filesystem::path elevationPath = "elevation.png";
-const std::filesystem::path humidityPath = "humidity.png";
+const std::filesystem::path elevationPath   = "elevation.png";
+const std::filesystem::path humidityPath    = "humidity.png";
 
 constexpr std::size_t grayscaleChannel = 1;
-constexpr float grayscaleRange = 1.f;
+constexpr float grayscaleRange         = 1.f;
 
 [[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
 {
@@ -60,7 +62,7 @@ constexpr float grayscaleRange = 1.f;
 	const auto size = static_cast< std::size_t >( layer.width ) * static_cast< std::size_t >( layer.height );
 	for ( std::size_t index = 0; index < size; index++ )
 	{
-		const float intensity = data[ index ];
+		const float intensity     = data[ index ];
 		const float propertyValue = ( ( grayscaleRange - intensity ) * mappingRange ) + mappingMin;
 		layer.values.emplace_back( propertyValue );
 	}
@@ -113,15 +115,19 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	// clang-format on
 
 	auto& grid = registry.ctx().emplace< Grid >( registry, validDimensions.x, validDimensions.y );
-	const auto size = static_cast< const std::size_t >( grid.Height * grid.Width );
+
+	assert( registry.ctx().contains< Preset >() );
+	const Preset::Vegetation& vegetationPreset = registry.ctx().get< Preset >().vegetation;
+
+	const auto size = static_cast< const std::size_t >( grid.height * grid.width );
 
 	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float cellTemperature = temperatureLayer->values[ index ];
-		const float cellElevation = elevationLayer->values[ index ];
-		const float cellHumidity = humidityLayer->values[ index ];
+		const float cellElevation   = elevationLayer->values[ index ];
+		const float cellHumidity    = humidityLayer->values[ index ];
 
-		grid.cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity );
+		grid.cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
 	}
 
 	return std::nullopt;

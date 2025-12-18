@@ -12,23 +12,23 @@ struct Preset
 	{
 		struct Speed
 		{
-			const float speedTempOptimal;
-			const float speedTempWidth;
+			const float tempOptimal;
+			const float tempWidth;
 
-			const float speedHumOptimal;
-			const float speedHumWidth;
+			const float humOptimal;
+			const float humWidth;
 		} const speed;
 
 		struct Limit
 		{
-			const float limitTempOptimal;
-			const float limitTempWidth;
+			const float tempOptimal;
+			const float tempWidth;
 
-			const float limitHumOptimal;
-			const float limitHumWidth;
+			const float humOptimal;
+			const float humWidth;
 
-			const float limitElevHalf;
-			const float limitElevSteepness;
+			const float elevHalf;
+			const float elevSteepness;
 		} const limit;
 	} const vegetation;
 

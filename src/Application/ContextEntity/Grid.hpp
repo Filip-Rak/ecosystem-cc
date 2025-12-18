@@ -13,18 +13,18 @@ namespace cc::app
 {
 struct Grid
 {
-	const uint16_t Width;
-	const uint16_t Height;
+	const uint16_t width;
+	const uint16_t height;
 
 	std::vector< Cell > cells;
 	std::vector< std::vector< entt::entity > > spatialGrid;
 
-	Grid( entt::registry& registry, uint16_t width, uint16_t height ) : Width( width ), Height( height )
+	Grid( entt::registry& registry, uint16_t width, uint16_t height ) : width( width ), height( height )
 	{
-		const auto CellCount = static_cast< std::size_t >( width ) * height;
-		cells.reserve( CellCount );
+		const auto cellCount = static_cast< std::size_t >( width ) * height;
+		cells.reserve( cellCount );
 
-		spatialGrid.resize( CellCount );
+		spatialGrid.resize( cellCount );
 		for ( auto& spatialCell : spatialGrid )
 		{
 			const auto& entity = spatialCell.emplace_back( registry.create() );

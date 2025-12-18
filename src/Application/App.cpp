@@ -33,7 +33,10 @@ constexpr std::string_view Title = "Ecosystem";
 
 App::App( const cli::Options& options )
     : m_cliOptions( options ),
-      m_engine( { .Title = Title.data(), .WindowWidth = WindowWidth, .WindowHeight = WindowHeight, .EnableGUI = options.gui } )
+      m_engine( { .Title        = Title.data(),
+                  .WindowWidth  = WindowWidth,
+                  .WindowHeight = WindowHeight,
+                  .EnableGUI    = options.gui } )
 {}
 
 auto App::init() -> std::optional< InitError >
@@ -61,6 +64,9 @@ auto App::run() -> void
 
 auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >
 {
+	registry.ctx().emplace< Preset >( preset );
+	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
+
 	const auto readingError = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( readingError )
 	{
@@ -74,12 +80,9 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		camera.position = glm::vec2{ CameraPosition };
 
 		const auto& grid = registry.ctx().get< Grid >();
-		registry.ctx().emplace< VisualGrid >( grid.Width, grid.Height, grid.cells.size() );
+		registry.ctx().emplace< VisualGrid >( grid.width, grid.height, grid.cells.size() );
 		registry.ctx().emplace< UIConfig >();
 	}
-
-	registry.ctx().emplace< Preset >( preset );
-	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 
 	return std::nullopt;
 }
