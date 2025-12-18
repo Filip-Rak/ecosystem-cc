@@ -14,7 +14,7 @@ auto main( int argc, char** argv ) -> int
 	app::App app( options );
 	if ( auto error = app.init(); error )
 	{
-		std::println( "Failed to initialize the app:\n{}", *error );
+		std::println( "Unable to initialize the app:\n{}", *error );
 		return -1;
 	}
 

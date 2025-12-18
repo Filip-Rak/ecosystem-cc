@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "Application/ContextEntity/Preset.hpp"
 
@@ -18,48 +19,45 @@ namespace
 
 using njson = nlohmann::json;
 
-auto getErrorMessage( const std::string_view& path, const std::string& key, const std::exception& exception ) -> std::runtime_error
+template < class F >
+auto withPath( std::string_view path, F&& function ) -> decltype( auto )
 {
-	return std::runtime_error( "\n-> Path: " + std::string( path ) + "\n-> Key: " + key +
-	                           "\n-> Issue: " + std::string( exception.what() ) );
+	try
+	{
+		return std::forward< F >( function )();
+	}
+	catch ( const njson::exception& exception )
+	{
+		throw std::runtime_error( "\n-> Path: " + std::string( path ) +
+		                          "\n-> Issue: " + std::string( exception.what() ) );
+	}
 }
 
 template < class T >
-auto get( const njson& json, const std::string_view& path ) -> T
+auto get( const njson& root, std::string_view path ) -> T
 {
-	const njson* current = &json;
+	return withPath( path,
+	                 [ & ]() -> T
+	                 {
+		                 const njson* current = &root;
 
-	std::size_t index = 0;
-	std::string key;
+		                 std::size_t cursor = 0;
+		                 while ( true )
+		                 {
+			                 const auto slashPos = path.find( '/', cursor );
+			                 const auto keyView =
+			                     path.substr( cursor, ( slashPos == std::string_view::npos ) ? ( path.size() - cursor )
+			                                                                                 : ( slashPos - cursor ) );
 
-	while ( index < path.size() )
-	{
-		const auto slash   = path.find( '/', index );
-		const auto keyView = path.substr( index, ( slash == std::string_view::npos ) ? ( path.size() - index ) : ( slash - index ) );
+			                 const std::string key( keyView );
+			                 current = &current->at( key.c_str() );
 
-		key = std::string( keyView );
+			                 if ( slashPos == std::string_view::npos ) break;
+			                 cursor = slashPos + 1;
+		                 }
 
-		try
-		{
-			current = &current->at( key.c_str() );
-		}
-		catch ( const std::exception& exception )
-		{
-			throw getErrorMessage( path, key, exception );
-		}
-
-		if ( slash == std::string_view::npos ) break;
-		index = slash + 1;
-	}
-
-	try
-	{
-		return current->get< T >();
-	}
-	catch ( const std::exception& exception )
-	{
-		throw getErrorMessage( path, key, exception );
-	}
+		                 return current->get< T >();
+	                 } );
 }
 }  // namespace
 
@@ -74,11 +72,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 	njson json;
 	try
 	{
-		constexpr bool allowExceptions    = true;
-		constexpr bool allowComments      = true;
-		constexpr std::nullptr_t callback = nullptr;
-
-		json = njson::parse( file, callback, allowExceptions, allowComments );
+		json = njson::parse( file, /* callback */ nullptr, /* allowExceptions */ true, /* allowComments */ true );
 	}
 	catch ( const njson::parse_error& exception )
 	{
@@ -118,9 +112,13 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .rngSeed           = rngSeed,
 		};
 	}
-	catch ( const std::exception& exception )
+	catch ( const std::runtime_error& exception )
 	{
 		return std::unexpected( "-> Parsing error" + std::string( exception.what() ) );
+	}
+	catch ( const std::exception& exception )
+	{
+		return std::unexpected( "-> Parsing error\n-> Issue: " + std::string( exception.what() ) );
 	}
 }
 }  // namespace cc::app
