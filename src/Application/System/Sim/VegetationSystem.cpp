@@ -18,8 +18,8 @@ auto VegetationSystem::update() -> void
 	for ( Cell& cell : gridCells )
 	{
 		auto& vegetation = cell.vegetation;
-		const auto& speedFactor = cell.GrowthParameters.SpeedFactor;
-		const auto& growthLimit = cell.GrowthParameters.GrowthLimit;
+		const auto& speedFactor = cell.growthParameters.speedFactor;
+		const auto& growthLimit = cell.growthParameters.growthLimit;
 
 		vegetation = std::min( vegetation + speedFactor, growthLimit );
 	}

@@ -104,17 +104,17 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	}
 	case Elevation:
 	{
-		colorizeCells< &Cell::Elevation >( colors, grid, Cell.ElevationRange, VisMode.Elevation );
+		colorizeCells< &Cell::elevation >( colors, grid, Cell.ElevationRange, VisMode.Elevation );
 		break;
 	}
 	case Humidity:
 	{
-		colorizeCells< &Cell::Humidity >( colors, grid, Cell.HumidityRange, VisMode.Humidity );
+		colorizeCells< &Cell::humidity >( colors, grid, Cell.HumidityRange, VisMode.Humidity );
 		break;
 	}
 	case Temperature:
 	{
-		colorizeCells< &Cell::Temperature >( colors, grid, Cell.TemperatureRange, VisMode.Temperature );
+		colorizeCells< &Cell::temperature >( colors, grid, Cell.TemperatureRange, VisMode.Temperature );
 		break;
 	}
 	case Population:

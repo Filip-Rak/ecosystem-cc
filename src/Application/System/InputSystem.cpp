@@ -46,7 +46,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 
 			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
 			            "Population: {}\n",
-			            cellIndex, cell.vegetation, cell.Temperature, cell.Humidity, cell.Elevation, cellPopulation );
+			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation );
 		}
 	}
 }
