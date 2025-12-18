@@ -25,12 +25,12 @@ struct Layer
 
 using ReadingResult = std::expected< Layer, ReadError >;
 
-const std::filesystem::path TemperaturePath = "temperature.png";
-const std::filesystem::path ElevationPath = "elevation.png";
-const std::filesystem::path HumidityPath = "humidity.png";
+const std::filesystem::path temperaturePath = "temperature.png";
+const std::filesystem::path elevationPath = "elevation.png";
+const std::filesystem::path humidityPath = "humidity.png";
 
-constexpr std::size_t GrayscaleChannel = 1;
-constexpr float GrayscaleRange = 1.f;
+constexpr std::size_t grayscaleChannel = 1;
+constexpr float grayscaleRange = 1.f;
 
 [[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
 {
@@ -44,7 +44,7 @@ constexpr float GrayscaleRange = 1.f;
                                   std::optional< glm::ivec2 > validDimensions = std::nullopt ) -> ReadingResult
 {
 	Layer layer;
-	auto* const data = stbi_loadf( path.string().c_str(), &layer.width, &layer.height, nullptr, GrayscaleChannel );
+	auto* const data = stbi_loadf( path.string().c_str(), &layer.width, &layer.height, nullptr, grayscaleChannel );
 
 	if ( data == nullptr )
 	{
@@ -61,7 +61,7 @@ constexpr float GrayscaleRange = 1.f;
 	for ( std::size_t index = 0; index < size; index++ )
 	{
 		const float intensity = data[ index ];
-		const float propertyValue = ( ( GrayscaleRange - intensity ) * mappingRange ) + mappingMin;
+		const float propertyValue = ( ( grayscaleRange - intensity ) * mappingRange ) + mappingMin;
 		layer.values.emplace_back( propertyValue );
 	}
 
@@ -71,14 +71,14 @@ constexpr float GrayscaleRange = 1.f;
 }  // namespace
 auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path ) -> std::optional< ReadError >
 {
-	constexpr const auto& Constant = constant::Cell;
+	constexpr const auto& constant = constant::cell;
 
 	// clang-format off
 	const auto temperatureLayer =
 	    readGridLayer( 
-			path / TemperaturePath, 
-			Constant.TemperatureRange, 
-			Constant.MinTemperature
+			path / temperaturePath, 
+			constant.temperatureRange, 
+			constant.minTemperature
 		);
 	if ( !temperatureLayer )
 	{
@@ -89,9 +89,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 
 	const auto elevationLayer =
 	    readGridLayer( 
-			path / ElevationPath, 
-			Constant.ElevationRange, 
-			Constant.MinElevation,
+			path / elevationPath, 
+			constant.elevationRange, 
+			constant.minElevation,
 			validDimensions
 		);
 	if ( !elevationLayer )
@@ -101,9 +101,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 
 	const auto humidityLayer =
 	    readGridLayer( 
-			path / HumidityPath, 
-			Constant.HumidityRange, 
-			Constant.MinHumidity,
+			path / humidityPath, 
+			constant.humidityRange, 
+			constant.minHumidity,
 			validDimensions
 		);
 	if ( !humidityLayer )

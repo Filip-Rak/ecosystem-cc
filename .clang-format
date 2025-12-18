@@ -6,7 +6,7 @@ TabWidth: 4
 UseTab: ForIndentation   # Never | ForIndentation | Always
 
 # Column / Line breaking
-ColumnLimit: 120
+ColumnLimit: 140
 BinPackParameters: true
 
 # Braces
@@ -42,7 +42,7 @@ SpacesInSquareBrackets: true
 SpacesInCStyleCastParentheses: true
 SpaceBeforeAssignmentOperators: true
 
-AlignConsecutiveAssignments: false
+AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: false
 AlignTrailingComments: true
 AlignAfterOpenBracket: Align   # Align | DontAlign | AlwaysBreak

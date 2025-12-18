@@ -3,6 +3,7 @@
 #include <cassert>
 #include <entt/entt.hpp>
 
+#include "Application/Constants/CellConstants.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 
 namespace cc::app
@@ -14,14 +15,16 @@ VegetationSystem::VegetationSystem( entt::registry& registry ) : m_registry( reg
 
 auto VegetationSystem::update() -> void
 {
-	auto& gridCells = m_registry.ctx().get< Grid >().cells;
+	constexpr const auto constants = constant::cell;
+	auto& gridCells                = m_registry.ctx().get< Grid >().cells;
+
 	for ( Cell& cell : gridCells )
 	{
-		auto& vegetation = cell.vegetation;
-		const auto& speedFactor = cell.growthParameters.speedFactor;
-		const auto& growthLimit = cell.growthParameters.growthLimit;
+		const auto params = cell.growthParameters;
+		float& vegetation = cell.vegetation;
 
-		vegetation = std::min( vegetation + speedFactor, growthLimit );
+		vegetation += params.effectiveSpeed * vegetation * ( constants.maxVegetation - vegetation / params.effectiveLimit );
+		vegetation = std::clamp( vegetation, constants.minVegetation, params.effectiveLimit );
 	}
 }
 }  // namespace cc::app

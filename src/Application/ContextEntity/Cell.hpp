@@ -6,8 +6,8 @@ struct Cell
 {
 	struct GrowthParameters
 	{
-		const float speedFactor;
-		const float growthLimit;
+		const float effectiveSpeed;
+		const float effectiveLimit;
 	};
 
 	float vegetation;

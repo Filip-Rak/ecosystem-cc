@@ -89,7 +89,7 @@ auto RenderSystem::update() -> void
 auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
 {
 	constexpr const auto& VisMode = constant::Visual.VisModes;
-	constexpr const auto& Cell = constant::Cell;
+	constexpr const auto& Cell = constant::cell;
 	auto& colors = visualGrid.colors;
 
 	const auto TotalPopulationPlaceholder = grid.cells.size();
@@ -99,22 +99,22 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	{
 	case Vegetation:
 	{
-		colorizeCells< &Cell::vegetation >( colors, grid, Cell.VegetationRange, VisMode.Vegetation );
+		colorizeCells< &Cell::vegetation >( colors, grid, Cell.vegetationRange, VisMode.Vegetation );
 		break;
 	}
 	case Elevation:
 	{
-		colorizeCells< &Cell::elevation >( colors, grid, Cell.ElevationRange, VisMode.Elevation );
+		colorizeCells< &Cell::elevation >( colors, grid, Cell.elevationRange, VisMode.Elevation );
 		break;
 	}
 	case Humidity:
 	{
-		colorizeCells< &Cell::humidity >( colors, grid, Cell.HumidityRange, VisMode.Humidity );
+		colorizeCells< &Cell::humidity >( colors, grid, Cell.humidityRange, VisMode.Humidity );
 		break;
 	}
 	case Temperature:
 	{
-		colorizeCells< &Cell::temperature >( colors, grid, Cell.TemperatureRange, VisMode.Temperature );
+		colorizeCells< &Cell::temperature >( colors, grid, Cell.temperatureRange, VisMode.Temperature );
 		break;
 	}
 	case Population:

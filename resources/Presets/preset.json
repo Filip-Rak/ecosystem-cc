@@ -1,5 +1,5 @@
 {
     "gridDirectoryPath": "resources/Grid100x100",
-    "iterationTarget": 3E2,
+    "iterationTarget": 3E5,
     "rngSeed": 0
 }

@@ -2,37 +2,29 @@
 
 namespace cc::app::constant
 {
-struct Cell_t
+struct CellConstants
 {
-	struct Growth_t
+	struct GrowthConstants
 	{
-		const float SpeedFactor = 0.001f;
+		const float baseGrowthSpeed = 0.08f;
+		const float baseGrowthLimit = 1.f;
+	} const growth;
 
-		const float IdealTemperature = 0.5f;
-		const float TemperaturePenalty = 3.f;
+	const float minVegetation = 1e-6f;
+	const float maxVegetation = 1.f;
 
-		const float IdealHumidity = 0.7f;
-		const float HumidityPenalty = 3.f;
+	const float minTemperature = 0.f;
+	const float maxTemperature = 1.f;
 
-		const float IdealElevationLimit = 0.7f;
-		const float ElevationPenalty = 6.f;
-	} const Growth;
+	const float minHumidity = 0.f;
+	const float maxHumidity = 1.f;
 
-	const float MinVegetation = 0.f;
-	const float MaxVegetation = 1.f;
+	const float minElevation = 0.f;
+	const float maxElevation = 1.f;
 
-	const float MinTemperature = 0.f;
-	const float MaxTemperature = 1.f;
-
-	const float MinHumidity = 0.f;
-	const float MaxHumidity = 1.f;
-
-	const float MinElevation = 0.f;
-	const float MaxElevation = 1.f;
-
-	const float VegetationRange = MaxVegetation - MinVegetation;
-	const float TemperatureRange = MaxTemperature - MinTemperature;
-	const float HumidityRange = MaxHumidity - MinHumidity;
-	const float ElevationRange = MaxElevation - MinElevation;
-} inline constexpr Cell;
+	const float vegetationRange  = maxVegetation - minVegetation;
+	const float temperatureRange = maxTemperature - minTemperature;
+	const float humidityRange    = maxHumidity - minHumidity;
+	const float elevationRange   = maxElevation - minElevation;
+} inline constexpr cell;
 }  // namespace cc::app::constant

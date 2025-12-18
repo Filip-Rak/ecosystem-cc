@@ -1,14 +1,30 @@
 #include "Application/ContextEntity/Cell.hpp"
 
+#include <algorithm>
 #include <cmath>
-#include <cstdlib>
 
 #include "Application/Constants/CellConstants.hpp"
 
 namespace cc::app
 {
+namespace
+{
+inline auto bellCurve( float value, float optimal, float width ) -> float
+{
+	const float alignment = ( value - optimal ) / std::max( 1e-6f, width );
+	const float result    = std::exp( -0.5f * alignment * alignment );
+	return result;
+}
+
+inline auto elevationPenalty( float maxElevation, float elevation, float half, float steepness ) -> float
+{
+	return maxElevation / ( maxElevation + std::exp( steepness * ( elevation - half ) ) );
+}
+
+}  // namespace
+
 Cell::Cell( float vegetation, float temperature, float elevation, float humidity )
-    : vegetation( vegetation ),
+    : vegetation( std::max( constant::cell.minVegetation, vegetation ) ),
       temperature( temperature ),
       elevation( elevation ),
       humidity( humidity ),
@@ -17,25 +33,35 @@ Cell::Cell( float vegetation, float temperature, float elevation, float humidity
 
 auto Cell::calculateGrowthParameters() const -> GrowthParameters
 {
-	constexpr const auto& Constants = constant::Cell;
-	constexpr const auto& Growth = Constants.Growth;
+	constexpr const auto constants = constant::cell;
 
-	const float tempDiff = std::abs( temperature - Growth.IdealTemperature );
-	const float tempDiffNormalized = tempDiff / Constants.TemperatureRange;
-	const float tempMod = std::pow( 1.f - tempDiffNormalized, Growth.TemperaturePenalty );
+	// Speed parameter
+	constexpr float speedTempOptimal = 0.6f;
+	constexpr float speedTempWidth   = 0.25f;
 
-	const float humDiff = std::abs( humidity - Growth.IdealHumidity );
-	const float humDiffNormalized = humDiff / Constants.HumidityRange;
-	const float humMod = std::pow( 1.f - humDiffNormalized, Growth.HumidityPenalty );
+	constexpr float speedHumOptimal = 0.65f;
+	constexpr float speedHumWidth   = 0.20f;
 
-	const float elevDiff = std::abs( elevation - Growth.IdealElevationLimit );
-	const float elevDiffNormalized = elevDiff / Constants.ElevationRange;
-	const float elevMod = ( elevation > Growth.IdealElevationLimit )
-	                          ? std::pow( Constants.ElevationRange - elevDiff, Growth.ElevationPenalty )
-	                          : 1.f;
+	const float speedTempF  = bellCurve( temperature, speedTempOptimal, speedTempWidth );
+	const float speedHumF   = bellCurve( humidity, speedHumOptimal, speedHumWidth );
+	const float speedFactor = speedTempF * speedHumF;
 
-	const float combinedModifier = tempMod * humMod * elevMod;
-	return { .speedFactor = Growth.SpeedFactor * combinedModifier,
-	         .growthLimit = ( combinedModifier * Constants.VegetationRange ) + Constants.MinVegetation };
+	// Limit parameter
+	constexpr float limitTempOptimal = 0.6f;
+	constexpr float limitTempWidth   = 0.27f;
+
+	constexpr float limitHumOptimal = 0.65f;
+	constexpr float limitHumWidth   = 0.3f;
+
+	constexpr float limitElevHalf      = 0.7f;
+	constexpr float limitElevSteepness = 6.f;
+
+	const float limitTempF  = bellCurve( temperature, limitTempOptimal, limitTempWidth );
+	const float limitHumF   = bellCurve( humidity, limitHumOptimal, limitHumWidth );
+	const float limitElevF  = elevationPenalty( constants.maxElevation, elevation, limitElevHalf, limitElevSteepness );
+	const float limitFactor = limitTempF * limitHumF * limitElevF;
+
+	return { .effectiveSpeed = speedFactor * constants.growth.baseGrowthSpeed,
+	         .effectiveLimit = limitFactor * constants.growth.baseGrowthLimit };
 }
 }  // namespace cc::app
