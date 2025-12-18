@@ -4,14 +4,13 @@
 
 namespace cc::app
 {
-struct SidePanel
-{
-	float width{ constant::UI.SidePanel.InitialWidth };
-};
-
 struct UIConfig
 {
-	SidePanel sidePanel;
+	struct SidePanel
+	{
+		float width{ constant::UI.SidePanel.InitialWidth };
+	} sidePanel;
+
 	bool askBeforeContinuing = false;
 };
 }  // namespace cc::app

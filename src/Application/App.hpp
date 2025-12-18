@@ -26,11 +26,10 @@ public:
 	auto run() -> void;
 
 private:
-	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const
-	    -> std::optional< InitError >;
+	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >;
 	auto initSystems() -> void;
 
-	const cli::Options m_CliOptions;
+	const cli::Options m_cliOptions;
 	Engine m_engine;
 };
 }  // namespace cc::app

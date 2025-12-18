@@ -1,5 +1,21 @@
 {
     "gridDirectoryPath": "resources/Grid100x100",
     "iterationTarget": 3E5,
-    "rngSeed": 0
+    "rngSeed": 0,
+    "vegetation": {
+        "speed": {
+            "tempOptimal": 0.6,
+            "tempWidth": 0.25,
+            "humOptimal": 0.65,
+            "humWidth": 0.2
+        },
+        "limit": {
+            "tempOptimal": 0.6,
+            "tempWidth": 0.27,
+            "humOptimal": 0.65,
+            "humWidth": 0.3,
+            "elevHalf": 0.7,
+            "elevSteepness": 6.0
+        }
+    }
 }

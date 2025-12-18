@@ -26,22 +26,19 @@ namespace cc::app
 {
 namespace
 {
-constexpr uint16_t WindowWidth = 1280u;
-constexpr uint16_t WindowHeight = 720u;
+constexpr uint16_t WindowWidth   = 1280u;
+constexpr uint16_t WindowHeight  = 720u;
 constexpr std::string_view Title = "Ecosystem";
 }  // namespace
 
 App::App( const cli::Options& options )
-    : m_CliOptions( options ),
-      m_engine( { .Title = Title.data(),
-                  .WindowWidth = WindowWidth,
-                  .WindowHeight = WindowHeight,
-                  .EnableGUI = options.gui } )
+    : m_cliOptions( options ),
+      m_engine( { .Title = Title.data(), .WindowWidth = WindowWidth, .WindowHeight = WindowHeight, .EnableGUI = options.gui } )
 {}
 
 auto App::init() -> std::optional< InitError >
 {
-	auto readResult = readPreset( m_CliOptions.presetPath );
+	auto readResult = readPreset( m_cliOptions.presetPath );
 	if ( !readResult )
 	{
 		return "-> Failed to read preset\n" + readResult.error();
@@ -70,7 +67,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		return "-> Couldn't load the grid\n" + *readingError;
 	}
 
-	if ( m_CliOptions.gui )
+	if ( m_cliOptions.gui )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
@@ -82,7 +79,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	}
 
 	registry.ctx().emplace< Preset >( preset );
-	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_CliOptions.gui } );
+	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 
 	return std::nullopt;
 }
@@ -90,20 +87,20 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 auto App::initSystems() -> void
 {
 	auto& registry = m_engine.registry();
-	if ( m_CliOptions.gui )
+	if ( m_cliOptions.gui )
 	{
 		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
 		auto& renderer = registry.ctx().get< SFRenderService >();
 
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
-		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions );
+		m_engine.addSystem< SimRunnerSystem >( registry, m_cliOptions );
 		m_engine.addSystem< UISystem >( registry );
 		m_engine.addSystem< RenderSystem >( registry, renderer );
 	}
 	else
 	{
-		m_engine.addSystem< SimRunnerSystem >( registry, m_CliOptions );
+		m_engine.addSystem< SimRunnerSystem >( registry, m_cliOptions );
 	}
 }
 }  // namespace cc::app
