@@ -92,7 +92,7 @@ auto App::initSystems() -> void
 	auto& registry = m_engine.registry();
 	if ( m_cliOptions.gui )
 	{
-		assert( registry.ctx().contains< SFRenderService >() && "SFRenderService not initialized" );
+		assert( registry.ctx().contains< SFRenderService >() );
 		auto& renderer = registry.ctx().get< SFRenderService >();
 
 		m_engine.addSystem< InputSystem >( registry );

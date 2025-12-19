@@ -2,9 +2,11 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CLI/ParseCli.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Cell.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Grid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/CameraMovementSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/InputSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/RenderSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentDecisionSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/CLILoggerSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/SimRunnerSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/VegetationSystem.cpp

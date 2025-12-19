@@ -4,8 +4,9 @@
 
 namespace cc::app::component
 {
-struct Position
+struct Genes
 {
-	std::size_t cellIndex;
+	float maxEnergy        = 100.f;
+	std::size_t perception = 2uz;
 };
 }  // namespace cc::app::component

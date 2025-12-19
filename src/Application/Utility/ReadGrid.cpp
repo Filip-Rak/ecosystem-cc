@@ -114,10 +114,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	}
 	// clang-format on
 
-	auto& grid = registry.ctx().emplace< Grid >( registry, validDimensions.x, validDimensions.y );
-
 	assert( registry.ctx().contains< Preset >() );
 	const Preset::Vegetation& vegetationPreset = registry.ctx().get< Preset >().vegetation;
+	auto grid                                  = Grid( registry, validDimensions.x, validDimensions.y );
 
 	const auto size = static_cast< const std::size_t >( grid.height * grid.width );
 
@@ -130,6 +129,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		grid.cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
 	}
 
+	registry.ctx().emplace< Grid >( std::move( grid ) );
 	return std::nullopt;
 }
 }  // namespace cc::app
