@@ -28,21 +28,22 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
 
 	if ( !cliOptions.gui )
-		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogInfrequency ) );
+		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
 }
 
 auto SimRunnerSystem::update() -> void
 {
 	const auto& preset = m_registry.ctx().get< Preset >();
-	auto& data = m_registry.ctx().get< SimRunnerData >();
+	auto& data         = m_registry.ctx().get< SimRunnerData >();
+	auto& time         = m_registry.ctx().get< Time >();
 
-	if ( m_speedLimited && !shouldUpdate( data, m_registry.ctx().get< Time >() ) )
+	if ( m_speedLimited && !shouldUpdate( data, time ) )
 	{
 		return;
 	}
 
 	m_timeSinceLastUpdate = 0.f;
-	data.iteration = ++m_iteration;
+	data.iteration        = ++m_iteration;
 
 	for ( auto& system : m_simSystems )
 	{
@@ -54,7 +55,7 @@ auto SimRunnerSystem::update() -> void
 		if ( !data.targetReached )
 		{
 			data.targetReached = true;
-			data.paused = true;
+			data.paused        = true;
 
 			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
 			dispatcher.enqueue< event::ReachedTargetIteration >();
@@ -86,9 +87,9 @@ auto SimRunnerSystem::onResetGrid( const event::ResetGrid& /*event*/ ) -> void
 	m_registry.ctx().erase< Grid >();
 	m_registry.ctx().emplace< Grid >( m_initialGrid );
 
-	auto& data = m_registry.ctx().get< SimRunnerData >();
+	auto& data         = m_registry.ctx().get< SimRunnerData >();
 	data.targetReached = false;
-	data.iteration = 0;
-	m_iteration = 0;
+	data.iteration     = 0;
+	m_iteration        = 0;
 }
 }  // namespace cc::app

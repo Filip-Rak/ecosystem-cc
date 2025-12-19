@@ -10,8 +10,8 @@
 
 namespace cc::app
 {
-CLILoggerSystem::CLILoggerSystem( entt::registry& registry, int logInfrequency )
-    : m_registry( registry ), m_logInfrequency( logInfrequency )
+CLILoggerSystem::CLILoggerSystem( entt::registry& registry, int logfrequency )
+    : m_registry( registry ), m_logfrequency( logfrequency )
 {
 	assert( registry.ctx().contains< SimRunnerData >() );
 	assert( registry.ctx().contains< Preset >() );
@@ -20,20 +20,20 @@ CLILoggerSystem::CLILoggerSystem( entt::registry& registry, int logInfrequency )
 auto CLILoggerSystem::update() -> void
 {
 	const auto& runnerData = m_registry.ctx().get< SimRunnerData >();
-	const auto& preset = m_registry.ctx().get< Preset >();
+	const auto& preset     = m_registry.ctx().get< Preset >();
 
 	const auto iteration = runnerData.iteration;
-	const auto target = preset.iterationTarget;
+	const auto target    = preset.iterationTarget;
 
-	if ( iteration % m_logInfrequency != 0 && iteration < target ) return;
+	if ( iteration % m_logfrequency != 0 && iteration < target ) return;
 
-	constexpr int BarWidth = 50;
-	const int progress = static_cast< int >( BarWidth * iteration / target );
+	constexpr int barWidth = 50;
+	const int progress     = static_cast< int >( barWidth * iteration / target );
 
 	std::string bar;
-	bar.reserve( BarWidth );
+	bar.reserve( barWidth );
 
-	for ( int i = 0; i < BarWidth; i++ )
+	for ( int i = 0; i < barWidth; i++ )
 	{
 		if ( i < progress )
 			bar += '=';
@@ -43,7 +43,7 @@ auto CLILoggerSystem::update() -> void
 			bar += ' ';
 	}
 
-	std::string line = std::format( "\r[{}] Iteration {} of {}", bar, iteration, target );
+	std::string line = std::format( "\r[{}] iteration {} of {}", bar, iteration, target );
 	if ( iteration == target ) line += "\nFinished\n";
 	std::print( "{}", line );
 }

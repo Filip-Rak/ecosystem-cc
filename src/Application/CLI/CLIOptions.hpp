@@ -12,6 +12,6 @@ struct Options
 {
 	bool gui{ false };
 	std::filesystem::path presetPath;
-	int terminalLogInfrequency = LogEvery10;
+	int terminalLogfrequency = LogEvery10;
 };
 }  // namespace cc::cli
