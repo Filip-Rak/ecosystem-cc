@@ -4,8 +4,6 @@
 #include <filesystem>
 #include <string>
 
-#include <entt/fwd.hpp>
-
 namespace cc::app
 {
 struct Preset;
