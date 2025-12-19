@@ -35,25 +35,26 @@ Cell::Cell( float vegetation, float temperature, float elevation, float humidity
 auto Cell::calculateGrowthParameters( const Preset::Vegetation& preset ) const -> GrowthParameters
 {
 	constexpr const auto cellConstants = constant::cell;
-	const auto sPreset                 = preset.speed;
-	const auto lPreset                 = preset.limit;
+	const auto speedPreset             = preset.speed;
+	const auto limitPreset             = preset.limit;
 
 	// Speed parameter
-	const float speedTempF  = bellCurve( temperature, sPreset.tempOptimal, sPreset.tempWidth );
-	const float speedHumF   = bellCurve( humidity, sPreset.humOptimal, sPreset.humWidth );
-	const float speedFactor = speedTempF * speedHumF;
+	const float speedTempF     = bellCurve( temperature, speedPreset.tempOptimal, speedPreset.tempWidth );
+	const float speedHumF      = bellCurve( humidity, speedPreset.humOptimal, speedPreset.humWidth );
+	const float speedFactor    = speedTempF * speedHumF;
+	const float effectiveSpeed = speedFactor * speedPreset.base;
 
 	// Limit parameter
-	const float limitTempF = bellCurve( temperature, lPreset.tempOptimal, lPreset.tempWidth );
-	const float limitHumF  = bellCurve( humidity, lPreset.humOptimal, lPreset.humWidth );
+	const float limitTempF = bellCurve( temperature, limitPreset.tempOptimal, limitPreset.tempWidth );
+	const float limitHumF  = bellCurve( humidity, limitPreset.humOptimal, limitPreset.humWidth );
 	const float limitElevF =
-	    elevationPenalty( cellConstants.maxElevation, elevation, lPreset.elevHalf, lPreset.elevSteepness );
+	    elevationPenalty( cellConstants.maxElevation, elevation, limitPreset.elevHalf, limitPreset.elevSteepness );
 
 	const float limitFactor = limitTempF * limitHumF * limitElevF;
+	const float effectiveLimit =
+	    std::clamp( limitFactor * limitPreset.base, cellConstants.minVegetation, cellConstants.maxVegetation );
 
 	// Effective Parameters
-	return { .effectiveSpeed = speedFactor * cellConstants.growth.baseGrowthSpeed,
-	         .effectiveLimit = std::clamp( limitFactor * cellConstants.growth.baseGrowthLimit,
-	                                       cellConstants.minVegetation, cellConstants.maxVegetation ) };
+	return { .effectiveSpeed = effectiveSpeed, .effectiveLimit = effectiveLimit };
 }
 }  // namespace cc::app

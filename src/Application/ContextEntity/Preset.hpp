@@ -12,6 +12,8 @@ struct Preset
 	{
 		struct Speed
 		{
+			const float base;
+
 			const float tempOptimal;
 			const float tempWidth;
 
@@ -21,6 +23,8 @@ struct Preset
 
 		struct Limit
 		{
+			const float base;
+
 			const float tempOptimal;
 			const float tempWidth;
 

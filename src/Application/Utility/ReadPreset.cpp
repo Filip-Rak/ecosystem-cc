@@ -79,6 +79,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse vegetation - speed
 		Preset::Vegetation::Speed speed{
+		    .base        = get< float >( json, "vegetation.speed.base" ),
 		    .tempOptimal = get< float >( json, "vegetation.speed.tempOptimal" ),
 		    .tempWidth   = get< float >( json, "vegetation.speed.tempWidth" ),
 		    .humOptimal  = get< float >( json, "vegetation.speed.humOptimal" ),
@@ -87,6 +88,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse vegetation - limit
 		Preset::Vegetation::Limit limit{
+		    .base          = get< float >( json, "vegetation.limit.base" ),
 		    .tempOptimal   = get< float >( json, "vegetation.limit.tempOptimal" ),
 		    .tempWidth     = get< float >( json, "vegetation.limit.tempWidth" ),
 		    .humOptimal    = get< float >( json, "vegetation.limit.humOptimal" ),

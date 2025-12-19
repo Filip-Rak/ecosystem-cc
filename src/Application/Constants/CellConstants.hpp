@@ -4,12 +4,6 @@ namespace cc::app::constant
 {
 struct CellConstants
 {
-	struct GrowthConstants
-	{
-		const float baseGrowthSpeed = 0.08f;
-		const float baseGrowthLimit = 1.f;
-	} const growth;
-
 	const float minVegetation = 1e-6f;
 	const float maxVegetation = 1.f;
 

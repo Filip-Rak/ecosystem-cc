@@ -31,7 +31,7 @@ auto CLILoggerSystem::update() -> void
 	const int progress     = static_cast< int >( barWidth * iteration / target );
 
 	std::string bar;
-	bar.reserve( barWidth );
+	bar.reserve( barWidth );  // FIXME: reserve every frame?
 
 	for ( int i = 0; i < barWidth; i++ )
 	{
