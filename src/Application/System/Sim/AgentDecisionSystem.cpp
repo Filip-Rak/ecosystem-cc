@@ -10,6 +10,7 @@
 #include "Application/Components/MoveIntent.hpp"
 #include "Application/ContextEntity/Cell.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "entt/entity/fwd.hpp"
 
 namespace cc::app
 {
@@ -20,7 +21,8 @@ constexpr std::size_t maxPerception = 3;  // TODO: Put in preset.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
 {
 	std::vector< std::ptrdiff_t > offsets;
-	offsets.reserve( ( static_cast< std::size_t >( ( 2uz * range ) + 1uz ) ) * ( 2uz * range + 1uz ) );
+	const auto side = ( 2uz * range ) + 1uz;
+	offsets.reserve( side * side );
 
 	const auto signedRange = static_cast< std::ptrdiff_t >( range );
 	for ( auto dy = -signedRange; dy <= signedRange; dy++ )
@@ -49,17 +51,14 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry ) : m_registr
 
 auto AgentDecisionSystem::update() -> void
 {
-	auto& grid = m_registry.ctx().get< Grid >();
-	auto view  = m_registry.view< component::Agent, component::GeneSet >();
+	auto& grid      = m_registry.ctx().get< Grid >();
+	const auto view = m_registry.view< component::Agent, component::GeneSet >();
 
-	for ( auto entity : view )
+	for ( const auto& [ entity, agent, geneSet ] : view.each() )
 	{
-		const auto& genes = view.get< component::GeneSet >( entity ).agentGenes;
-		auto& agent       = view.get< component::Agent >( entity );
-
 		// TODO: Expand.
 		// Pick cell with most food in range.
-		const auto bestIndex = bestCell( grid, genes.perception, agent.cellIndex );
+		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, agent.cellIndex );
 		if ( agent.cellIndex != bestIndex )
 		{
 			m_registry.emplace_or_replace< component::MoveIntent >( entity, bestIndex );
@@ -76,17 +75,20 @@ auto AgentDecisionSystem::bestCell( const Grid& grid, std::size_t perception, st
 
 	std::size_t bestCell = cellIndex;
 
-	for ( const auto offset : m_rangeOffsets[ perception ] )
+	for ( const auto offset : m_rangeOffsets[ perception - 1 ] )
 	{
 		const auto newIndex = static_cast< std::ptrdiff_t >( cellIndex ) + offset;
+
+		// Clip at borders
 		if ( newIndex >= grid.signedCellSize || newIndex < 0 )
 		{
 			continue;
 		}
 
-		if ( cells[ newIndex ].vegetation > cells[ bestCell ].vegetation )
+		const auto unsignedNI = static_cast< std::size_t >( newIndex );
+		if ( cells[ unsignedNI ].vegetation > cells[ bestCell ].vegetation )
 		{
-			bestCell = newIndex;
+			bestCell = unsignedNI;
 		}
 	}
 
