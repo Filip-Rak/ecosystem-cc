@@ -26,11 +26,11 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );
 
-	m_simSystems.push_back( std::make_unique< VegetationSystem >( registry ) );
-	m_simSystems.push_back( std::make_unique< AgentDecisionSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< VegetationSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< AgentDecisionSystem >( registry ) );
 
 	if ( !cliOptions.gui )
-		m_simSystems.push_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
+		m_simSystems.emplace_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
 }
 
 auto SimRunnerSystem::update() -> void

@@ -13,6 +13,7 @@ inline auto bellCurve( float value, float optimal, float width ) -> float
 {
 	const float alignment = ( value - optimal ) / std::max( 1e-6f, width );
 	const float result    = std::exp( -0.5f * alignment * alignment );
+
 	return result;
 }
 

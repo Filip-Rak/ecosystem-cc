@@ -4,9 +4,8 @@
 
 namespace cc::app::component
 {
-struct Genes
+struct MoveIntent
 {
-	float maxEnergy        = 100.f;
-	std::size_t perception = 2uz;
+	std::size_t targetCell;
 };
 }  // namespace cc::app::component

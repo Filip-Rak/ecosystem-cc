@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -16,6 +17,7 @@ struct Grid
 
 	std::vector< Cell > cells;
 	std::vector< std::vector< entt::entity > > spatialGrid;
+	const std::ptrdiff_t signedCellSize;
 
 	Grid( entt::registry& registry, uint16_t width, uint16_t height );
 };
