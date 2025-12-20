@@ -117,16 +117,15 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	assert( registry.ctx().contains< Preset >() );
 	const Preset::Vegetation& vegetationPreset = registry.ctx().get< Preset >().vegetation;
 	auto grid                                  = Grid( registry, validDimensions.x, validDimensions.y );
+	auto& cells                                = grid.cells();
 
-	const auto size = static_cast< const std::size_t >( grid.height * grid.width );
-
-	for ( std::size_t index = 0; index < size; index++ )
+	for ( std::size_t index = 0; index < grid.getCellSize(); index++ )
 	{
 		const float cellTemperature = temperatureLayer->values[ index ];
 		const float cellElevation   = elevationLayer->values[ index ];
 		const float cellHumidity    = humidityLayer->values[ index ];
 
-		grid.cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
+		cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
 	}
 
 	registry.ctx().emplace< Grid >( std::move( grid ) );

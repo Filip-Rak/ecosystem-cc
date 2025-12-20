@@ -7,8 +7,7 @@
 
 #include "Application/Components/Agent.hpp"
 #include "Application/Components/GeneSet.hpp"
-#include "Application/Components/MoveIntent.hpp"
-#include "Application/ContextEntity/Cell.hpp"
+#include "Application/Components/NextMove.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "entt/entity/fwd.hpp"
 
@@ -18,6 +17,7 @@ namespace
 {
 constexpr std::size_t maxPerception = 3;  // TODO: Put in preset.
 
+// TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
 {
 	std::vector< std::ptrdiff_t > offsets;
@@ -29,12 +29,32 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 	{
 		for ( auto dx = -signedRange; dx <= signedRange; dx++ )
 		{
-			const auto index = ( dy * grid.width ) + dx;
+			const auto index = ( dy * grid.getWidth() ) + dx;
 			offsets.emplace_back( index );
 		}
 	}
 
 	return offsets;
+}
+
+// TODO: Cheybyshev - consider Manhattan for better performance.
+auto nextStepUnsafe( std::ptrdiff_t gridWith, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
+{
+	// TODO: Make a helper in Grid.hpp
+	auto x = pos & gridWith;
+	auto y = pos / gridWith;
+
+	const auto targetX = target & gridWith;
+	const auto targetY = target / gridWith;
+
+	const auto deltaX = targetX - x;
+	const auto deltaY = targetY - y;
+
+	if ( deltaX != 0 ) x += ( deltaX > 0 ) ? 1 : -1;
+	if ( deltaY != 0 ) y += ( deltaY > 0 ) ? 1 : -1;
+
+	// TODO: Make a helper in Grid.hpp
+	return ( y * gridWith ) + y;
 }
 }  // namespace
 
@@ -49,6 +69,7 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry ) : m_registr
 	}
 }
 
+// TODO: Signed, unsigned is a costly mess. Figure out if full switch to signed is feasible or minimize
 auto AgentDecisionSystem::update() -> void
 {
 	auto& grid      = m_registry.ctx().get< Grid >();
@@ -58,17 +79,23 @@ auto AgentDecisionSystem::update() -> void
 	{
 		// TODO: Expand.
 		// Pick cell with most food in range.
+
+		// Returns unsigned and its immediately casted to signed.
 		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, agent.cellIndex );
 		if ( agent.cellIndex != bestIndex )
 		{
-			m_registry.emplace_or_replace< component::MoveIntent >( entity, bestIndex );
+			const auto signedIndex     = static_cast< ptrdiff_t >( agent.cellIndex );
+			const auto signedBestIndex = static_cast< ptrdiff_t >( bestIndex );
+			const auto stepIndex       = nextStepUnsafe( grid.getSignedCellSize(), signedIndex, signedBestIndex );
+
+			m_registry.emplace_or_replace< component::NextMove >( entity, stepIndex );
 		}
 	}
 }
 
 auto AgentDecisionSystem::bestCell( const Grid& grid, std::size_t perception, std::size_t cellIndex ) -> std::size_t
 {
-	const auto& cells = grid.cells;
+	const auto& cells = grid.getCells();
 
 	assert( perception <= maxPerception );
 	assert( cellIndex < cells.size() );
@@ -80,7 +107,7 @@ auto AgentDecisionSystem::bestCell( const Grid& grid, std::size_t perception, st
 		const auto newIndex = static_cast< std::ptrdiff_t >( cellIndex ) + offset;
 
 		// Clip at borders
-		if ( newIndex >= grid.signedCellSize || newIndex < 0 )
+		if ( newIndex >= grid.getSignedCellSize() || newIndex < 0 )
 		{
 			continue;
 		}

@@ -16,14 +16,15 @@ VegetationSystem::VegetationSystem( entt::registry& registry ) : m_registry( reg
 auto VegetationSystem::update() -> void
 {
 	constexpr const auto constants = constant::cell;
-	auto& gridCells                = m_registry.ctx().get< Grid >().cells;
+	auto& gridCells                = m_registry.ctx().get< Grid >().cells();
 
 	for ( Cell& cell : gridCells )
 	{
 		const auto params = cell.growthParameters;
 		float& vegetation = cell.vegetation;
 
-		vegetation += params.effectiveSpeed * vegetation * ( constants.maxVegetation - vegetation / params.effectiveLimit );
+		vegetation +=
+		    params.effectiveSpeed * vegetation * ( constants.maxVegetation - vegetation / params.effectiveLimit );
 		vegetation = std::clamp( vegetation, constants.minVegetation, params.effectiveLimit );
 	}
 }

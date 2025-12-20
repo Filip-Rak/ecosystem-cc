@@ -11,7 +11,7 @@ namespace cc::app
 {
 namespace
 {
-auto emplaceAgents( entt::registry& registry, std::vector< std::vector< entt::entity > >& spatialGrid ) -> void
+auto initSpacialGrid( entt::registry& registry, std::vector< std::vector< entt::entity > >& spatialGrid ) -> void
 {
 	// TODO: const auto& basicGenes = registry.get</*preset::Genes*/>;
 	const auto initialGenes   = component::GeneSet::Genes{ .maxEnergy = 100.f, .perception = 2uz };
@@ -32,12 +32,50 @@ auto emplaceAgents( entt::registry& registry, std::vector< std::vector< entt::en
 }  // namespace
 
 Grid::Grid( entt::registry& registry, uint16_t width, uint16_t height )
-    : width( width ), height( height ), signedCellSize( static_cast< std::ptrdiff_t >( width ) * height )
+    : m_width( width ),
+      m_height( height ),
+      m_cellSize( static_cast< std::size_t >( width ) * height ),
+      m_signedCellSize( static_cast< std::ptrdiff_t >( width ) * height )
 {
-	const auto cellCount = static_cast< std::size_t >( signedCellSize );
-	cells.reserve( cellCount );
+	const auto cellCount = static_cast< std::size_t >( m_signedCellSize );
+	m_cells.reserve( cellCount );
 
-	spatialGrid.resize( cellCount );
-	emplaceAgents( registry, spatialGrid );
+	m_spatialGrid.resize( cellCount );
+	initSpacialGrid( registry, m_spatialGrid );
+}
+
+auto Grid::getWidth() const -> uint16_t
+{
+	return m_width;
+}
+
+auto Grid::getHeight() const -> uint16_t
+{
+	return m_height;
+}
+
+auto Grid::getCellSize() const -> std::size_t
+{
+	return m_cellSize;
+}
+
+auto Grid::getSignedCellSize() const -> uint16_t
+{
+	return m_signedCellSize;
+}
+
+auto Grid::getCells() const -> const std::vector< Cell >&
+{
+	return m_cells;
+}
+
+auto Grid::getSpatialGrid() const -> const SpatialGrid&
+{
+	return m_spatialGrid;
+}
+
+auto Grid::cells() -> std::vector< Cell >&
+{
+	return m_cells;
 }
 }  // namespace cc::app

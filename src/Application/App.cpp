@@ -80,7 +80,8 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		camera.position = glm::vec2{ CameraPosition };
 
 		const auto& grid = registry.ctx().get< Grid >();
-		registry.ctx().emplace< VisualGrid >( grid.width, grid.height, grid.cells.size() );
+
+		registry.ctx().emplace< VisualGrid >( grid.getWidth(), grid.getHeight(), grid.getCellSize() );
 		registry.ctx().emplace< UIConfig >();
 	}
 

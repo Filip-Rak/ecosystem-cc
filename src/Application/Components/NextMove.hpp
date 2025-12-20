@@ -4,7 +4,7 @@
 
 namespace cc::app::component
 {
-struct MoveIntent
+struct NextMove
 {
 	std::size_t targetCell;
 };

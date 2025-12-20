@@ -36,13 +36,16 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 	if ( input.isPressed( mouse::Button::Left ) )
 	{
 		auto& visualGrid = registry.ctx().get< VisualGrid >();
-		auto& logicalGrid = registry.ctx().get< Grid >();
+
+		auto& logicalGrid       = registry.ctx().get< Grid >();
+		const auto& spatialGrid = logicalGrid.getSpatialGrid();
+		const auto& cells       = logicalGrid.getCells();
 
 		if ( const auto cellPos = visualGrid.cellPositionUnderMouse; cellPos )
 		{
-			const auto cellIndex = ( cellPos->y * visualGrid.Height ) + cellPos->x;
-			const auto cellPopulation = logicalGrid.spatialGrid[ cellIndex ].size();
-			const Cell& cell = logicalGrid.cells[ cellIndex ];
+			const auto cellIndex      = ( cellPos->y * visualGrid.Height ) + cellPos->x;
+			const auto cellPopulation = spatialGrid[ cellIndex ].size();
+			const Cell& cell          = cells[ cellIndex ];
 
 			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
 			            "Population: {}\n",
@@ -64,9 +67,9 @@ InputSystem::InputSystem( entt::registry& registry ) : m_registry( registry )
 auto InputSystem::update() -> void
 {
 	const auto& input = m_registry.ctx().get< InputService >();
-	const auto& gui = m_registry.ctx().get< GUIService >();
-	const auto& time = m_registry.ctx().get< Time >();
-	auto& camera = m_registry.ctx().get< Camera >();
+	const auto& gui   = m_registry.ctx().get< GUIService >();
+	const auto& time  = m_registry.ctx().get< Time >();
+	auto& camera      = m_registry.ctx().get< Camera >();
 
 	using namespace keyboard;
 	using namespace mouse;
@@ -83,7 +86,7 @@ auto InputSystem::update() -> void
 
 	if ( !gui.nowHandlesMouse() )
 	{
-		camera.mouseZoomInput = input.getMouseScrollDelta();
+		camera.mouseZoomInput     = input.getMouseScrollDelta();
 		camera.mouseMovementInput = ( input.isDown( Button::Left ) ) ? input.getMouseMoveDelta() : glm::ivec2{ 0 };
 	}
 

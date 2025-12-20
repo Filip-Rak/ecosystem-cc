@@ -23,8 +23,8 @@ auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> Gri
 	assert( registry.ctx().contains< Grid >() );
 	const auto& logicalGrid = registry.ctx().get< Grid >();
 
-	const uint16_t width  = logicalGrid.width;
-	const uint16_t height = logicalGrid.height;
+	const uint16_t width  = logicalGrid.getWidth();
+	const uint16_t height = logicalGrid.getHeight();
 
 	constexpr float CellSize   = 4.f;
 	const float verticalSize   = static_cast< float >( width ) * CellSize;
@@ -38,7 +38,7 @@ template < auto CellPropertyPtr >
 auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float propertyRange,
                     const constant::Visual_t::VisMode_t& visMode ) -> void
 {
-	const auto& cells = grid.cells;
+	const auto& cells = grid.getCells();
 	for ( std::size_t index = 0; index < cells.size(); index++ )
 	{
 		const Cell& cell = cells[ index ];
@@ -92,7 +92,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	constexpr const auto& Cell    = constant::cell;
 	auto& colors                  = visualGrid.colors;
 
-	const auto TotalPopulationPlaceholder = grid.cells.size();
+	const auto TotalPopulationPlaceholder = grid.getCellSize();
 
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
@@ -119,7 +119,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	}
 	case Population:
 	{
-		colorizePopulationCells( colors, grid.spatialGrid, TotalPopulationPlaceholder );
+		colorizePopulationCells( colors, grid.getSpatialGrid(), TotalPopulationPlaceholder );
 		break;
 	}
 	default: assert( false );
