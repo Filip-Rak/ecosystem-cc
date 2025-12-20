@@ -12,15 +12,16 @@ namespace cc::app
 {
 class Grid
 {
+public:
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;
 
-public:
 	Grid( entt::registry& registry, uint16_t width, uint16_t height );
 
 	[[nodiscard]] auto getWidth() const -> uint16_t;
 	[[nodiscard]] auto getHeight() const -> uint16_t;
 	[[nodiscard]] auto getCellSize() const -> std::size_t;
 	[[nodiscard]] auto getSignedCellSize() const -> uint16_t;
+
 	[[nodiscard]] auto getCells() const -> const std::vector< Cell >&;
 	[[nodiscard]] auto getSpatialGrid() const -> const SpatialGrid&;
 
