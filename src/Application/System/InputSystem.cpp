@@ -50,11 +50,12 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			const Cell& cell          = cells[ cellIndex ];
 			const auto totalPopulation =
 			    std::ranges::fold_left( spatialGrid | std::views::transform( std::ranges::size ), 0, std::plus<>() );
+			const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
 
 			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
-			            "Population: {}\n-> Total Population {}\n",
+			            "Population: {}\n-> Total Population {}\n-> Highest Population {}\n",
 			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation,
-			            totalPopulation );
+			            totalPopulation, highestPopulation );
 
 			/* Cells with more entities than one */
 			/*std::println( "Most populated cells" );

@@ -22,7 +22,6 @@ auto AgentMovementSystem::update() -> void
 	for ( const auto& [ entity, nextMove, position ] : view.each() )
 	{
 		grid.moveEntity( entity, position.cellIndex, nextMove.targetCell );
-		position.cellIndex = nextMove.targetCell;
 	}
 
 	m_registry.remove< component::NextMove >( view.begin(), view.end() );

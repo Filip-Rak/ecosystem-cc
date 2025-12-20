@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <limits>
 
 #include <entt/entt.hpp>
 
@@ -10,38 +11,31 @@
 
 namespace cc::app
 {
-namespace
-{
-auto initSpacialGrid( entt::registry& registry, std::vector< std::vector< entt::entity > >& spatialGrid ) -> void
-{
-	// TODO: const auto& basicGenes = registry.get</*preset::Genes*/>;
-	const auto initialGenes   = component::GeneSet::Genes{ .maxEnergy = 100.f, .perception = 2uz };
-	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
-
-	for ( auto index{ 0uz }; index < spatialGrid.size(); index++ )
-	{
-		auto& spatialCell  = spatialGrid[ index ];
-		const auto& entity = spatialCell.emplace_back( registry.create() );
-
-		registry.emplace< component::GeneSet >( entity, initialGeneSet );
-
-		auto& position     = registry.emplace< component::Position >( entity );
-		position.cellIndex = index;
-	}
-}
-}  // namespace
-
 Grid::Grid( entt::registry& registry, uint16_t width, uint16_t height )
     : m_width( width ),
       m_height( height ),
       m_cellSize( static_cast< std::size_t >( width ) * height ),
-      m_signedCellSize( static_cast< std::ptrdiff_t >( width ) * height )
+      m_signedCellSize( static_cast< std::ptrdiff_t >( width ) * height ),
+      m_registry( registry )
 {
 	const auto cellCount = static_cast< std::size_t >( m_signedCellSize );
+	m_spatialGrid.resize( cellCount );
 	m_cells.reserve( cellCount );
 
-	m_spatialGrid.resize( cellCount );
-	initSpacialGrid( registry, m_spatialGrid );
+	const auto initialGenes   = component::GeneSet::Genes{ .maxEnergy = 100.f, .perception = 2uz };
+	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
+
+	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
+	{
+		auto& spatialCell  = m_spatialGrid[ index ];
+		const auto& entity = registry.create();
+
+		registry.emplace< component::GeneSet >( entity, initialGeneSet );
+		registry.emplace< component::Position >( entity );
+
+		spatialCell.reserve( 4 );
+		addToSpatialGrid( entity, index );
+	}
 }
 
 void Grid::moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell )
@@ -66,7 +60,7 @@ auto Grid::getCellSize() const -> std::size_t
 	return m_cellSize;
 }
 
-auto Grid::getSignedCellSize() const -> uint16_t
+auto Grid::getSignedCellSize() const -> std::ptrdiff_t
 {
 	return m_signedCellSize;
 }
@@ -88,21 +82,33 @@ auto Grid::cells() -> std::vector< Cell >&
 
 void Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex )
 {
-	m_spatialGrid[ cellIndex ].push_back( entity );
+	auto& bucket   = m_spatialGrid[ cellIndex ];
+	auto& position = m_registry.get< component::Position >( entity );
+
+	position.spatialIndex = bucket.size();
+	position.cellIndex    = cellIndex;
+	bucket.push_back( entity );
 }
 
 void Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex )
 {
-	auto& entityVector = m_spatialGrid[ cellIndex ];
-	for ( auto index{ 0zu }; index < entityVector.size(); index++ )
-	{
-		if ( entityVector[ index ] != targetEntity ) continue;
+	auto& bucket      = m_spatialGrid[ cellIndex ];
+	auto& targetIndex = m_registry.get< component::Position >( targetEntity ).spatialIndex;
 
-		entityVector[ index ] = entityVector.back();
-		entityVector.pop_back();
-		return;
+	// FIXME: Will fail after restart - fix restart to reset buckets.
+	assert( targetIndex < bucket.size() );
+	assert( bucket[ targetIndex ] == targetEntity );
+
+	const auto lastEntity = bucket.back();
+	bucket[ targetIndex ] = lastEntity;
+	bucket.pop_back();
+
+	if ( targetEntity != lastEntity )
+	{
+		auto& lastPosition        = m_registry.get< component::Position >( lastEntity );
+		lastPosition.spatialIndex = targetIndex;
 	}
 
-	assert( false && "entity not found" );
+	targetIndex = std::numeric_limits< std::size_t >::max();
 }
 }  // namespace cc::app
