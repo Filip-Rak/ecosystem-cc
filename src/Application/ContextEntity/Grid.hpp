@@ -7,6 +7,7 @@
 #include <entt/fwd.hpp>
 
 #include "Application/ContextEntity/Cell.hpp"
+#include "entt/entity/fwd.hpp"
 
 namespace cc::app
 {
@@ -14,8 +15,9 @@ class Grid
 {
 public:
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;
-
 	Grid( entt::registry& registry, uint16_t width, uint16_t height );
+
+	void moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell );
 
 	[[nodiscard]] auto getWidth() const -> uint16_t;
 	[[nodiscard]] auto getHeight() const -> uint16_t;
@@ -28,6 +30,9 @@ public:
 	[[nodiscard]] auto cells() -> std::vector< Cell >&;
 
 private:
+	void addToSpatialGrid( entt::entity entity, std::size_t cellIndex );
+	void removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex );
+
 	const uint16_t m_width;
 	const uint16_t m_height;
 	const std::size_t m_cellSize;

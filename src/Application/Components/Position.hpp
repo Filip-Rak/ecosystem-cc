@@ -4,9 +4,8 @@
 
 namespace cc::app::component
 {
-struct Agent
+struct Position
 {
 	std::size_t cellIndex;
-	float energy;
 };
 }  // namespace cc::app::component

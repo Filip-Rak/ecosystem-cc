@@ -1,6 +1,8 @@
 #include "Application/System/RenderSystem.hpp"
 
+#include <algorithm>
 #include <cassert>
+#include <ranges>
 #include <vector>
 
 #include <entt/entt.hpp>
@@ -44,23 +46,27 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 		const Cell& cell = cells[ index ];
 		Color& color     = colors[ index ];
 
-		const float multiplier = cell.*CellPropertyPtr / propertyRange;
-		color                  = lerpColor( visMode.LowEndColor, visMode.HighEndColor, multiplier );
+		const float factor = std::min( cell.*CellPropertyPtr / propertyRange, 1.f );
+		color              = lerpColor( visMode.LowEndColor, visMode.HighEndColor, factor );
 	}
 }
 
 auto colorizePopulationCells( std::vector< Color >& colors,
-                              const std::vector< std::vector< entt::entity > >& spatialGrid,
-                              std::size_t currentMaxPopulation ) -> void
+                              const std::vector< std::vector< entt::entity > >& spatialGrid ) -> void
 {
+	// TODO: Consider performance.
+	const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
+	// const auto highestPopulation = 2uz;
+
 	constexpr const auto& Constants = constant::Visual.VisModes.Population;
 	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
 	{
 		const std::size_t cellPopulation = spatialGrid[ index ].size();
 		Color& color                     = colors[ index ];
 
-		const float multiplier = static_cast< float >( cellPopulation ) / static_cast< float >( currentMaxPopulation );
-		color                  = lerpColor( Constants.LowEndColor, Constants.HighEndColor, multiplier );
+		const float popFactor =
+		    std::min( static_cast< float >( cellPopulation ) / static_cast< float >( highestPopulation ), 1.f );
+		color = lerpColor( Constants.LowEndColor, Constants.HighEndColor, popFactor );
 	}
 }
 }  // namespace
@@ -92,8 +98,6 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	constexpr const auto& Cell    = constant::cell;
 	auto& colors                  = visualGrid.colors;
 
-	const auto TotalPopulationPlaceholder = grid.getCellSize();
-
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
 	{
@@ -119,7 +123,7 @@ auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) 
 	}
 	case Population:
 	{
-		colorizePopulationCells( colors, grid.getSpatialGrid(), TotalPopulationPlaceholder );
+		colorizePopulationCells( colors, grid.getSpatialGrid() );
 		break;
 	}
 	default: assert( false );

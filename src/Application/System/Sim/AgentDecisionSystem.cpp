@@ -5,9 +5,9 @@
 #include <cstddef>
 #include <entt/entt.hpp>
 
-#include "Application/Components/Agent.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/NextMove.hpp"
+#include "Application/Components/Position.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "entt/entity/fwd.hpp"
 
@@ -41,8 +41,8 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 auto nextStepUnsafe( std::ptrdiff_t gridWith, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
 {
 	// TODO: Make a helper in Grid.hpp
-	auto x = pos & gridWith;
-	auto y = pos / gridWith;
+	auto x = pos / gridWith;
+	auto y = pos & gridWith;
 
 	const auto targetX = target & gridWith;
 	const auto targetY = target / gridWith;
@@ -54,7 +54,7 @@ auto nextStepUnsafe( std::ptrdiff_t gridWith, std::ptrdiff_t pos, std::ptrdiff_t
 	if ( deltaY != 0 ) y += ( deltaY > 0 ) ? 1 : -1;
 
 	// TODO: Make a helper in Grid.hpp
-	return ( y * gridWith ) + y;
+	return ( y * gridWith ) + x;
 }
 }  // namespace
 
@@ -73,20 +73,20 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry ) : m_registr
 auto AgentDecisionSystem::update() -> void
 {
 	auto& grid      = m_registry.ctx().get< Grid >();
-	const auto view = m_registry.view< component::Agent, component::GeneSet >();
+	const auto view = m_registry.view< component::Position, component::GeneSet >();
 
-	for ( const auto& [ entity, agent, geneSet ] : view.each() )
+	for ( const auto& [ entity, position, geneSet ] : view.each() )
 	{
 		// TODO: Expand.
 		// Pick cell with most food in range.
 
 		// Returns unsigned and its immediately casted to signed.
-		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, agent.cellIndex );
-		if ( agent.cellIndex != bestIndex )
+		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, position.cellIndex );
+		if ( position.cellIndex != bestIndex )
 		{
-			const auto signedIndex     = static_cast< ptrdiff_t >( agent.cellIndex );
+			const auto signedIndex     = static_cast< ptrdiff_t >( position.cellIndex );
 			const auto signedBestIndex = static_cast< ptrdiff_t >( bestIndex );
-			const auto stepIndex       = nextStepUnsafe( grid.getSignedCellSize(), signedIndex, signedBestIndex );
+			const auto stepIndex       = nextStepUnsafe( grid.getWidth(), signedIndex, signedBestIndex );
 
 			m_registry.emplace_or_replace< component::NextMove >( entity, stepIndex );
 		}

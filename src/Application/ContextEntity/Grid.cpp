@@ -1,11 +1,12 @@
 #include "Application/ContextEntity/Grid.hpp"
 
+#include <cassert>
 #include <cstddef>
 
 #include <entt/entt.hpp>
 
-#include "Application/Components/Agent.hpp"
 #include "Application/Components/GeneSet.hpp"
+#include "Application/Components/Position.hpp"
 
 namespace cc::app
 {
@@ -24,9 +25,8 @@ auto initSpacialGrid( entt::registry& registry, std::vector< std::vector< entt::
 
 		registry.emplace< component::GeneSet >( entity, initialGeneSet );
 
-		auto& agent     = registry.emplace< component::Agent >( entity );
-		agent.energy    = initialGenes.maxEnergy;
-		agent.cellIndex = index;
+		auto& position     = registry.emplace< component::Position >( entity );
+		position.cellIndex = index;
 	}
 }
 }  // namespace
@@ -42,6 +42,13 @@ Grid::Grid( entt::registry& registry, uint16_t width, uint16_t height )
 
 	m_spatialGrid.resize( cellCount );
 	initSpacialGrid( registry, m_spatialGrid );
+}
+
+void Grid::moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell )
+{
+	assert( currentCell != targetCell );
+	removeFromSpatialGrid( entity, currentCell );
+	addToSpatialGrid( entity, targetCell );
 }
 
 auto Grid::getWidth() const -> uint16_t
@@ -77,5 +84,25 @@ auto Grid::getSpatialGrid() const -> const SpatialGrid&
 auto Grid::cells() -> std::vector< Cell >&
 {
 	return m_cells;
+}
+
+void Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex )
+{
+	m_spatialGrid[ cellIndex ].push_back( entity );
+}
+
+void Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex )
+{
+	auto& entityVector = m_spatialGrid[ cellIndex ];
+	for ( auto index{ 0zu }; index < entityVector.size(); index++ )
+	{
+		if ( entityVector[ index ] != targetEntity ) continue;
+
+		entityVector[ index ] = entityVector.back();
+		entityVector.pop_back();
+		return;
+	}
+
+	assert( false && "entity not found" );
 }
 }  // namespace cc::app

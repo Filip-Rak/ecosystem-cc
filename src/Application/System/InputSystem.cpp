@@ -1,7 +1,9 @@
 #include "Application/System/InputSystem.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <print>  // FIXME: Debug
+#include <ranges>
 
 #include <entt/entt.hpp>
 #include <glm/vec2.hpp>
@@ -46,10 +48,27 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			const auto cellIndex      = ( cellPos->y * visualGrid.Height ) + cellPos->x;
 			const auto cellPopulation = spatialGrid[ cellIndex ].size();
 			const Cell& cell          = cells[ cellIndex ];
+			const auto totalPopulation =
+			    std::ranges::fold_left( spatialGrid | std::views::transform( std::ranges::size ), 0, std::plus<>() );
 
 			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
-			            "Population: {}\n",
-			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation );
+			            "Population: {}\n-> Total Population {}\n",
+			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation,
+			            totalPopulation );
+
+			/* Cells with more entities than one */
+			/*std::println( "Most populated cells" );
+			for ( auto i{ 0uz }; const auto& spatialCell : spatialGrid )
+			{
+			    if ( spatialCell.size() > 1 )
+			    {
+			        const auto x = i % logicalGrid.getWidth();
+			        const auto y = i / logicalGrid.getWidth();
+			        std::println( "-> X: {}, Y: {}, count: {}", x, y, spatialCell.size() );
+			    }
+
+			    i++;
+			}*/
 		}
 	}
 }
