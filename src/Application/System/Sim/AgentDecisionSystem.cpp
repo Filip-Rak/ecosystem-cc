@@ -15,7 +15,7 @@ namespace cc::app
 {
 namespace
 {
-constexpr std::size_t maxPerception = 3;  // TODO: Put in preset.
+constexpr std::size_t maxPerception = 10;  // TODO: Put in preset.
 
 // TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
@@ -38,14 +38,14 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 }
 
 // TODO: Cheybyshev - consider Manhattan for better performance.
-auto nextStepUnsafe( std::ptrdiff_t gridWith, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
+auto nextStepUnsafe( std::ptrdiff_t gridWidth, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
 {
 	// TODO: Make a helper in Grid.hpp
-	auto x = pos / gridWith;
-	auto y = pos & gridWith;
+	auto x = pos / gridWidth;
+	auto y = pos % gridWidth;
 
-	const auto targetX = target & gridWith;
-	const auto targetY = target / gridWith;
+	const auto targetX = target / gridWidth;
+	const auto targetY = target % gridWidth;
 
 	const auto deltaX = targetX - x;
 	const auto deltaY = targetY - y;
@@ -54,7 +54,7 @@ auto nextStepUnsafe( std::ptrdiff_t gridWith, std::ptrdiff_t pos, std::ptrdiff_t
 	if ( deltaY != 0 ) y += ( deltaY > 0 ) ? 1 : -1;
 
 	// TODO: Make a helper in Grid.hpp
-	return ( y * gridWith ) + x;
+	return ( x * gridWidth ) + y;
 }
 }  // namespace
 
@@ -80,7 +80,7 @@ auto AgentDecisionSystem::update() -> void
 		// TODO: Expand.
 		// Pick cell with most food in range.
 
-		// Returns unsigned and its immediately casted to signed.
+		// FIXME: Returns unsigned and its immediately casted to signed.
 		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, position.cellIndex );
 		if ( position.cellIndex != bestIndex )
 		{

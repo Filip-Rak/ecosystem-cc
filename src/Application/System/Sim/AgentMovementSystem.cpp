@@ -16,12 +16,12 @@ AgentMovementSystem::AgentMovementSystem( entt::registry& registry ) : m_registr
 
 auto AgentMovementSystem::update() -> void
 {
-	auto& grid = m_registry.ctx().get< Grid >();
-	auto view  = m_registry.view< const component::NextMove, component::Position >();
+	auto& grid      = m_registry.ctx().get< Grid >();
+	const auto view = m_registry.view< component::Position, const component::NextMove >();
 
-	for ( const auto& [ entity, nextMove, position ] : view.each() )
+	for ( const auto& [ entity, position, nextMove ] : view.each() )
 	{
-		grid.moveEntity( entity, position.cellIndex, nextMove.targetCell );
+		grid.moveEntity( entity, position.cellIndex, nextMove.cellIndex );
 	}
 
 	m_registry.remove< component::NextMove >( view.begin(), view.end() );
