@@ -13,29 +13,43 @@ namespace cc::app
 class Grid
 {
 public:
+	struct Args
+	{
+		entt::registry& registry;
+		std::uint16_t width;
+		std::uint16_t height;
+
+		// Intended copies
+		std::vector< float > temperatureValues;
+		std::vector< float > humidityValues;
+		std::vector< float > elevationValues;
+	};
+
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;
-	Grid( entt::registry& registry, uint16_t width, uint16_t height );
+	Grid( const Args& args );
 
 	void moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell );
 
-	[[nodiscard]] auto getWidth() const -> uint16_t;
-	[[nodiscard]] auto getHeight() const -> uint16_t;
-	[[nodiscard]] auto getCellSize() const -> std::size_t;
-	[[nodiscard]] auto getSignedCellSize() const -> std::ptrdiff_t;
+	[[nodiscard]] auto getWidth() const -> std::uint16_t;
+	[[nodiscard]] auto getHeight() const -> std::uint16_t;
+	[[nodiscard]] auto getCellCount() const -> std::size_t;
+	[[nodiscard]] auto getSignedCellCount() const -> std::ptrdiff_t;
 
 	[[nodiscard]] auto getCells() const -> const std::vector< Cell >&;
 	[[nodiscard]] auto getSpatialGrid() const -> const SpatialGrid&;
+	[[nodiscard]] auto copyCreationArguments() const -> Args;
 
 	[[nodiscard]] auto cells() -> std::vector< Cell >&;
 
 private:
-	void addToSpatialGrid( entt::entity entity, std::size_t cellIndex );
-	void removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex );
+	auto addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void;
+	auto removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void;
 
-	const uint16_t m_width;
-	const uint16_t m_height;
-	const std::size_t m_cellSize;
-	const std::ptrdiff_t m_signedCellSize;
+	const Args m_creationArguments;
+	const std::uint16_t m_width;
+	const std::uint16_t m_height;
+	const std::size_t m_cellCount;
+	const std::ptrdiff_t m_signedCellCount;
 	entt::registry& m_registry;
 
 	std::vector< Cell > m_cells;

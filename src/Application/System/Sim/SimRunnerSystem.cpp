@@ -5,6 +5,7 @@
 #include <entt/entt.hpp>
 
 #include "Application/CLI/CLIOptions.hpp"
+#include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
@@ -17,7 +18,7 @@
 namespace cc::app
 {
 SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
-    : m_initialGrid( registry.ctx().get< Grid >() ), m_speedLimited( cliOptions.gui ), m_registry( registry )
+    : m_speedLimited( cliOptions.gui ), m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
@@ -88,8 +89,11 @@ auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time 
 
 auto SimRunnerSystem::onResetGrid( const event::ResetGrid& /*event*/ ) -> void
 {
+	m_registry.clear();
+
+	const auto gridArgs = m_registry.ctx().get< Grid >().copyCreationArguments();
 	m_registry.ctx().erase< Grid >();
-	m_registry.ctx().emplace< Grid >( m_initialGrid );
+	m_registry.ctx().emplace< Grid >( gridArgs );
 
 	auto& data         = m_registry.ctx().get< SimRunnerData >();
 	data.targetReached = false;

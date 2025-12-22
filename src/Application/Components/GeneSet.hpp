@@ -13,6 +13,6 @@ struct GeneSet
 	};
 
 	const Genes agentGenes;
-	const Genes futureGenes;
+	Genes futureGenes;
 };
 }  // namespace cc::app::component

@@ -15,7 +15,7 @@ namespace cc::app
 {
 namespace
 {
-constexpr std::size_t maxPerception = 10;  // TODO: Put in preset.
+constexpr std::size_t maxPerception = 3;  // TODO: Put in preset.
 
 // TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
@@ -41,11 +41,11 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 auto nextStepUnsafe( std::ptrdiff_t gridWidth, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
 {
 	// TODO: Make a helper in Grid.hpp
-	auto x = pos / gridWidth;
-	auto y = pos % gridWidth;
+	auto x = pos % gridWidth;
+	auto y = pos / gridWidth;
 
-	const auto targetX = target / gridWidth;
-	const auto targetY = target % gridWidth;
+	const auto targetX = target % gridWidth;
+	const auto targetY = target / gridWidth;
 
 	const auto deltaX = targetX - x;
 	const auto deltaY = targetY - y;
@@ -54,7 +54,7 @@ auto nextStepUnsafe( std::ptrdiff_t gridWidth, std::ptrdiff_t pos, std::ptrdiff_
 	if ( deltaY != 0 ) y += ( deltaY > 0 ) ? 1 : -1;
 
 	// TODO: Make a helper in Grid.hpp
-	return ( x * gridWidth ) + y;
+	return ( y * gridWidth ) + x;
 }
 }  // namespace
 
@@ -107,7 +107,7 @@ auto AgentDecisionSystem::bestCell( const Grid& grid, std::size_t perception, st
 		const auto newIndex = static_cast< std::ptrdiff_t >( cellIndex ) + offset;
 
 		// Clip at borders
-		if ( newIndex >= grid.getSignedCellSize() || newIndex < 0 )
+		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 )
 		{
 			continue;
 		}

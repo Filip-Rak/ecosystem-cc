@@ -8,19 +8,20 @@
 
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
 {
-Grid::Grid( entt::registry& registry, uint16_t width, uint16_t height )
-    : m_width( width ),
-      m_height( height ),
-      m_cellSize( static_cast< std::size_t >( width ) * height ),
-      m_signedCellSize( static_cast< std::ptrdiff_t >( width ) * height ),
-      m_registry( registry )
+Grid::Grid( const Args& args )
+    : m_creationArguments( args ),
+      m_width( args.width ),
+      m_height( args.height ),
+      m_cellCount( static_cast< std::size_t >( args.width ) * args.height ),
+      m_signedCellCount( static_cast< std::ptrdiff_t >( args.width ) * args.height ),
+      m_registry( args.registry )
 {
-	const auto cellCount = static_cast< std::size_t >( m_signedCellSize );
-	m_spatialGrid.resize( cellCount );
-	m_cells.reserve( cellCount );
+	m_spatialGrid.resize( m_cellCount );
+	m_cells.reserve( m_cellCount );
 
 	const auto initialGenes   = component::GeneSet::Genes{ .maxEnergy = 100.f, .perception = 2uz };
 	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
@@ -28,13 +29,23 @@ Grid::Grid( entt::registry& registry, uint16_t width, uint16_t height )
 	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
 	{
 		auto& spatialCell  = m_spatialGrid[ index ];
-		const auto& entity = registry.create();
+		const auto& entity = m_registry.create();
 
-		registry.emplace< component::GeneSet >( entity, initialGeneSet );
-		registry.emplace< component::Position >( entity );
+		m_registry.emplace< component::GeneSet >( entity, initialGeneSet );
+		m_registry.emplace< component::Position >( entity );
 
 		spatialCell.reserve( 4 );
 		addToSpatialGrid( entity, index );
+	}
+
+	const Preset::Vegetation& vegetationPreset = m_registry.ctx().get< Preset >().vegetation;
+	for ( std::size_t index = 0; index < m_cellCount; index++ )
+	{
+		const float cellTemperature = args.temperatureValues[ index ];
+		const float cellHumidity    = args.humidityValues[ index ];
+		const float cellElevation   = args.elevationValues[ index ];
+
+		m_cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
 	}
 }
 
@@ -45,24 +56,24 @@ void Grid::moveEntity( entt::entity entity, std::size_t currentCell, std::size_t
 	addToSpatialGrid( entity, targetCell );
 }
 
-auto Grid::getWidth() const -> uint16_t
+auto Grid::getWidth() const -> std::uint16_t
 {
 	return m_width;
 }
 
-auto Grid::getHeight() const -> uint16_t
+auto Grid::getHeight() const -> std::uint16_t
 {
 	return m_height;
 }
 
-auto Grid::getCellSize() const -> std::size_t
+auto Grid::getCellCount() const -> std::size_t
 {
-	return m_cellSize;
+	return m_cellCount;
 }
 
-auto Grid::getSignedCellSize() const -> std::ptrdiff_t
+auto Grid::getSignedCellCount() const -> std::ptrdiff_t
 {
-	return m_signedCellSize;
+	return m_signedCellCount;
 }
 
 auto Grid::getCells() const -> const std::vector< Cell >&
@@ -75,12 +86,17 @@ auto Grid::getSpatialGrid() const -> const SpatialGrid&
 	return m_spatialGrid;
 }
 
+auto Grid::copyCreationArguments() const -> Args
+{
+	return m_creationArguments;
+}
+
 auto Grid::cells() -> std::vector< Cell >&
 {
 	return m_cells;
 }
 
-void Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex )
+auto Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void
 {
 	auto& bucket   = m_spatialGrid[ cellIndex ];
 	auto& position = m_registry.get< component::Position >( entity );
@@ -90,12 +106,11 @@ void Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex )
 	bucket.push_back( entity );
 }
 
-void Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex )
+auto Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void
 {
 	auto& bucket      = m_spatialGrid[ cellIndex ];
 	auto& targetIndex = m_registry.get< component::Position >( targetEntity ).spatialIndex;
 
-	// FIXME: Will fail after restart - fix restart to reset buckets.
 	assert( targetIndex < bucket.size() );
 	assert( bucket[ targetIndex ] == targetEntity );
 

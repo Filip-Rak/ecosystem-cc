@@ -4,7 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "Application/ContextEntity/Grid.hpp"
+#include <entt/fwd.hpp>
+
 #include "Engine/Interface/ISystem.hpp"
 
 namespace cc
@@ -35,12 +36,10 @@ private:
 	auto shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool;
 	auto onResetGrid( const event::ResetGrid& event ) -> void;
 
-	const Grid m_initialGrid;
 	const bool m_speedLimited;
-
 	entt::registry& m_registry;
 	std::vector< std::unique_ptr< ISystem > > m_simSystems;
-	std::size_t m_iteration = 0;
+	std::size_t m_iteration     = 0;
 	float m_timeSinceLastUpdate = 0.f;
 };
 }  // namespace cc::app

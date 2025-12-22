@@ -12,7 +12,6 @@
 
 #include "Application/Constants/CellConstants.hpp"
 #include "Application/ContextEntity/Grid.hpp"
-#include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
 {
@@ -115,18 +114,12 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	// clang-format on
 
 	assert( registry.ctx().contains< Preset >() );
-	const Preset::Vegetation& vegetationPreset = registry.ctx().get< Preset >().vegetation;
-	auto grid                                  = Grid( registry, validDimensions.x, validDimensions.y );
-	auto& cells                                = grid.cells();
-
-	for ( std::size_t index = 0; index < grid.getCellSize(); index++ )
-	{
-		const float cellTemperature = temperatureLayer->values[ index ];
-		const float cellElevation   = elevationLayer->values[ index ];
-		const float cellHumidity    = humidityLayer->values[ index ];
-
-		cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
-	}
+	auto grid = Grid( { .registry          = registry,
+	                    .width             = static_cast< uint16_t >( validDimensions.x ),
+	                    .height            = static_cast< uint16_t >( validDimensions.y ),
+	                    .temperatureValues = temperatureLayer->values,
+	                    .humidityValues    = humidityLayer->values,
+	                    .elevationValues   = elevationLayer->values } );
 
 	registry.ctx().emplace< Grid >( std::move( grid ) );
 	return std::nullopt;

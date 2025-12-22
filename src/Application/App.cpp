@@ -81,7 +81,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 
 		const auto& grid = registry.ctx().get< Grid >();
 
-		registry.ctx().emplace< VisualGrid >( grid.getWidth(), grid.getHeight(), grid.getCellSize() );
+		registry.ctx().emplace< VisualGrid >( grid.getWidth(), grid.getHeight(), grid.getCellCount() );
 		registry.ctx().emplace< UIConfig >();
 	}
 
