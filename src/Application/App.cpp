@@ -67,11 +67,13 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	registry.ctx().emplace< Preset >( preset );
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 
-	const auto readingError = readGridFromDirectory( registry, preset.gridDirectoryPath );
-	if ( readingError )
+	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
+	if ( !gridArgs )
 	{
-		return "-> Couldn't load the grid\n" + *readingError;
+		return "-> Couldn't load the grid\n" + gridArgs.error();
 	}
+
+	Grid grid( gridArgs.value() );
 
 	if ( m_cliOptions.gui )
 	{
@@ -79,11 +81,11 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
 		camera.position = glm::vec2{ CameraPosition };
 
-		const auto& grid = registry.ctx().get< Grid >();
-
 		registry.ctx().emplace< VisualGrid >( grid.getWidth(), grid.getHeight(), grid.getCellCount() );
 		registry.ctx().emplace< UIConfig >();
 	}
+
+	registry.ctx().emplace< Grid >( std::move( grid ) );
 
 	return std::nullopt;
 }

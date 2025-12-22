@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <expected>
 #include <format>
+#include <optional>
 #include <vector>
 
 #include <entt/entt.hpp>
@@ -11,7 +12,6 @@
 #include <stb_image.h>
 
 #include "Application/Constants/CellConstants.hpp"
-#include "Application/ContextEntity/Grid.hpp"
 
 namespace cc::app
 {
@@ -70,7 +70,8 @@ constexpr float grayscaleRange         = 1.f;
 	return layer;
 }
 }  // namespace
-auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path ) -> std::optional< ReadError >
+auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path )
+    -> std::expected< Grid::Args, ReadError >
 {
 	constexpr const auto& constant = constant::cell;
 
@@ -83,7 +84,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !temperatureLayer )
 	{
-		return temperatureLayer.error();
+		return std::unexpected(temperatureLayer.error());
 	}
 
 	const glm::ivec2 validDimensions = { temperatureLayer->width, temperatureLayer->height };
@@ -97,7 +98,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !elevationLayer )
 	{
-		return elevationLayer.error();
+		return std::unexpected(elevationLayer.error());
 	}
 
 	const auto humidityLayer =
@@ -109,19 +110,16 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !humidityLayer )
 	{
-		return humidityLayer.error();
+		return std::unexpected(humidityLayer.error());
 	}
 	// clang-format on
 
-	assert( registry.ctx().contains< Preset >() );
-	auto grid = Grid( { .registry          = registry,
-	                    .width             = static_cast< uint16_t >( validDimensions.x ),
-	                    .height            = static_cast< uint16_t >( validDimensions.y ),
-	                    .temperatureValues = temperatureLayer->values,
-	                    .humidityValues    = humidityLayer->values,
-	                    .elevationValues   = elevationLayer->values } );
-
-	registry.ctx().emplace< Grid >( std::move( grid ) );
-	return std::nullopt;
+	Grid::Args args{ .registry          = registry,
+	                 .width             = static_cast< uint16_t >( validDimensions.x ),
+	                 .height            = static_cast< uint16_t >( validDimensions.y ),
+	                 .temperatureValues = temperatureLayer->values,
+	                 .humidityValues    = humidityLayer->values,
+	                 .elevationValues   = elevationLayer->values };
+	return args;
 }
 }  // namespace cc::app
