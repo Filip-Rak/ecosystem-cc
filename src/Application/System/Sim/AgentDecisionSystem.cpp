@@ -38,23 +38,18 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 }
 
 // TODO: Cheybyshev - consider Manhattan for better performance.
-auto nextStepUnsafe( std::ptrdiff_t gridWidth, std::ptrdiff_t pos, std::ptrdiff_t target ) -> std::size_t
+auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targetIndex ) -> std::size_t
 {
-	// TODO: Make a helper in Grid.hpp
-	auto x = pos % gridWidth;
-	auto y = pos / gridWidth;
+	auto startPosition        = grid.indexToPosition( startIndex );
+	const auto targetPosition = grid.indexToPosition( targetIndex );
 
-	const auto targetX = target % gridWidth;
-	const auto targetY = target / gridWidth;
+	const auto deltaX = targetPosition.x - startPosition.x;
+	const auto deltaY = targetPosition.y - startPosition.y;
 
-	const auto deltaX = targetX - x;
-	const auto deltaY = targetY - y;
+	if ( deltaX != 0 ) startPosition.x += ( deltaX > 0 ) ? 1 : -1;
+	if ( deltaY != 0 ) startPosition.y += ( deltaY > 0 ) ? 1 : -1;
 
-	if ( deltaX != 0 ) x += ( deltaX > 0 ) ? 1 : -1;
-	if ( deltaY != 0 ) y += ( deltaY > 0 ) ? 1 : -1;
-
-	// TODO: Make a helper in Grid.hpp
-	return ( y * gridWidth ) + x;
+	return grid.PositionToIndex( startPosition );
 }
 }  // namespace
 
@@ -84,10 +79,7 @@ auto AgentDecisionSystem::update() -> void
 		const auto bestIndex = bestCell( grid, geneSet.agentGenes.perception, position.cellIndex );
 		if ( position.cellIndex != bestIndex )
 		{
-			const auto signedIndex     = static_cast< ptrdiff_t >( position.cellIndex );
-			const auto signedBestIndex = static_cast< ptrdiff_t >( bestIndex );
-			const auto stepIndex       = nextStepUnsafe( grid.getWidth(), signedIndex, signedBestIndex );
-
+			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, bestIndex );
 			m_registry.emplace_or_replace< component::NextMove >( entity, stepIndex );
 		}
 	}

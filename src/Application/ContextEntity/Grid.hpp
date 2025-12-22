@@ -13,22 +13,32 @@ namespace cc::app
 class Grid
 {
 public:
+	struct Position
+	{
+		std::ptrdiff_t x;
+		std::ptrdiff_t y;
+	};
+
 	struct Args
 	{
 		entt::registry& registry;
-		std::uint16_t width;
-		std::uint16_t height;
+		const std::uint16_t width;
+		const std::uint16_t height;
 
 		// Intended copies
-		std::vector< float > temperatureValues;
-		std::vector< float > humidityValues;
-		std::vector< float > elevationValues;
+		const std::vector< float > temperatureValues;
+		const std::vector< float > humidityValues;
+		const std::vector< float > elevationValues;
 	};
 
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;
 	Grid( const Args& args );
 
 	void moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell );
+
+	[[nodiscard]] auto indexToPosition( std::size_t index ) const -> Position;
+	[[nodiscard]] auto PositionToIndex( ptrdiff_t x, ptrdiff_t y ) const -> std::size_t;
+	[[nodiscard]] auto PositionToIndex( Position position ) const -> std::size_t;
 
 	[[nodiscard]] auto getWidth() const -> std::uint16_t;
 	[[nodiscard]] auto getHeight() const -> std::uint16_t;

@@ -56,6 +56,21 @@ void Grid::moveEntity( entt::entity entity, std::size_t currentCell, std::size_t
 	addToSpatialGrid( entity, targetCell );
 }
 
+auto Grid::indexToPosition( std::size_t index ) const -> Position
+{
+	return { .x = static_cast< ptrdiff_t >( index % m_width ), .y = static_cast< ptrdiff_t >( index / m_width ) };
+}
+
+auto Grid::PositionToIndex( ptrdiff_t x, ptrdiff_t y ) const -> std::size_t
+{
+	return ( y * m_width ) + x;
+}
+
+auto Grid::PositionToIndex( Position position ) const -> std::size_t
+{
+	return PositionToIndex( position.x, position.y );
+}
+
 auto Grid::getWidth() const -> std::uint16_t
 {
 	return m_width;
