@@ -45,7 +45,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 
 		if ( const auto cellPos = visualGrid.cellPositionUnderMouse; cellPos )
 		{
-			const auto cellIndex      = ( cellPos->y * visualGrid.Height ) + cellPos->x;
+			const auto cellIndex      = ( cellPos->y * visualGrid.height ) + cellPos->x;
 			const auto cellPopulation = spatialGrid[ cellIndex ].size();
 			const Cell& cell          = cells[ cellIndex ];
 			const auto totalPopulation =

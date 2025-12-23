@@ -23,17 +23,17 @@ namespace
 auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> GridHandle
 {
 	assert( registry.ctx().contains< Grid >() );
-	const auto& logicalGrid = registry.ctx().get< Grid >();
+	const auto& visualGrid = registry.ctx().get< VisualGrid >();
 
-	const uint16_t width  = logicalGrid.getWidth();
-	const uint16_t height = logicalGrid.getHeight();
+	const uint16_t width  = visualGrid.width;
+	const uint16_t height = visualGrid.height;
 
-	constexpr float CellSize   = 4.f;
-	const float verticalSize   = static_cast< float >( width ) * CellSize;
-	const float horizontalSize = static_cast< float >( height ) * CellSize;
+	constexpr float cellSize   = 4.f;
+	const float verticalSize   = static_cast< float >( width ) * cellSize;
+	const float horizontalSize = static_cast< float >( height ) * cellSize;
 	const glm::vec2 position{ -( verticalSize / 2.f ), -( horizontalSize / 2.f ) };
 
-	return renderer.createGrid( width, height, position, CellSize );
+	return renderer.createGrid( width, height, position, cellSize );
 }
 
 template < auto CellPropertyPtr >

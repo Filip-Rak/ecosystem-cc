@@ -74,6 +74,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	}
 
 	Grid grid( gridArgs.value() );
+	registry.ctx().emplace< Grid >( std::move( grid ) );
 
 	if ( m_cliOptions.gui )
 	{
@@ -81,11 +82,9 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
 		camera.position = glm::vec2{ CameraPosition };
 
-		registry.ctx().emplace< VisualGrid >( grid.getWidth(), grid.getHeight(), grid.getCellCount() );
+		registry.ctx().emplace< VisualGrid >( gridArgs->width, gridArgs->height );
 		registry.ctx().emplace< UIConfig >();
 	}
-
-	registry.ctx().emplace< Grid >( std::move( grid ) );
 
 	return std::nullopt;
 }

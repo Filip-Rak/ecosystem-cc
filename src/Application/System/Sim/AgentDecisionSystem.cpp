@@ -29,7 +29,7 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 	{
 		for ( auto dx = -signedRange; dx <= signedRange; dx++ )
 		{
-			const auto index = ( dy * grid.getWidth() ) + dx;
+			const auto index = grid.PositionToIndex( dx, dy );
 			offsets.emplace_back( index );
 		}
 	}
