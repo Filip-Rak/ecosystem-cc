@@ -1,15 +1,14 @@
 #include "Application/System/Sim/AgentDecisionSystem.hpp"
 
 #include <cassert>
-
 #include <cstddef>
+
 #include <entt/entt.hpp>
 
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/NextMove.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/ContextEntity/Grid.hpp"
-#include "entt/entity/fwd.hpp"
 
 namespace cc::app
 {
@@ -25,11 +24,11 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 	offsets.reserve( side * side );
 
 	const auto signedRange = static_cast< std::ptrdiff_t >( range );
-	for ( auto dy = -signedRange; dy <= signedRange; dy++ )
+	for ( auto deltaY = -signedRange; deltaY <= signedRange; deltaY++ )
 	{
-		for ( auto dx = -signedRange; dx <= signedRange; dx++ )
+		for ( auto deltaX = -signedRange; deltaX <= signedRange; deltaX++ )
 		{
-			const auto index = grid.PositionToIndex( dx, dy );
+			const auto index = grid.PositionToIndex( deltaX, deltaY );
 			offsets.emplace_back( index );
 		}
 	}

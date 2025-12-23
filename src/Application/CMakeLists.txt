@@ -7,6 +7,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/System/InputSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/RenderSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentDecisionSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentFeedingSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentMovementSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/CLILoggerSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/SimRunnerSystem.cpp

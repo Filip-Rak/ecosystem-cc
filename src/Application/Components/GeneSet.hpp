@@ -8,7 +8,7 @@ struct GeneSet
 {
 	struct Genes
 	{
-		float maxEnergy        = 100.f;
+		float maxEnergy        = 1.f;
 		std::size_t perception = 2uz;
 	};
 

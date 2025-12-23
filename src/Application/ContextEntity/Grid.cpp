@@ -8,6 +8,7 @@
 
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
+#include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
@@ -23,8 +24,9 @@ Grid::Grid( const Args& args )
 	m_spatialGrid.resize( m_cellCount );
 	m_cells.reserve( m_cellCount );
 
-	const auto initialGenes   = component::GeneSet::Genes{ .maxEnergy = 100.f, .perception = 2uz };
-	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
+	constexpr auto initialGenes   = component::GeneSet::Genes{};
+	constexpr auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
+	constexpr auto initialEnergy  = initialGeneSet.agentGenes.maxEnergy;
 
 	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
 	{
@@ -32,9 +34,11 @@ Grid::Grid( const Args& args )
 		const auto& entity = m_registry.create();
 
 		m_registry.emplace< component::GeneSet >( entity, initialGeneSet );
+		m_registry.emplace< component::Vitals >( entity, initialEnergy );
 		m_registry.emplace< component::Position >( entity );
 
-		spatialCell.reserve( 4 );
+		constexpr auto preallocatedEntities = 4uz;
+		spatialCell.reserve( preallocatedEntities );
 		addToSpatialGrid( entity, index );
 	}
 

@@ -1,0 +1,36 @@
+#include "Application/System/Sim/AgentFeedingSystem.hpp"
+
+#include <algorithm>
+#include <cassert>
+#include <entt/entt.hpp>
+
+#include "Application/Components/GeneSet.hpp"
+#include "Application/Components/Position.hpp"
+#include "Application/Components/Vitals.hpp"
+#include "Application/ContextEntity/Grid.hpp"
+
+namespace cc::app
+{
+AgentFeedingSystem::AgentFeedingSystem( entt::registry& registry ) : m_registry( registry )
+{
+	assert( m_registry.ctx().contains< Grid >() );
+}
+
+auto AgentFeedingSystem::update() -> void
+{
+	auto& grid  = m_registry.ctx().get< Grid >();
+	auto& cells = grid.cells();
+
+	const auto view = m_registry.view< const component::Position, const component::GeneSet, component::Vitals >();
+	for ( const auto [ entity, position, geneSet, vitals ] : view.each() )
+	{
+		auto& vegetation          = cells[ position.cellIndex ].vegetation;
+		constexpr float maxIntake = 0.2f;
+		const float hunger        = geneSet.agentGenes.maxEnergy - vitals.energy;
+
+		const float eaten = std::min( { maxIntake, vegetation, hunger } );
+		vegetation -= eaten;
+		vitals.energy += eaten;
+	}
+}
+}  // namespace cc::app
