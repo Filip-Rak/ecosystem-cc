@@ -6,6 +6,7 @@
 
 #include <entt/entt.hpp>
 
+#include "Application/Components/EatIntent.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
 #include "Application/Components/Position.hpp"
@@ -164,7 +165,11 @@ auto AgentDecisionSystem::update() -> void
 		assert( geneSet.agentGenes.perception <= m_maxPerception );
 
 		const auto result = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
-		if ( position.cellIndex != result.index )
+		if ( position.cellIndex == result.index )
+		{
+			m_registry.emplace_or_replace< component::EatIntent >( entity );
+		}
+		else
 		{
 			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, result.index );
 			m_registry.emplace_or_replace< component::MoveIntent >( entity, stepIndex, result.movementCost );

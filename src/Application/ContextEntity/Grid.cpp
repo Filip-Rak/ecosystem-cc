@@ -16,15 +16,14 @@ namespace cc::app
 {
 namespace
 {
-auto mutateGenes( const Genes& genes, const float maxShift = 0.0f ) -> Genes
+auto mutateGenes( const Genes& genes, const float maxShift = 0.5f ) -> Genes
 {
 	static std::random_device rd;
 	static std::mt19937 gen( rd() );
 	std::uniform_real_distribution< float > dist( -maxShift, maxShift );
 
 	Genes newGenes = genes;
-
-	auto mutate = [ & ]( float value ) -> float { return std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
+	auto mutate    = [ & ]( float value ) -> float { return std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
 
 	mutate( newGenes.maxEnergy );
 	mutate( newGenes.temperaturePreference );
