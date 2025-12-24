@@ -9,7 +9,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "Application/Components/GeneSet.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
