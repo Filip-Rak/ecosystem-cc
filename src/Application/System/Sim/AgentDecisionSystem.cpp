@@ -6,7 +6,7 @@
 #include <entt/entt.hpp>
 
 #include "Application/Components/GeneSet.hpp"
-#include "Application/Components/NextMove.hpp"
+#include "Application/Components/MoveIntent.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
@@ -85,7 +85,7 @@ auto AgentDecisionSystem::update() -> void
 		if ( position.cellIndex != bestIndex )
 		{
 			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, bestIndex );
-			m_registry.emplace_or_replace< component::NextMove >( entity, stepIndex );
+			m_registry.emplace_or_replace< component::MoveIntent >( entity, stepIndex );
 		}
 	}
 }
