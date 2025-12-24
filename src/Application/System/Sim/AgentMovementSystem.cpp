@@ -17,15 +17,17 @@ AgentMovementSystem::AgentMovementSystem( entt::registry& registry ) : m_registr
 
 auto AgentMovementSystem::update() -> void
 {
-	auto& grid      = m_registry.ctx().get< Grid >();
+	auto& grid              = m_registry.ctx().get< Grid >();
+	const auto& spatialGrid = m_registry.ctx().get< Grid >().getSpatialGrid();
 	const auto view = m_registry.view< const component::MoveIntent, const component::Position, component::Vitals >();
 
 	for ( const auto& [ entity, moveIntent, position, vitals ] : view.each() )
 	{
-		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );
+		constexpr std::size_t cellAgentLimit = 1;
+		if ( spatialGrid[ moveIntent.cellIndex ].size() >= cellAgentLimit ) continue;
 
-		constexpr float energyTax = 0.05f;
-		vitals.energy -= energyTax;
+		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );
+		vitals.energy -= moveIntent.movemementCost;
 	}
 
 	m_registry.remove< component::MoveIntent >( view.begin(), view.end() );

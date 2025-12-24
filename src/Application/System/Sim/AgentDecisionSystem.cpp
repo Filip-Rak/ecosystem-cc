@@ -66,7 +66,7 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
                    float baseCost ) -> float
 {
 	float totalCost   = 0.f;
-	const auto& cells = grid.getCells();
+	const auto& cells = grid.cells();
 
 	std::size_t currentPos = startPos;
 	while ( currentPos != targetPos )
@@ -78,11 +78,17 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	return totalCost;
 }
 
+struct BestCell
+{
+	std::size_t index;
+	float movementCost;
+};
+
 auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vitals& vitals, const Preset& preset,
                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, const std::size_t cellIndex )
-    -> std::size_t
+    -> BestCell
 {
-	const auto& cells              = grid.getCells();
+	const auto& cells              = grid.cells();
 	const auto& spatialCells       = grid.getSpatialGrid();
 	const auto perception          = agentGenes.perception;
 	const auto startingCell        = static_cast< std::ptrdiff_t >( cellIndex );
@@ -90,8 +96,8 @@ auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vital
 
 	assert( cellIndex < cells.size() );
 
-	std::size_t bestCell = cellIndex;
-	float bestScore      = -std::numeric_limits< float >::infinity();
+	BestCell bestCell{ .index = cellIndex, .movementCost = 0 };
+	float bestScore = -std::numeric_limits< float >::infinity();
 
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
@@ -114,8 +120,9 @@ auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vital
 		const float score = foodScore - crowdScore - moveCost;
 		if ( score > bestScore )
 		{
-			bestScore = score;
-			bestCell  = newIndexUnsigned;
+			bestScore             = score;
+			bestCell.index        = newIndexUnsigned;
+			bestCell.movementCost = moveCost;
 		}
 	}
 
@@ -156,11 +163,11 @@ auto AgentDecisionSystem::update() -> void
 
 		assert( geneSet.agentGenes.perception <= m_maxPerception );
 
-		const auto bestIndex = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
-		if ( position.cellIndex != bestIndex )
+		const auto result = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
+		if ( position.cellIndex != result.index )
 		{
-			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, bestIndex );
-			m_registry.emplace_or_replace< component::MoveIntent >( entity, stepIndex );
+			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, result.index );
+			m_registry.emplace_or_replace< component::MoveIntent >( entity, stepIndex, result.movementCost );
 		}
 	}
 }

@@ -40,7 +40,7 @@ template < auto CellPropertyPtr >
 auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float propertyRange,
                     const constant::Visual_t::VisMode_t& visMode ) -> void
 {
-	const auto& cells = grid.getCells();
+	const auto& cells = grid.cells();
 	for ( std::size_t index = 0; index < cells.size(); index++ )
 	{
 		const Cell& cell = cells[ index ];

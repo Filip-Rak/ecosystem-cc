@@ -41,7 +41,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 
 		auto& logicalGrid       = registry.ctx().get< Grid >();
 		const auto& spatialGrid = logicalGrid.getSpatialGrid();
-		const auto& cells       = logicalGrid.getCells();
+		const auto& cells       = logicalGrid.cells();
 
 		if ( const auto cellPos = visualGrid.cellPositionUnderMouse; cellPos )
 		{

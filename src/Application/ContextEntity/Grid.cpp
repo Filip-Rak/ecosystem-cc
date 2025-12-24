@@ -16,7 +16,7 @@ namespace cc::app
 {
 namespace
 {
-auto mutateGenes( const Genes& genes, const float maxShift = 0.5f ) -> Genes
+auto mutateGenes( const Genes& genes, const float maxShift = 0.0f ) -> Genes
 {
 	static std::random_device rd;
 	static std::mt19937 gen( rd() );
@@ -127,11 +127,6 @@ auto Grid::getSignedCellCount() const -> std::ptrdiff_t
 	return m_signedCellCount;
 }
 
-auto Grid::getCells() const -> const std::vector< Cell >&
-{
-	return m_cells;
-}
-
 auto Grid::getSpatialGrid() const -> const SpatialGrid&
 {
 	return m_spatialGrid;
@@ -143,6 +138,11 @@ auto Grid::copyCreationArguments() const -> Args
 }
 
 auto Grid::cells() -> std::vector< Cell >&
+{
+	return m_cells;
+}
+
+auto Grid::cells() const -> const std::vector< Cell >&
 {
 	return m_cells;
 }

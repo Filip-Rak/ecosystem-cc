@@ -45,11 +45,11 @@ public:
 	[[nodiscard]] auto getCellCount() const -> std::size_t;
 	[[nodiscard]] auto getSignedCellCount() const -> std::ptrdiff_t;
 
-	[[nodiscard]] auto getCells() const -> const std::vector< Cell >&;
 	[[nodiscard]] auto getSpatialGrid() const -> const SpatialGrid&;
 	[[nodiscard]] auto copyCreationArguments() const -> Args;
 
 	[[nodiscard]] auto cells() -> std::vector< Cell >&;
+	[[nodiscard]] auto cells() const -> const std::vector< Cell >&;
 
 private:
 	auto addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void;
