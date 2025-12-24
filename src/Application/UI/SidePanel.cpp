@@ -20,7 +20,7 @@ namespace cc::app
 namespace
 {
 constexpr const auto& Constants = constant::UI.SidePanel;
-constexpr const auto& Labels = Constants.WidgetLabels;
+constexpr const auto& Labels    = Constants.WidgetLabels;
 
 auto toImGui( Color color ) -> ImU32
 {
@@ -29,15 +29,15 @@ auto toImGui( Color color ) -> ImU32
 
 auto setProperties( entt::registry& registry )
 {
-	const auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	const auto& panelWidth = panelConfig.width;
+	const auto& panelConfig    = registry.ctx().get< UIConfig >().sidePanel;
+	const auto& panelWidth     = panelConfig.width;
 	const auto* const ViewPort = ImGui::GetMainViewport();
 
 	constexpr float StatusBarHeight = constant::UI.StatusBar.Height;
-	const float PanelTop = ViewPort->WorkPos.y;
-	const float PanelLeft = ViewPort->WorkPos.x + ViewPort->WorkSize.x - panelWidth;
-	const float UiScale = ImGui::GetIO().FontGlobalScale;
-	const float PanelHeight = ViewPort->WorkSize.y - ( StatusBarHeight * UiScale );
+	const float PanelTop            = ViewPort->WorkPos.y;
+	const float PanelLeft           = ViewPort->WorkPos.x + ViewPort->WorkSize.x - panelWidth;
+	const float UiScale             = ImGui::GetIO().FontGlobalScale;
+	const float PanelHeight         = ViewPort->WorkSize.y - ( StatusBarHeight * UiScale );
 
 	ImGui::SetNextWindowPos( ImVec2{ PanelLeft, PanelTop }, ImGuiCond_Always );
 	ImGui::SetNextWindowSize( ImVec2{ panelWidth, PanelHeight }, ImGuiCond_Always );
@@ -46,12 +46,12 @@ auto setProperties( entt::registry& registry )
 auto drawContents( entt::registry& registry ) -> void
 {
 	constexpr const auto& Contents = Constants.Contents;
-	constexpr const auto& Visual = constant::Visual;
-	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	auto& cam = registry.ctx().get< Camera >();
+	constexpr const auto& Visual   = constant::Visual;
+	auto& panelConfig              = registry.ctx().get< UIConfig >().sidePanel;
+	auto& cam                      = registry.ctx().get< Camera >();
 
 	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
-	auto& preset = registry.ctx().get< Preset >();
+	auto& preset        = registry.ctx().get< Preset >();
 
 	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
 
@@ -103,8 +103,8 @@ auto drawContents( entt::registry& registry ) -> void
 		dispatcher.enqueue< cc::event::GUIResized >();
 	}
 
-	VisModeEnum& currentVisMode = registry.ctx().get< VisualGrid >().visMode;
-	auto currentVisModeInt = static_cast< int >( currentVisMode );
+	VisModeEnum& currentVisMode       = registry.ctx().get< VisualGrid >().visMode;
+	auto currentVisModeInt            = static_cast< int >( currentVisMode );
 	constexpr const auto& VisModesArr = app::constant::Visual.VisModes.Array;
 
 	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(), app::constant::getVisModeData( currentVisMode ).Name.data() ) )
@@ -115,7 +115,7 @@ auto drawContents( entt::registry& registry ) -> void
 			if ( ImGui::Selectable( mode.Name.data(), isSelected ) )
 			{
 				currentVisModeInt = index;
-				currentVisMode = static_cast< VisModeEnum >( currentVisModeInt );
+				currentVisMode    = static_cast< VisModeEnum >( currentVisModeInt );
 			}
 			if ( isSelected ) ImGui::SetItemDefaultFocus();
 
@@ -127,7 +127,7 @@ auto drawContents( entt::registry& registry ) -> void
 	{
 		const auto visModeData = VisModesArr[ currentVisModeInt ];
 
-		const ImU32 leftColor = toImGui( visModeData.LowEndColor );
+		const ImU32 leftColor  = toImGui( visModeData.LowEndColor );
 		const ImU32 rightColor = toImGui( visModeData.HighEndColor );
 
 		const float boxWidth = ImGui::GetContentRegionAvail().x * Constants.ScrollablePanel.DefaultWidgetWidthFactor;
@@ -139,13 +139,13 @@ auto drawContents( entt::registry& registry ) -> void
 		                                   leftColor, rightColor, rightColor, leftColor );
 		ImGui::Dummy( boxSize );
 
-		const auto* const leftLabel = visModeData.LowEndName.data();
+		const auto* const leftLabel  = visModeData.LowEndName.data();
 		const auto* const rightLabel = visModeData.HighEndName.data();
 
 		ImGui::TextUnformatted( leftLabel );
 
-		const float leftTextWidth = ImGui::CalcTextSize( leftLabel ).x;
-		const float rightTextWidth = ImGui::CalcTextSize( rightLabel ).x;
+		const float leftTextWidth   = ImGui::CalcTextSize( leftLabel ).x;
+		const float rightTextWidth  = ImGui::CalcTextSize( rightLabel ).x;
 		const float rightTextBeginX = boxWidth - rightTextWidth;
 
 		const float minimumDistX = Contents.LegendLabelsMinDistX * uiScale;

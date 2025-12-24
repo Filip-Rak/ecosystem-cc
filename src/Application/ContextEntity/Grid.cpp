@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstddef>
 #include <limits>
+#include <random>
 
 #include <entt/entt.hpp>
 
@@ -13,6 +14,27 @@
 
 namespace cc::app
 {
+namespace
+{
+auto mutateGenes( const Genes& genes, const float maxShift = 0.5f ) -> Genes
+{
+	static std::random_device rd;
+	static std::mt19937 gen( rd() );
+	std::uniform_real_distribution< float > dist( -maxShift, maxShift );
+
+	Genes newGenes = genes;
+
+	auto mutate = [ & ]( float value ) -> float { return std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
+
+	mutate( newGenes.maxEnergy );
+	mutate( newGenes.temperaturePreference );
+	mutate( newGenes.humidityPreference );
+	mutate( newGenes.elevationPreference );
+
+	return newGenes;
+}
+}  // namespace
+
 Grid::Grid( const Args& args )
     : m_creationArguments( args ),
       m_width( args.width ),
@@ -23,30 +45,9 @@ Grid::Grid( const Args& args )
 {
 	assert( m_registry.ctx().contains< Preset >() );
 
-	const auto initialGenes   = m_registry.ctx().get< Preset >().agent.initialGenes;
-	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
-	const auto initialEnergy  = initialGeneSet.agentGenes.maxEnergy;
-
+	// Create cells
 	m_spatialGrid.resize( m_cellCount );
 	m_cells.reserve( m_cellCount );
-
-	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
-	{
-		auto& spatialCell                   = m_spatialGrid[ index ];
-		constexpr auto preallocatedEntities = 4uz;
-		spatialCell.reserve( preallocatedEntities );
-
-		constexpr auto agentCountDivisor = 10uz;
-		if ( index % agentCountDivisor == 0 )
-		{
-			const auto& entity = m_registry.create();
-			m_registry.emplace< component::GeneSet >( entity, initialGeneSet );
-			m_registry.emplace< component::Vitals >( entity, initialEnergy );
-			m_registry.emplace< component::Position >( entity );
-
-			addToSpatialGrid( entity, index );
-		}
-	}
 
 	const Preset::Vegetation& vegetationPreset = m_registry.ctx().get< Preset >().vegetation;
 	for ( std::size_t index = 0; index < m_cellCount; index++ )
@@ -56,6 +57,31 @@ Grid::Grid( const Args& args )
 		const float cellElevation   = args.elevationValues[ index ];
 
 		m_cells.emplace_back( 0.f, cellTemperature, cellElevation, cellHumidity, vegetationPreset );
+	}
+
+	// Create agents
+	const auto initialGenes = m_registry.ctx().get< Preset >().agent.initialGenes;
+
+	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
+	{
+		auto& spatialCell                   = m_spatialGrid[ index ];
+		constexpr auto preallocatedEntities = 4uz;
+		spatialCell.reserve( preallocatedEntities );
+
+		const std::size_t agentCount        = 100;
+		const std::size_t agentCountDivisor = m_cellCount / agentCount;
+		if ( index % agentCountDivisor == 0 )
+		{
+			const auto& entity = m_registry.create();
+
+			const auto randomizedGenes = mutateGenes( initialGenes );
+
+			m_registry.emplace< component::GeneSet >( entity, randomizedGenes, randomizedGenes );
+			m_registry.emplace< component::Vitals >( entity, randomizedGenes.maxEnergy );
+			m_registry.emplace< component::Position >( entity );
+
+			addToSpatialGrid( entity, index );
+		}
 	}
 }
 
