@@ -32,16 +32,20 @@ Grid::Grid( const Args& args )
 
 	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
 	{
-		auto& spatialCell  = m_spatialGrid[ index ];
-		const auto& entity = m_registry.create();
-
-		m_registry.emplace< component::GeneSet >( entity, initialGeneSet );
-		m_registry.emplace< component::Vitals >( entity, initialEnergy );
-		m_registry.emplace< component::Position >( entity );
-
+		auto& spatialCell                   = m_spatialGrid[ index ];
 		constexpr auto preallocatedEntities = 4uz;
 		spatialCell.reserve( preallocatedEntities );
-		addToSpatialGrid( entity, index );
+
+		constexpr auto agentCountDivisor = 10uz;
+		if ( index % agentCountDivisor == 0 )
+		{
+			const auto& entity = m_registry.create();
+			m_registry.emplace< component::GeneSet >( entity, initialGeneSet );
+			m_registry.emplace< component::Vitals >( entity, initialEnergy );
+			m_registry.emplace< component::Position >( entity );
+
+			addToSpatialGrid( entity, index );
+		}
 	}
 
 	const Preset::Vegetation& vegetationPreset = m_registry.ctx().get< Preset >().vegetation;
