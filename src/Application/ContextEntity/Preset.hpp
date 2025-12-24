@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <string>
 
+#include "Application/Components/GeneSet.hpp"
+
 namespace cc::app
 {
 struct Preset
@@ -35,6 +37,17 @@ struct Preset
 			const float elevSteepness;
 		} const limit;
 	} const vegetation;
+
+	struct Agent
+	{
+		struct Modifier
+		{
+			float baseTraversalCost;
+			std::size_t maxPerception;
+		} const modifier;
+
+		const Genes initialGenes;
+	} const agent;
 
 	const std::string presetName;
 	const std::filesystem::path gridDirectoryPath;

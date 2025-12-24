@@ -9,13 +9,12 @@
 #include "Application/Components/NextMove.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
 {
 namespace
 {
-constexpr std::size_t maxPerception = 3;  // TODO: Put in preset.
-
 // TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
 {
@@ -50,14 +49,21 @@ auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targe
 
 	return grid.PositionToIndex( startPosition );
 }
+
+auto getPerception( entt::registry& registry ) -> std::size_t
+{
+	assert( registry.ctx().contains< Preset >() );
+	return registry.ctx().get< Preset >().agent.modifier.maxPerception;
+}
 }  // namespace
 
-AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry ) : m_registry( registry )
+AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry )
+    : m_registry( registry ), m_maxPerception( getPerception( registry ) )
 {
 	assert( registry.ctx().contains< Grid >() );
 	auto& grid = registry.ctx().get< Grid >();
 
-	for ( auto range = 0uz; range < maxPerception; range++ )
+	for ( auto range = 0uz; range < m_maxPerception; range++ )
 	{
 		m_rangeOffsets.emplace_back( rangeOffsets( grid, range ) );
 	}
@@ -88,7 +94,7 @@ auto AgentDecisionSystem::bestCell( const Grid& grid, std::size_t perception, st
 {
 	const auto& cells = grid.getCells();
 
-	assert( perception <= maxPerception );
+	assert( perception <= m_maxPerception );
 	assert( cellIndex < cells.size() );
 
 	std::size_t bestCell = cellIndex;

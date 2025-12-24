@@ -9,6 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Application/Components/GeneSet.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
@@ -97,9 +98,25 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .elevSteepness = get< float >( json, "vegetation.limit.elevSteepness" ),
 		};
 
+		// Parse agent - modifier
+		Preset::Agent::Modifier modifier{
+		    .baseTraversalCost = get< float >( json, "agent.modifier.baseTraversalCost" ),
+		    .maxPerception     = get< std::size_t >( json, "agent.modifier.maxPerception" ),
+		};
+
+		// Parse agent - initialGene
+		Genes initialGenes{
+		    .perception            = get< std::size_t >( json, "agent.initialGene.perception" ),
+		    .maxEnergy             = get< float >( json, "agent.initialGene.energy" ),
+		    .temperaturePreference = get< float >( json, "agent.initialGene.temperaturePreference" ),
+		    .humidityPreference    = get< float >( json, "agent.initialGene.humidityPreference" ),
+		    .elevationPreference   = get< float >( json, "agent.initialGene.elevationPreference" ),
+		};
+
 		// Construct preset
 		return Preset{
 		    .vegetation{ .speed = speed, .limit = limit },
+		    .agent{ .modifier = modifier, .initialGenes = initialGenes },
 		    .presetName        = path.filename().string(),
 		    .gridDirectoryPath = gridPath,
 		    .iterationTarget   = iterationTarget,

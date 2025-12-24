@@ -2,16 +2,22 @@
 
 #include <cstddef>
 
+namespace cc::app
+{
+struct Genes
+{
+	std::size_t perception;
+	float maxEnergy;
+	float temperaturePreference;
+	float humidityPreference;
+	float elevationPreference;
+};
+}  // namespace cc::app
+
 namespace cc::app::component
 {
 struct GeneSet
 {
-	struct Genes
-	{
-		float maxEnergy        = 1.f;
-		std::size_t perception = 2uz;
-	};
-
 	const Genes agentGenes;
 	Genes futureGenes;
 };

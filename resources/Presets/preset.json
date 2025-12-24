@@ -19,5 +19,18 @@
             "elevHalf": 0.7,
             "elevSteepness": 6.0
         }
+    },
+    "agent": {
+        "modifier": {
+            "baseTraversalCost": 0.3,
+            "maxPerception": 3
+        },
+        "initialGene": {
+            "perception": 2,
+            "energy": 1.0,
+            "temperaturePreference": 0.5,
+            "humidityPreference": 0.5,
+            "elevationPreference": 0.5
+        }
     }
 }

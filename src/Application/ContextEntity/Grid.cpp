@@ -21,12 +21,14 @@ Grid::Grid( const Args& args )
       m_signedCellCount( static_cast< std::ptrdiff_t >( args.width ) * args.height ),
       m_registry( args.registry )
 {
+	assert( m_registry.ctx().contains< Preset >() );
+
+	const auto initialGenes   = m_registry.ctx().get< Preset >().agent.initialGenes;
+	const auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
+	const auto initialEnergy  = initialGeneSet.agentGenes.maxEnergy;
+
 	m_spatialGrid.resize( m_cellCount );
 	m_cells.reserve( m_cellCount );
-
-	constexpr auto initialGenes   = component::GeneSet::Genes{};
-	constexpr auto initialGeneSet = component::GeneSet{ .agentGenes = initialGenes, .futureGenes = initialGenes };
-	constexpr auto initialEnergy  = initialGeneSet.agentGenes.maxEnergy;
 
 	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
 	{
