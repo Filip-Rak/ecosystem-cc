@@ -12,6 +12,7 @@ struct Cell
 		const float effectiveLimit;
 	};
 
+	float carrion{ 0.f };
 	float vegetation;
 
 	const float temperature;

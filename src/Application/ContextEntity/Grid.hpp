@@ -35,6 +35,8 @@ public:
 	Grid( const Args& args );
 
 	void moveEntity( entt::entity entity, std::size_t currentCell, std::size_t targetCell );
+	auto addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void;
+	auto removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void;
 
 	[[nodiscard]] auto indexToPosition( std::size_t index ) const -> Position;
 	[[nodiscard]] auto PositionToIndex( ptrdiff_t x, ptrdiff_t y ) const -> std::size_t;
@@ -52,9 +54,6 @@ public:
 	[[nodiscard]] auto cells() const -> const std::vector< Cell >&;
 
 private:
-	auto addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void;
-	auto removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void;
-
 	const Args m_creationArguments;
 	const std::uint16_t m_width;
 	const std::uint16_t m_height;

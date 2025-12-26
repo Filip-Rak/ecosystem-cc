@@ -12,6 +12,7 @@
 #include "Application/System/Sim/AgentDecisionSystem.hpp"
 #include "Application/System/Sim/AgentFeedingSystem.hpp"
 #include "Application/System/Sim/AgentMovementSystem.hpp"
+#include "Application/System/Sim/AgentPassingSystem.hpp"
 #include "Application/System/Sim/CLILoggerSystem.hpp"
 #include "Application/System/Sim/VegetationSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
@@ -33,6 +34,7 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.emplace_back( std::make_unique< AgentDecisionSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentMovementSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentFeedingSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< AgentPassingSystem >( registry ) );
 
 	if ( !cliOptions.gui )
 		m_simSystems.emplace_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );

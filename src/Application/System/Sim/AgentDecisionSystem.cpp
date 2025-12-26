@@ -6,6 +6,7 @@
 
 #include <entt/entt.hpp>
 
+#include "Application/Components/Destroy.hpp"
 #include "Application/Components/EatIntent.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
@@ -79,26 +80,20 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	return totalCost;
 }
 
-struct BestCell
-{
-	std::size_t index;
-	float movementCost;
-};
-
 auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vitals& vitals, const Preset& preset,
                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, const std::size_t cellIndex )
-    -> BestCell
+    -> std::size_t
 {
 	const auto& cells              = grid.cells();
 	const auto& spatialCells       = grid.getSpatialGrid();
 	const auto perception          = agentGenes.perception;
 	const auto startingCell        = static_cast< std::ptrdiff_t >( cellIndex );
-	const auto energyDeficitFactor = agentGenes.maxEnergy - ( vitals.energy / agentGenes.maxEnergy );
+	const auto energyDeficitFactor = 1 - ( vitals.energy / agentGenes.maxEnergy );
 
 	assert( cellIndex < cells.size() );
 
-	BestCell bestCell{ .index = cellIndex, .movementCost = 0 };
-	float bestScore = -std::numeric_limits< float >::infinity();
+	std::size_t bestCell = cellIndex;
+	float bestScore      = -std::numeric_limits< float >::infinity();
 
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
@@ -114,16 +109,15 @@ auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vital
 		const auto moveCost =
 		    calcMoveCost( grid, agentGenes, cellIndex, newIndexUnsigned, preset.agent.modifier.baseTraversalCost );
 
-		constexpr float crowdPenalty = 0.05f;
+		constexpr float crowdPenalty = 1.f;
 		const float crowdScore       = static_cast< float >( crowd ) * crowdPenalty;
 		const float foodScore        = food * energyDeficitFactor;
 
 		const float score = foodScore - crowdScore - moveCost;
 		if ( score > bestScore )
 		{
-			bestScore             = score;
-			bestCell.index        = newIndexUnsigned;
-			bestCell.movementCost = moveCost;
+			bestScore = score;
+			bestCell  = newIndexUnsigned;
 		}
 	}
 
@@ -159,21 +153,31 @@ auto AgentDecisionSystem::update() -> void
 	for ( const auto& [ entity, position, geneSet, vitals ] : view.each() )
 	{
 		// TODO: Move to a different system
-		constexpr float energyTax = 0.1f;
-		vitals.energy -= energyTax;
-
 		assert( geneSet.agentGenes.perception <= m_maxPerception );
 
-		const auto result = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
-		if ( position.cellIndex == result.index )
+		constexpr float energyTax = 0.01f;
+		vitals.energy -= energyTax;
+
+		if ( vitals.energy <= 0.f )
 		{
-			m_registry.emplace_or_replace< component::EatIntent >( entity );
+			m_registry.emplace< component::Destroy >( entity, component::Destroy::Reason::Starvation );
+			continue;
+		}
+
+		const auto result = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
+		if ( position.cellIndex == result )
+		{
+			m_registry.emplace< component::EatIntent >( entity );
 		}
 		else
 		{
-			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, result.index );
-			m_registry.emplace_or_replace< component::MoveIntent >( entity, stepIndex, result.movementCost );
+			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, result );
+			m_registry.emplace< component::MoveIntent >( entity, stepIndex,
+			                                             getEnergyCost( geneSet.agentGenes, grid.cells()[ stepIndex ],
+			                                                            preset.agent.modifier.baseTraversalCost ) );
 		}
+
+		m_registry.emplace< component::EatIntent >( entity );
 	}
 }
 }  // namespace cc::app

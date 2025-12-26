@@ -16,14 +16,16 @@ namespace cc::app
 {
 namespace
 {
-auto mutateGenes( const Genes& genes, const float maxShift = 0.5f ) -> Genes
+auto mutateGenes( const Genes& genes ) -> Genes
 {
 	static std::random_device rd;
 	static std::mt19937 gen( rd() );
+
+	constexpr float maxShift = 0.5f;
 	std::uniform_real_distribution< float > dist( -maxShift, maxShift );
 
 	Genes newGenes = genes;
-	auto mutate    = [ & ]( float value ) -> float { return std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
+	auto mutate    = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
 
 	mutate( newGenes.maxEnergy );
 	mutate( newGenes.temperaturePreference );
@@ -71,8 +73,7 @@ Grid::Grid( const Args& args )
 		const std::size_t agentCountDivisor = m_cellCount / agentCount;
 		if ( index % agentCountDivisor == 0 )
 		{
-			const auto& entity = m_registry.create();
-
+			const auto& entity         = m_registry.create();
 			const auto randomizedGenes = mutateGenes( initialGenes );
 
 			m_registry.emplace< component::GeneSet >( entity, randomizedGenes, randomizedGenes );
@@ -89,6 +90,37 @@ void Grid::moveEntity( entt::entity entity, std::size_t currentCell, std::size_t
 	assert( currentCell != targetCell );
 	removeFromSpatialGrid( entity, currentCell );
 	addToSpatialGrid( entity, targetCell );
+}
+
+auto Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void
+{
+	auto& bucket   = m_spatialGrid[ cellIndex ];
+	auto& position = m_registry.get< component::Position >( entity );
+
+	position.spatialIndex = bucket.size();
+	position.cellIndex    = cellIndex;
+	bucket.push_back( entity );
+}
+
+auto Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void
+{
+	auto& bucket      = m_spatialGrid[ cellIndex ];
+	auto& targetIndex = m_registry.get< component::Position >( targetEntity ).spatialIndex;
+
+	assert( targetIndex < bucket.size() );
+	assert( bucket[ targetIndex ] == targetEntity );
+
+	const auto lastEntity = bucket.back();
+	bucket[ targetIndex ] = lastEntity;
+	bucket.pop_back();
+
+	if ( targetEntity != lastEntity )
+	{
+		auto& lastPosition        = m_registry.get< component::Position >( lastEntity );
+		lastPosition.spatialIndex = targetIndex;
+	}
+
+	targetIndex = std::numeric_limits< std::size_t >::max();
 }
 
 auto Grid::indexToPosition( std::size_t index ) const -> Position
@@ -144,36 +176,5 @@ auto Grid::cells() -> std::vector< Cell >&
 auto Grid::cells() const -> const std::vector< Cell >&
 {
 	return m_cells;
-}
-
-auto Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> void
-{
-	auto& bucket   = m_spatialGrid[ cellIndex ];
-	auto& position = m_registry.get< component::Position >( entity );
-
-	position.spatialIndex = bucket.size();
-	position.cellIndex    = cellIndex;
-	bucket.push_back( entity );
-}
-
-auto Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void
-{
-	auto& bucket      = m_spatialGrid[ cellIndex ];
-	auto& targetIndex = m_registry.get< component::Position >( targetEntity ).spatialIndex;
-
-	assert( targetIndex < bucket.size() );
-	assert( bucket[ targetIndex ] == targetEntity );
-
-	const auto lastEntity = bucket.back();
-	bucket[ targetIndex ] = lastEntity;
-	bucket.pop_back();
-
-	if ( targetEntity != lastEntity )
-	{
-		auto& lastPosition        = m_registry.get< component::Position >( lastEntity );
-		lastPosition.spatialIndex = targetIndex;
-	}
-
-	targetIndex = std::numeric_limits< std::size_t >::max();
 }
 }  // namespace cc::app

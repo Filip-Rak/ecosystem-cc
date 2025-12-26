@@ -31,7 +31,9 @@ Cell::Cell( float vegetation, float temperature, float elevation, float humidity
       elevation( elevation ),
       humidity( humidity ),
       growthParameters( calculateGrowthParameters( vegetationPreset ) )
-{}
+{
+	this->vegetation = growthParameters.effectiveLimit;
+}
 
 auto Cell::calculateGrowthParameters( const Preset::Vegetation& preset ) const -> GrowthParameters
 {

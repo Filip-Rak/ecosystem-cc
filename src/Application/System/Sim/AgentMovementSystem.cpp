@@ -23,7 +23,7 @@ auto AgentMovementSystem::update() -> void
 
 	for ( const auto& [ entity, moveIntent, position, vitals ] : view.each() )
 	{
-		constexpr std::size_t cellAgentLimit = 1;
+		constexpr std::size_t cellAgentLimit = 10;
 		if ( spatialGrid[ moveIntent.cellIndex ].size() >= cellAgentLimit ) continue;
 
 		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );

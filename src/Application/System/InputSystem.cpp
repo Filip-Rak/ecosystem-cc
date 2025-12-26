@@ -8,6 +8,8 @@
 #include <entt/entt.hpp>
 #include <glm/vec2.hpp>
 
+#include "Application/Components/GeneSet.hpp"
+#include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -46,8 +48,10 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 		if ( const auto cellPos = visualGrid.cellPositionUnderMouse; cellPos )
 		{
 			const auto cellIndex      = ( cellPos->y * visualGrid.height ) + cellPos->x;
-			const auto cellPopulation = spatialGrid[ cellIndex ].size();
+			const auto spatialCell    = spatialGrid[ cellIndex ];
+			const auto cellPopulation = spatialCell.size();
 			const Cell& cell          = cells[ cellIndex ];
+
 			const auto totalPopulation =
 			    std::ranges::fold_left( spatialGrid | std::views::transform( std::ranges::size ), 0, std::plus<>() );
 			const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
@@ -57,19 +61,17 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation,
 			            totalPopulation, highestPopulation );
 
-			/* Cells with more entities than one */
-			/*std::println( "Most populated cells" );
-			for ( auto i{ 0uz }; const auto& spatialCell : spatialGrid )
+			std::println( "Population: " );
+			for ( const auto entity : spatialCell )
 			{
-			    if ( spatialCell.size() > 1 )
-			    {
-			        const auto x = i % logicalGrid.getWidth();
-			        const auto y = i / logicalGrid.getWidth();
-			        std::println( "-> X: {}, Y: {}, count: {}", x, y, spatialCell.size() );
-			    }
+				const auto vitals = registry.get< component::Vitals >( entity );
+				const auto genes  = registry.get< component::GeneSet >( entity ).agentGenes;
 
-			    i++;
-			}*/
+				std::print( "\tEnergy: {}\n\tMaxEnergy: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
+				            "Elevation Preference: {}\n",
+				            vitals.energy, genes.maxEnergy, genes.temperaturePreference, genes.humidityPreference,
+				            genes.elevationPreference );
+			}
 		}
 	}
 }

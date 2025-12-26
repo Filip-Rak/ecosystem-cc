@@ -22,7 +22,7 @@
     },
     "agent": {
         "modifier": {
-            "baseTraversalCost": 0.5,
+            "baseTraversalCost": 0.1,
             "maxPerception": 3
         },
         "initialGene": {
