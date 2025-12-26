@@ -55,7 +55,7 @@ auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targe
 	return grid.PositionToIndex( startPosition );
 }
 
-auto getEnergyCost( const Genes& agentGenes, const Cell& cell, float baseCost ) -> float
+auto getSatietyCost( const Genes& agentGenes, const Cell& cell, float baseCost ) -> float
 {
 	const float tempCost = std::abs( cell.temperature - agentGenes.temperaturePreference );
 	const float elevCost = std::abs( cell.elevation - agentGenes.elevationPreference );
@@ -74,7 +74,7 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	while ( currentPos != targetPos )
 	{
 		currentPos = nextStepUnsafe( grid, currentPos, targetPos );
-		totalCost += getEnergyCost( agentGenes, cells[ currentPos ], baseCost );
+		totalCost += getSatietyCost( agentGenes, cells[ currentPos ], baseCost );
 	}
 
 	return totalCost;
@@ -84,11 +84,12 @@ auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vital
                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, const std::size_t cellIndex )
     -> std::size_t
 {
-	const auto& cells              = grid.cells();
-	const auto& spatialCells       = grid.getSpatialGrid();
-	const auto perception          = agentGenes.perception;
-	const auto startingCell        = static_cast< std::ptrdiff_t >( cellIndex );
-	const auto energyDeficitFactor = 1 - ( vitals.energy / agentGenes.maxEnergy );
+	const auto& cells               = grid.cells();
+	const auto& spatialCells        = grid.getSpatialGrid();
+	const auto perception           = agentGenes.perception;
+	const auto startingCell         = static_cast< std::ptrdiff_t >( cellIndex );
+	const auto satietyDeficitFactor = 1 - ( vitals.satiety / agentGenes.maxSatiety );
+	const auto traversalCost        = preset.agent.modifier.baseTraversalCost;
 
 	assert( cellIndex < cells.size() );
 
@@ -104,14 +105,13 @@ auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vital
 		const auto newIndexUnsigned = static_cast< std::size_t >( newIndex );
 		const auto& cell            = cells[ newIndexUnsigned ];
 
-		const auto food  = cell.vegetation;
-		const auto crowd = spatialCells[ newIndexUnsigned ].size();
-		const auto moveCost =
-		    calcMoveCost( grid, agentGenes, cellIndex, newIndexUnsigned, preset.agent.modifier.baseTraversalCost );
-
+		const auto food              = cell.vegetation;
+		const auto crowd             = spatialCells[ newIndexUnsigned ].size();
 		constexpr float crowdPenalty = 1.f;
-		const float crowdScore       = static_cast< float >( crowd ) * crowdPenalty;
-		const float foodScore        = food * energyDeficitFactor;
+
+		const float crowdScore = static_cast< float >( crowd ) * crowdPenalty;
+		const float foodScore  = food * satietyDeficitFactor;
+		const auto moveCost    = calcMoveCost( grid, agentGenes, cellIndex, newIndexUnsigned, traversalCost );
 
 		const float score = foodScore - crowdScore - moveCost;
 		if ( score > bestScore )
@@ -155,10 +155,10 @@ auto AgentDecisionSystem::update() -> void
 		// TODO: Move to a different system
 		assert( geneSet.agentGenes.perception <= m_maxPerception );
 
-		constexpr float energyTax = 0.01f;
-		vitals.energy -= energyTax;
+		constexpr float satietyTax = 0.1f;
+		vitals.satiety -= satietyTax;
 
-		if ( vitals.energy <= 0.f )
+		if ( vitals.satiety <= 0.f )
 		{
 			m_registry.emplace< component::Destroy >( entity, component::Destroy::Reason::Starvation );
 			continue;
@@ -173,8 +173,8 @@ auto AgentDecisionSystem::update() -> void
 		{
 			const auto stepIndex = nextStepUnsafe( grid, position.cellIndex, result );
 			m_registry.emplace< component::MoveIntent >( entity, stepIndex,
-			                                             getEnergyCost( geneSet.agentGenes, grid.cells()[ stepIndex ],
-			                                                            preset.agent.modifier.baseTraversalCost ) );
+			                                             getSatietyCost( geneSet.agentGenes, grid.cells()[ stepIndex ],
+			                                                             preset.agent.modifier.baseTraversalCost ) );
 		}
 
 		m_registry.emplace< component::EatIntent >( entity );

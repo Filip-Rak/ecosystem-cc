@@ -28,11 +28,11 @@ auto AgentFeedingSystem::update() -> void
 	{
 		auto& vegetation          = cells[ position.cellIndex ].vegetation;
 		constexpr float maxIntake = 0.2f;
-		const float hunger        = geneSet.agentGenes.maxEnergy - vitals.energy;
+		const float hunger        = geneSet.agentGenes.maxSatiety - vitals.satiety;
 
 		const float eaten = std::min( { maxIntake, vegetation, hunger } );
 		vegetation -= eaten;
-		vitals.energy += eaten;
+		vitals.satiety += eaten;
 	}
 
 	m_registry.remove< component::EatIntent >( view.begin(), view.end() );

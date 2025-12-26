@@ -27,7 +27,7 @@
         },
         "initialGene": {
             "perception": 2,
-            "energy": 1.0,
+            "satiety": 1.0,
             "temperaturePreference": 0.5,
             "humidityPreference": 0.5,
             "elevationPreference": 0.5

@@ -4,6 +4,6 @@ namespace cc::app::component
 {
 struct Vitals
 {
-	float energy;
+	float satiety;
 };
 }  // namespace cc::app::component

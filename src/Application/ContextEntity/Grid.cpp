@@ -27,7 +27,7 @@ auto mutateGenes( const Genes& genes ) -> Genes
 	Genes newGenes = genes;
 	auto mutate    = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
 
-	mutate( newGenes.maxEnergy );
+	mutate( newGenes.maxSatiety );
 	mutate( newGenes.temperaturePreference );
 	mutate( newGenes.humidityPreference );
 	mutate( newGenes.elevationPreference );
@@ -77,7 +77,7 @@ Grid::Grid( const Args& args )
 			const auto randomizedGenes = mutateGenes( initialGenes );
 
 			m_registry.emplace< component::GeneSet >( entity, randomizedGenes, randomizedGenes );
-			m_registry.emplace< component::Vitals >( entity, randomizedGenes.maxEnergy );
+			m_registry.emplace< component::Vitals >( entity, randomizedGenes.maxSatiety );
 			m_registry.emplace< component::Position >( entity );
 
 			addToSpatialGrid( entity, index );

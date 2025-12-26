@@ -7,7 +7,7 @@ namespace cc::app
 struct Genes
 {
 	std::size_t perception;
-	float maxEnergy;
+	float maxSatiety;
 	float temperaturePreference;
 	float humidityPreference;
 	float elevationPreference;
