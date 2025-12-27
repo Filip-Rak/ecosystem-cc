@@ -1,12 +1,10 @@
 #pragma once
 
-#include <cstddef>
-
 namespace cc::app::component
 {
 struct Vitals
 {
 	float satiety;
-	std::size_t remainingRefractoryPeriod;
+	int remainingRefractoryPeriod;
 };
 }  // namespace cc::app::component

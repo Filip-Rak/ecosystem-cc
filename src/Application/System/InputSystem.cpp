@@ -12,6 +12,7 @@
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 #include "Engine/Events/SystemEvents.hpp"
@@ -40,6 +41,7 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 	if ( input.isPressed( mouse::Button::Left ) )
 	{
 		auto& visualGrid = registry.ctx().get< VisualGrid >();
+		auto& runnerData = registry.ctx().get< SimRunnerData >();
 
 		auto& logicalGrid       = registry.ctx().get< Grid >();
 		const auto& spatialGrid = logicalGrid.getSpatialGrid();
@@ -56,10 +58,11 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			    std::ranges::fold_left( spatialGrid | std::views::transform( std::ranges::size ), 0, std::plus<>() );
 			const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
 
-			std::print( "Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> Elevation: {}\n-> "
+			std::print( "Increment: {} \n->Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> "
+			            "Elevation: {}\n-> "
 			            "Population: {}\n-> Total Population {}\n-> Highest Population {}\n",
-			            cellIndex, cell.vegetation, cell.temperature, cell.humidity, cell.elevation, cellPopulation,
-			            totalPopulation, highestPopulation );
+			            runnerData.iteration, cellIndex, cell.vegetation, cell.temperature, cell.humidity,
+			            cell.elevation, cellPopulation, totalPopulation, highestPopulation );
 
 			std::println( "Population: " );
 			for ( const auto entity : spatialCell )
@@ -69,10 +72,11 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 
 				std::print(
 				    "\tSatiety: {}\n\tMaxSatiety: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
-				    "Elevation Preference: {}\n",
+				    "Elevation Preference: {}\n\tRefractor: {}\n",
 				    vitals.satiety, genes.maxSatiety, genes.temperaturePreference, genes.humidityPreference,
-				    genes.elevationPreference );
+				    genes.elevationPreference, vitals.remainingRefractoryPeriod );
 			}
+			std::print( "------------\n" );
 		}
 	}
 }

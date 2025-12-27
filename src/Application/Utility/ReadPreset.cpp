@@ -108,7 +108,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		// Parse agent - initialGene
 		Genes initialGenes{
 		    .perception            = get< std::size_t >( json, "agent.initialGene.perception" ),
-		    .refractoryPeriod      = get< std::size_t >( json, "agent.initialGene.refractoryPeriod" ),
+		    .refractoryPeriod      = get< int >( json, "agent.initialGene.refractoryPeriod" ),
 		    .maxSatiety            = get< float >( json, "agent.initialGene.satiety" ),
 		    .temperaturePreference = get< float >( json, "agent.initialGene.temperaturePreference" ),
 		    .humidityPreference    = get< float >( json, "agent.initialGene.humidityPreference" ),

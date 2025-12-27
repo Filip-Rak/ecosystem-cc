@@ -9,6 +9,7 @@
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Utility/AgentHelpers.hpp"
 
 namespace cc::app
@@ -20,7 +21,8 @@ AgentOffspringSystem::AgentOffspringSystem( entt::registry& registry ) : m_regis
 
 auto AgentOffspringSystem::update() -> void
 {
-	auto& grid = m_registry.ctx().get< Grid >();
+	auto& grid   = m_registry.ctx().get< Grid >();
+	auto& runner = m_registry.ctx().get< SimRunnerData >();
 
 	const auto view = m_registry.view< const component::OffspringIntent, const component::GeneSet,
 	                                   const component::Position, component::Vitals >();
@@ -31,11 +33,11 @@ auto AgentOffspringSystem::update() -> void
 		const auto childEntity         = createAgent( m_registry, newGenes );
 		grid.addToSpatialGrid( childEntity, position.cellIndex );
 
-		const auto& parentGenes          = geneSet.agentGenes;
-		vitals.remainingRefractoryPeriod = parentGenes.refractoryPeriod;
+		vitals.remainingRefractoryPeriod = geneSet.agentGenes.refractoryPeriod;
 
-		const float satietyCost = parentGenes.maxSatiety / 2.f;
-		vitals.satiety -= satietyCost;
+		constexpr float half = 2.f;
+		vitals.satiety /= half;
+		runner.paused = true;
 	}
 
 	m_registry.remove< component::OffspringIntent >( view.begin(), view.end() );
