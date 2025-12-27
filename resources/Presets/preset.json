@@ -22,6 +22,8 @@
     },
     "agent": {
         "modifier": {
+            "maxIntake": 0.2,
+            "metabolism": 0.1,
             "baseTraversalCost": 0.1,
             "maxPerception": 3
         },

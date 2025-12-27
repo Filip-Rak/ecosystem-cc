@@ -42,6 +42,8 @@ struct Preset
 	{
 		struct Modifier
 		{
+			float maxIntake;
+			float metabolism;
 			float baseTraversalCost;
 			std::size_t maxPerception;
 		} const modifier;

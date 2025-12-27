@@ -99,6 +99,8 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse agent - modifier
 		Preset::Agent::Modifier modifier{
+		    .maxIntake         = get< float >( json, "agent.modifier.maxIntake" ),
+		    .metabolism        = get< float >( json, "agent.modifier.metabolism" ),
 		    .baseTraversalCost = get< float >( json, "agent.modifier.baseTraversalCost" ),
 		    .maxPerception     = get< std::size_t >( json, "agent.modifier.maxPerception" ),
 		};

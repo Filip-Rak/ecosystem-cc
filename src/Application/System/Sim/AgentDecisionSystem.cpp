@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <limits>
 
 #include <entt/entt.hpp>
 
@@ -80,40 +79,57 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	return totalCost;
 }
 
-auto bestCell( const Grid& grid, const Genes& agentGenes, const component::Vitals& vitals, const Preset& preset,
+auto getCurrentCellScore( const Cell& currentCell, const Genes& genes, float satietyFactor, float metabolism,
+                          float maxIntake ) -> float
+{
+	const float cost = getSatietyCost( genes, currentCell, metabolism );
+	if ( cost > maxIntake ) return 0.f;
+
+	const float currentSustain      = currentCell.vegetation / cost;
+	const float currentSustainScore = ( currentSustain < 1.f ) ? 0.f : currentSustain * ( 1 - satietyFactor );
+
+	return currentSustainScore;
+}
+
+auto bestCell( const Grid& grid, const Genes& genes, const component::Vitals& vitals, const Preset& preset,
                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, const std::size_t cellIndex )
     -> std::size_t
 {
-	const auto& cells               = grid.cells();
-	const auto& spatialCells        = grid.getSpatialGrid();
-	const auto perception           = agentGenes.perception;
-	const auto startingCell         = static_cast< std::ptrdiff_t >( cellIndex );
-	const auto satietyDeficitFactor = 1 - ( vitals.satiety / agentGenes.maxSatiety );
-	const auto traversalCost        = preset.agent.modifier.baseTraversalCost;
+	const auto& cells        = grid.cells();
+	const auto& spatialCells = grid.getSpatialGrid();
+	const auto perception    = genes.perception;
+	const auto startSigned   = static_cast< std::ptrdiff_t >( cellIndex );
+	const auto traversalCost = preset.agent.modifier.baseTraversalCost;
+	const auto metabolism    = preset.agent.modifier.metabolism;
+	const auto satietyFactor = vitals.satiety / genes.maxSatiety;
+	const auto maxIntake     = preset.agent.modifier.maxIntake;
 
 	assert( cellIndex < cells.size() );
 
+	// Rate current cell
+
 	std::size_t bestCell = cellIndex;
-	float bestScore      = -std::numeric_limits< float >::infinity();
+	float bestScore      = getCurrentCellScore( cells[ cellIndex ], genes, satietyFactor, metabolism, maxIntake );
 
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
-		// Clip at borders
-		const auto newIndex = startingCell + offset;
-		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 ) continue;
+		// Clip at borders.
+		const auto newIndex = startSigned + offset;
+		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 || newIndex == startSigned ) continue;
 
 		const auto newIndexUnsigned = static_cast< std::size_t >( newIndex );
 		const auto& cell            = cells[ newIndexUnsigned ];
 
-		const auto food              = cell.vegetation;
 		const auto crowd             = spatialCells[ newIndexUnsigned ].size();
-		constexpr float crowdPenalty = 1.f;
+		constexpr float crowdPenalty = 0.5f;
+		const float crowdScore       = static_cast< float >( crowd ) * crowdPenalty;
 
-		const float crowdScore = static_cast< float >( crowd ) * crowdPenalty;
-		const float foodScore  = food * satietyDeficitFactor;
-		const auto moveCost    = calcMoveCost( grid, agentGenes, cellIndex, newIndexUnsigned, traversalCost );
+		const auto food          = cell.vegetation;
+		const float moveCost     = calcMoveCost( grid, genes, cellIndex, newIndexUnsigned, traversalCost );
+		const float sustain      = food / getSatietyCost( genes, cell, metabolism );
+		const float sustainScore = sustain * std::pow( satietyFactor, 4.f );
 
-		const float score = foodScore - crowdScore - moveCost;
+		const float score = sustainScore - crowdScore - moveCost;
 		if ( score > bestScore )
 		{
 			bestScore = score;
@@ -147,27 +163,29 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry )
 auto AgentDecisionSystem::update() -> void
 {
 	auto& grid         = m_registry.ctx().get< Grid >();
+	const auto& cells  = grid.cells();
 	const auto& preset = m_registry.ctx().get< Preset >();
 
 	const auto view = m_registry.view< const component::Position, const component::GeneSet, component::Vitals >();
 	for ( const auto& [ entity, position, geneSet, vitals ] : view.each() )
 	{
-		// TODO: Move to a different system
-		assert( geneSet.agentGenes.perception <= m_maxPerception );
+		const auto& genes = geneSet.agentGenes;
 
-		constexpr float satietyTax = 0.1f;
-		vitals.satiety -= satietyTax;
-
+		assert( genes.perception <= m_maxPerception );
 		if ( vitals.satiety <= 0.f )
 		{
 			m_registry.emplace< component::Destroy >( entity, component::Destroy::Reason::Starvation );
 			continue;
 		}
 
-		const auto result = bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
+		const auto result = bestCell( grid, genes, vitals, preset, m_rangeOffsets, position.cellIndex );
 		if ( position.cellIndex == result )
 		{
 			m_registry.emplace< component::EatIntent >( entity );
+
+			const auto& cell       = cells[ position.cellIndex ];
+			const auto& metabolism = preset.agent.modifier.metabolism;
+			vitals.satiety -= getSatietyCost( genes, cell, metabolism );
 		}
 		else
 		{
@@ -176,8 +194,6 @@ auto AgentDecisionSystem::update() -> void
 			                                             getSatietyCost( geneSet.agentGenes, grid.cells()[ stepIndex ],
 			                                                             preset.agent.modifier.baseTraversalCost ) );
 		}
-
-		m_registry.emplace< component::EatIntent >( entity );
 	}
 }
 }  // namespace cc::app
