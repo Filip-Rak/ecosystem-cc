@@ -3,39 +3,16 @@
 #include <cassert>
 #include <cstddef>
 #include <limits>
-#include <random>
 
 #include <entt/entt.hpp>
 
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
-#include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/Utility/AgentHelpers.hpp"
 
 namespace cc::app
 {
-namespace
-{
-auto mutateGenes( const Genes& genes ) -> Genes
-{
-	static std::random_device rd;
-	static std::mt19937 gen( rd() );
-
-	constexpr float maxShift = 0.5f;
-	std::uniform_real_distribution< float > dist( -maxShift, maxShift );
-
-	Genes newGenes = genes;
-	auto mutate    = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
-
-	mutate( newGenes.maxSatiety );
-	mutate( newGenes.temperaturePreference );
-	mutate( newGenes.humidityPreference );
-	mutate( newGenes.elevationPreference );
-
-	return newGenes;
-}
-}  // namespace
-
 Grid::Grid( const Args& args )
     : m_creationArguments( args ),
       m_width( args.width ),
@@ -73,13 +50,9 @@ Grid::Grid( const Args& args )
 		const std::size_t agentCountDivisor = m_cellCount / agentCount;
 		if ( index % agentCountDivisor == 0 )
 		{
-			const auto& entity         = m_registry.create();
-			const auto randomizedGenes = mutateGenes( initialGenes );
-
-			m_registry.emplace< component::GeneSet >( entity, randomizedGenes, randomizedGenes );
-			m_registry.emplace< component::Vitals >( entity, randomizedGenes.maxSatiety );
-			m_registry.emplace< component::Position >( entity );
-
+			constexpr float mutationOffset = 0.5f;
+			const auto randomizedGenes     = mutateGenes( initialGenes, mutationOffset );
+			const auto& entity             = createAgent( m_registry, randomizedGenes );
 			addToSpatialGrid( entity, index );
 		}
 	}

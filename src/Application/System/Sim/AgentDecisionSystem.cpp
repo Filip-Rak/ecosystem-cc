@@ -9,6 +9,7 @@
 #include "Application/Components/EatIntent.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
+#include "Application/Components/OffspringIntent.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Cell.hpp"
@@ -19,6 +20,8 @@ namespace cc::app
 {
 namespace
 {
+constexpr float refractorEpsilon = 0.05f;
+
 // TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
 {
@@ -79,16 +82,18 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	return totalCost;
 }
 
-auto getCurrentCellScore( const Cell& currentCell, const Genes& genes, float satietyFactor, float metabolism,
-                          float maxIntake ) -> float
+auto getCurrentCellScore( const Cell& currentCell, const Genes& genes, std::size_t refractoryLeft, float satietyFactor,
+                          float metabolism, float maxIntake, float satiety ) -> float
 {
 	const float cost = getSatietyCost( genes, currentCell, metabolism );
 	if ( cost > maxIntake ) return 0.f;
 
 	const float currentSustain      = currentCell.vegetation / cost;
 	const float currentSustainScore = ( currentSustain < 1.f ) ? 0.f : currentSustain * ( 1 - satietyFactor );
+	const float refractorScore =
+	    ( std::abs( satiety - genes.maxSatiety ) < refractorEpsilon && refractoryLeft <= 0 ) ? 20.f : 0.f;
 
-	return currentSustainScore;
+	return currentSustainScore + refractorScore;
 }
 
 auto bestCell( const Grid& grid, const Genes& genes, const component::Vitals& vitals, const Preset& preset,
@@ -107,9 +112,9 @@ auto bestCell( const Grid& grid, const Genes& genes, const component::Vitals& vi
 	assert( cellIndex < cells.size() );
 
 	// Rate current cell
-
+	float bestScore = getCurrentCellScore( cells[ cellIndex ], genes, vitals.remainingRefractoryPeriod, satietyFactor,
+	                                       metabolism, maxIntake, vitals.satiety );
 	std::size_t bestCell = cellIndex;
-	float bestScore      = getCurrentCellScore( cells[ cellIndex ], genes, satietyFactor, metabolism, maxIntake );
 
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
@@ -170,8 +175,9 @@ auto AgentDecisionSystem::update() -> void
 	for ( const auto& [ entity, position, geneSet, vitals ] : view.each() )
 	{
 		const auto& genes = geneSet.agentGenes;
-
 		assert( genes.perception <= m_maxPerception );
+
+		vitals.remainingRefractoryPeriod -= 1;
 		if ( vitals.satiety <= 0.f )
 		{
 			m_registry.emplace< component::Destroy >( entity, component::Destroy::Reason::Starvation );
@@ -181,11 +187,19 @@ auto AgentDecisionSystem::update() -> void
 		const auto result = bestCell( grid, genes, vitals, preset, m_rangeOffsets, position.cellIndex );
 		if ( position.cellIndex == result )
 		{
-			m_registry.emplace< component::EatIntent >( entity );
+			if ( std::abs( vitals.satiety - genes.maxSatiety ) < refractorEpsilon &&
+			     vitals.remainingRefractoryPeriod <= 0 )
+			{
+				m_registry.emplace< component::OffspringIntent >( entity );
+			}
+			else
+			{
+				m_registry.emplace< component::EatIntent >( entity );
 
-			const auto& cell       = cells[ position.cellIndex ];
-			const auto& metabolism = preset.agent.modifier.metabolism;
-			vitals.satiety -= getSatietyCost( genes, cell, metabolism );
+				const auto& cell       = cells[ position.cellIndex ];
+				const auto& metabolism = preset.agent.modifier.metabolism;
+				vitals.satiety -= getSatietyCost( genes, cell, metabolism );
+			}
 		}
 		else
 		{

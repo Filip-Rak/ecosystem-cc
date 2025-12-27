@@ -8,6 +8,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/System/RenderSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentDecisionSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentFeedingSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentOffspringSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentPassingSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentMovementSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/CLILoggerSystem.cpp
@@ -17,6 +18,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utility/AgentHelpers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadGrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadPreset.cpp
 )
