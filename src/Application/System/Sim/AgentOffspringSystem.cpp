@@ -26,10 +26,10 @@ auto AgentOffspringSystem::update() -> void
 	                                   const component::Position, component::Vitals >();
 	for ( const auto [ entity, geneSet, position, vitals ] : view.each() )
 	{
-		constexpr float mutationOffset = 0.5f;
+		constexpr float mutationOffset = 0.2f;
 		const auto newGenes            = mutateGenes( geneSet.futureGenes, mutationOffset );
 		const auto childEntity         = createAgent( m_registry, newGenes );
-		grid.addToSpatialGrid( entity, position.cellIndex );
+		grid.addToSpatialGrid( childEntity, position.cellIndex );
 
 		const auto& parentGenes          = geneSet.agentGenes;
 		vitals.remainingRefractoryPeriod = parentGenes.refractoryPeriod;

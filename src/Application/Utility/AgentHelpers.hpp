@@ -6,6 +6,6 @@ namespace cc::app
 {
 struct Genes;
 
+[[nodiscard]] auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes;
 auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity;
-auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes;
 }  // namespace cc::app

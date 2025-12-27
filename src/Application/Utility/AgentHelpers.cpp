@@ -10,16 +10,6 @@
 
 namespace cc::app
 {
-auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity
-{
-	const auto entity = registry.create();
-	registry.emplace< component::GeneSet >( entity, genes, genes );
-	registry.emplace< component::Vitals >( entity, genes.maxSatiety, genes.refractoryPeriod );
-	registry.emplace< component::Position >( entity );
-
-	return entity;
-}
-
 auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 {
 	static std::random_device rd;
@@ -36,5 +26,15 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	mutate( newGenes.elevationPreference );
 
 	return newGenes;
+}
+
+auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity
+{
+	const auto entity = registry.create();
+	registry.emplace< component::GeneSet >( entity, genes, genes );
+	registry.emplace< component::Vitals >( entity, genes.maxSatiety, genes.refractoryPeriod );
+	registry.emplace< component::Position >( entity );
+
+	return entity;
 }
 }  // namespace cc::app
