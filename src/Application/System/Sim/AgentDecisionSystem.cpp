@@ -1,5 +1,6 @@
 #include "Application/System/Sim/AgentDecisionSystem.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 
@@ -82,7 +83,8 @@ auto calcMoveCost( const Grid& grid, const Genes& agentGenes, const std::size_t 
 	return totalCost;
 }
 
-auto bestCell( const Grid& grid, const Genes& genes, const component::Vitals& vitals, const Preset& preset,
+auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, const Genes& genes,
+               const component::Vitals& vitals, const Preset& preset,
                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, const std::size_t cellIndex )
     -> std::size_t
 {
@@ -109,14 +111,15 @@ auto bestCell( const Grid& grid, const Genes& genes, const component::Vitals& vi
 		const auto newIndexUnsigned = static_cast< std::size_t >( newIndex );
 		const auto& cell            = cells[ newIndexUnsigned ];
 
-		const auto crowd             = spatialCells[ newIndexUnsigned ].size();
+		const auto crowdCurrent      = spatialCells[ newIndexUnsigned ].size();
+		const auto crowdFuture       = moveIntentions[ newIndexUnsigned ];
+		const auto crowdMax          = crowdCurrent + crowdFuture;
 		constexpr float crowdPenalty = 0.5f;
-		const float crowdScore       = static_cast< float >( crowd ) * crowdPenalty;
+		const float crowdScore       = static_cast< float >( crowdMax ) * crowdPenalty;
 
 		const auto food          = cell.vegetation;
 		const float moveCost     = calcMoveCost( grid, genes, cellIndex, newIndexUnsigned, traversalCost );
-		const float sustain      = food / getSatietyCost( genes, cell, metabolism );
-		const float sustainScore = sustain * std::pow( satietyFactor, 4.f );
+		const float sustainScore = food / getSatietyCost( genes, cell, metabolism );
 
 		const float score = sustainScore - crowdScore - moveCost;
 		if ( score > bestScore )
@@ -191,12 +194,12 @@ auto getStayAction( const Genes& genes, const Cell& cell, const Preset& preset, 
 	}
 
 	const float fullnessFactor               = vitals.satiety / genes.maxSatiety;
-	constexpr float offspringRequiredFulness = 0.05f;
+	constexpr float offspringRequiredFulness = 0.95f;
 	const bool canBearOffspring = vitals.remainingRefractoryPeriod <= 0 && fullnessFactor >= offspringRequiredFulness;
 
 	if ( canBearOffspring )
 	{
-		// return Action::Mate;
+		return Action::Mate;
 	}
 	if ( fullnessFactor == 1.f )
 	{
@@ -228,6 +231,8 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry )
 	assert( registry.ctx().contains< Grid >() );
 	auto& grid = registry.ctx().get< Grid >();
 
+	m_moveIntentions.resize( grid.getCellCount(), 0 );
+
 	for ( auto range = 0uz; range < m_maxPerception; range++ )
 	{
 		m_rangeOffsets.emplace_back( rangeOffsets( grid, range ) );
@@ -239,6 +244,8 @@ auto AgentDecisionSystem::update() -> void
 	const auto& preset = m_registry.ctx().get< Preset >();
 	auto& grid         = m_registry.ctx().get< Grid >();
 	const auto& cells  = grid.cells();
+
+	std::ranges::fill( m_moveIntentions, 0 );
 
 	const auto view = m_registry.view< const component::Position, const component::GeneSet, component::Vitals >();
 	for ( const auto& [ entity, position, geneSet, vitals ] : view.each() )
@@ -254,17 +261,14 @@ auto AgentDecisionSystem::update() -> void
 		else if ( action == Eat )
 		{
 			vitals.satiety -= preset.agent.modifier.metabolism;
-			if ( vitals.satiety < 0.f )
-				m_registry.emplace< component::Destroy >( entity );
-			else
-				m_registry.emplace< component::EatIntent >( entity );
+			m_registry.emplace< component::EatIntent >( entity );
 		}
-		else if ( action == ExploreStarving )
+		else if ( action == ExploreStarving || action == ExploreFull )
 		{
 			// const std::size_t betterCell = findBetterCell( position.cellIndex, geneSet.agentGenes, grid, preset,
 			// vitals, m_rangeOffsets );
-			const std::size_t betterCell =
-			    bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
+			const std::size_t betterCell = bestCell( m_moveIntentions, grid, geneSet.agentGenes, vitals, preset,
+			                                         m_rangeOffsets, position.cellIndex );
 
 			const std::size_t nextCellIndex = nextStepUnsafe( grid, position.cellIndex, betterCell );
 			const auto nextCell             = cells[ nextCellIndex ];
@@ -273,24 +277,13 @@ auto AgentDecisionSystem::update() -> void
 			const float moveCost = getSatietyCost( geneSet.agentGenes, nextCell, traverseCost );
 
 			m_registry.emplace< component::MoveIntent >( entity, nextCellIndex, moveCost );
-		}
-		else if ( action == ExploreFull )
-		{
-			const std::size_t betterCell =
-			    bestCell( grid, geneSet.agentGenes, vitals, preset, m_rangeOffsets, position.cellIndex );
-
-			const std::size_t nextCellIndex = nextStepUnsafe( grid, position.cellIndex, betterCell );
-			const auto nextCell             = cells[ nextCellIndex ];
-			const auto traverseCost         = preset.agent.modifier.baseTraversalCost;
-
-			const float moveCost = getSatietyCost( geneSet.agentGenes, nextCell, traverseCost );
-
-			m_registry.emplace< component::MoveIntent >( entity, nextCellIndex, moveCost );
+			m_moveIntentions[ nextCellIndex ]++;
 		}
 		else if ( action == Flee )
 		{}
 
-		vitals.remainingRefractoryPeriod -= 1;
+		vitals.remainingRefractoryPeriod--;
+		if ( vitals.satiety < 0.f ) m_registry.emplace< component::Destroy >( entity );
 	}
 }
 }  // namespace cc::app

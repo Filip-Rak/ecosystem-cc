@@ -9,7 +9,7 @@ namespace cc::app
 {
 namespace
 {
-inline auto bellCurve( float value, float optimal, float width ) -> float
+auto bellCurve( float value, float optimal, float width ) -> float
 {
 	const float alignment = ( value - optimal ) / std::max( 1e-6f, width );
 	const float result    = std::exp( -0.5f * alignment * alignment );
@@ -17,7 +17,7 @@ inline auto bellCurve( float value, float optimal, float width ) -> float
 	return result;
 }
 
-inline auto elevationPenalty( float maxElevation, float elevation, float half, float steepness ) -> float
+auto elevationPenalty( float maxElevation, float elevation, float half, float steepness ) -> float
 {
 	return maxElevation / ( maxElevation + std::exp( steepness * ( elevation - half ) ) );
 }

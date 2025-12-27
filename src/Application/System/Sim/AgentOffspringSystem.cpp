@@ -9,7 +9,6 @@
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
-#include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Utility/AgentHelpers.hpp"
 
 namespace cc::app
@@ -21,8 +20,7 @@ AgentOffspringSystem::AgentOffspringSystem( entt::registry& registry ) : m_regis
 
 auto AgentOffspringSystem::update() -> void
 {
-	auto& grid   = m_registry.ctx().get< Grid >();
-	auto& runner = m_registry.ctx().get< SimRunnerData >();
+	auto& grid = m_registry.ctx().get< Grid >();
 
 	const auto view = m_registry.view< const component::OffspringIntent, const component::GeneSet,
 	                                   const component::Position, component::Vitals >();
@@ -37,7 +35,6 @@ auto AgentOffspringSystem::update() -> void
 
 		constexpr float half = 2.f;
 		vitals.satiety /= half;
-		runner.paused = true;
 	}
 
 	m_registry.remove< component::OffspringIntent >( view.begin(), view.end() );

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 #include <entt/fwd.hpp>
 
@@ -15,7 +16,8 @@ public:
 	auto update() -> void override;
 
 private:
-	std::vector< std::vector< std::ptrdiff_t > > m_rangeOffsets;  // TODO: Either dynamic vector or fixed std::array
+	std::vector< std::vector< std::ptrdiff_t > > m_rangeOffsets;
+	std::vector< std::uint8_t > m_moveIntentions;
 	entt::registry& m_registry;
 	const std::size_t m_maxPerception;
 };

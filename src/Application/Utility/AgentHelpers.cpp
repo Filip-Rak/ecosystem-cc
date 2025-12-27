@@ -18,13 +18,16 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	std::uniform_real_distribution< float > dist( -mutationOffset, mutationOffset );
 
 	Genes newGenes = baseGenes;
-	auto mutate    = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
 
-	mutate( newGenes.maxSatiety );
-	mutate( newGenes.temperaturePreference );
-	mutate( newGenes.humidityPreference );
-	mutate( newGenes.elevationPreference );
+	// Standard mutation for normalized genes (0.0 to 1.0)
+	auto mutateClamped = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
 
+	mutateClamped( newGenes.temperaturePreference );
+	mutateClamped( newGenes.humidityPreference );
+	mutateClamped( newGenes.elevationPreference );
+
+	// Uncapped mutation for satiety
+	newGenes.maxSatiety = std::max( 0.0f, newGenes.maxSatiety + dist( gen ) );
 	return newGenes;
 }
 
