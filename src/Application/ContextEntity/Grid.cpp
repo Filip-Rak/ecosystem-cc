@@ -27,7 +27,9 @@ Grid::Grid( const Args& args )
 	m_spatialGrid.resize( m_cellCount );
 	m_cells.reserve( m_cellCount );
 
-	const Preset::Vegetation& vegetationPreset = m_registry.ctx().get< Preset >().vegetation;
+	const auto preset                          = m_registry.ctx().get< Preset >();
+	const Preset::Vegetation& vegetationPreset = preset.vegetation;
+
 	for ( std::size_t index = 0; index < m_cellCount; index++ )
 	{
 		const float cellTemperature = args.temperatureValues[ index ];
@@ -50,9 +52,9 @@ Grid::Grid( const Args& args )
 		const std::size_t agentCountDivisor = m_cellCount / agentCount;
 		if ( index % agentCountDivisor == 0 )
 		{
-			constexpr float mutationOffset = 0.5f;
-			const auto randomizedGenes     = mutateGenes( initialGenes, mutationOffset );
-			const auto& entity             = createAgent( m_registry, randomizedGenes );
+			const float mutationOffset = preset.agent.modifier.initialMutation;
+			const auto randomizedGenes = mutateGenes( initialGenes, mutationOffset );
+			const auto& entity         = createAgent( m_registry, randomizedGenes );
 			addToSpatialGrid( entity, index );
 		}
 	}

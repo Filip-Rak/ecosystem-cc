@@ -10,6 +10,7 @@
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -64,6 +65,7 @@ auto App::run() -> void
 
 auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >
 {
+	registry.ctx().emplace< SimLog >();
 	registry.ctx().emplace< Preset >( preset );
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 

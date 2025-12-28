@@ -70,11 +70,10 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 				const auto vitals = registry.get< component::Vitals >( entity );
 				const auto genes  = registry.get< component::GeneSet >( entity ).agentGenes;
 
-				std::print(
-				    "\tSatiety: {}\n\tMaxSatiety: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
-				    "Elevation Preference: {}\n\tRefractor: {}\n",
-				    vitals.satiety, genes.maxSatiety, genes.temperaturePreference, genes.humidityPreference,
-				    genes.elevationPreference, vitals.remainingRefractoryPeriod );
+				std::print( "\tEnergy: {}\n\tMaxEnergy: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
+				            "Elevation Preference: {}\n\tRefractor: {}\n",
+				            vitals.energy, genes.maxEnergy, genes.temperaturePreference, genes.humidityPreference,
+				            genes.elevationPreference, vitals.remainingRefractoryPeriod );
 			}
 			std::print( "------------\n" );
 		}

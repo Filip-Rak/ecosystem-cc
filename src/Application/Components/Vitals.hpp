@@ -4,7 +4,8 @@ namespace cc::app::component
 {
 struct Vitals
 {
-	float satiety;
+	float energy;
 	int remainingRefractoryPeriod;
+	int lifespanLeft;
 };
 }  // namespace cc::app::component

@@ -9,6 +9,7 @@
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -41,6 +42,15 @@ auto setProperties( entt::registry& registry )
 
 	ImGui::SetNextWindowPos( ImVec2{ PanelLeft, PanelTop }, ImGuiCond_Always );
 	ImGui::SetNextWindowSize( ImVec2{ panelWidth, PanelHeight }, ImGuiCond_Always );
+}
+
+auto drawSimLog( const SimLog& log ) -> void
+{
+	ImGui::NewLine();
+	ImGui::Text( "Total Births: %zu", log.totalBirths );
+	ImGui::Text( "Current Population: %zu", log.currentPopulation );
+	ImGui::Text( "Starvations: %zu", log.starvations );
+	ImGui::Text( "Old Age Deaths: %zu", log.oldAgeDeaths );
 }
 
 auto drawContents( entt::registry& registry ) -> void
@@ -159,6 +169,11 @@ auto drawContents( entt::registry& registry ) -> void
 		}
 
 		ImGui::TextUnformatted( rightLabel );
+	}
+
+	{
+		const auto& simLog = registry.ctx().get< SimLog >();
+		drawSimLog( simLog );
 	}
 }
 

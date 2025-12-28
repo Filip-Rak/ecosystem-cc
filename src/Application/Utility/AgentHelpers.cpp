@@ -1,5 +1,6 @@
 #include "Application/Utility/AgentHelpers.hpp"
 
+#include <cassert>
 #include <random>
 
 #include <entt/entt.hpp>
@@ -7,6 +8,7 @@
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 
 namespace cc::app
 {
@@ -26,16 +28,22 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	mutateClamped( newGenes.humidityPreference );
 	mutateClamped( newGenes.elevationPreference );
 
-	// Uncapped mutation for satiety
-	newGenes.maxSatiety = std::max( 0.0f, newGenes.maxSatiety + dist( gen ) );
+	// Uncapped mutation for energy
+	newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
 	return newGenes;
 }
 
 auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity
 {
+	assert( registry.ctx().contains< SimLog >() );
+	auto& simLog = registry.ctx().get< SimLog >();
+
+	simLog.currentPopulation++;
+	simLog.totalBirths++;
+
 	const auto entity = registry.create();
 	registry.emplace< component::GeneSet >( entity, genes, genes );
-	registry.emplace< component::Vitals >( entity, genes.maxSatiety, genes.refractoryPeriod );
+	registry.emplace< component::Vitals >( entity, genes.maxEnergy, genes.refractoryPeriod, genes.lifespan );
 	registry.emplace< component::Position >( entity );
 
 	return entity;

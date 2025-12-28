@@ -30,11 +30,11 @@ auto AgentFeedingSystem::update() -> void
 	for ( const auto [ entity, position, geneSet, vitals ] : view.each() )
 	{
 		auto& vegetation   = cells[ position.cellIndex ].vegetation;
-		const float hunger = geneSet.agentGenes.maxSatiety - vitals.satiety;
+		const float hunger = geneSet.agentGenes.maxEnergy - vitals.energy;
 
 		const float eaten = std::min( { maxIntake, vegetation, hunger } );
 		vegetation -= eaten;
-		vitals.satiety += eaten;
+		vitals.energy += eaten;
 	}
 
 	m_registry.remove< component::EatIntent >( view.begin(), view.end() );

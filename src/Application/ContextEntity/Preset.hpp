@@ -42,9 +42,12 @@ struct Preset
 	{
 		struct Modifier
 		{
+			float initialMutation;
+			float furtherMutations;
 			float maxIntake;
 			float metabolism;
 			float baseTraversalCost;
+			float climateAdaptationRate;
 			std::size_t maxPerception;
 		} const modifier;
 

@@ -22,15 +22,19 @@
     },
     "agent": {
         "modifier": {
+            "initialMutation": 0.5,
+            "furtherMutations": 0.2,
             "maxIntake": 0.2,
-            "metabolism": 0.1,
-            "baseTraversalCost": 0.15,
+            "metabolism": 0.05,
+            "baseTraversalCost": 0.30,
+            "climateAdaptationRate": 0.01,
             "maxPerception": 3
         },
         "initialGene": {
             "perception": 2,
             "refractoryPeriod": 15,
-            "satiety": 1.0,
+            "lifeSpan": 35,
+            "energy": 1.0,
             "temperaturePreference": 0.5,
             "humidityPreference": 0.5,
             "elevationPreference": 0.5

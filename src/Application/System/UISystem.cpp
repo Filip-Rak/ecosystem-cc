@@ -5,6 +5,7 @@
 
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -24,6 +25,7 @@ UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 	assert( registry.ctx().contains< VisualGrid >() );
 	assert( registry.ctx().contains< GUIService >() );
 	assert( registry.ctx().contains< UIConfig >() );
+	assert( registry.ctx().contains< SimLog >() );
 	assert( registry.ctx().contains< Camera >() );
 	assert( registry.ctx().contains< Preset >() );
 	assert( registry.ctx().contains< Time >() );
@@ -45,7 +47,7 @@ auto UISystem::update() -> void {}
 
 auto UISystem::onReachedTargetIteration( const event::ReachedTargetIteration& /*event*/ ) -> void
 {
-	auto& config = m_registry.ctx().get< UIConfig >();
+	auto& config               = m_registry.ctx().get< UIConfig >();
 	config.askBeforeContinuing = true;
 }
 }  // namespace cc::app

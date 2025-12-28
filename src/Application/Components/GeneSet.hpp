@@ -1,14 +1,15 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
 
 namespace cc::app
 {
 struct Genes
 {
-	std::size_t perception;
+	std::uint8_t perception;
 	int refractoryPeriod;
-	float maxSatiety;
+	int lifespan;
+	float maxEnergy;
 	float temperaturePreference;
 	float humidityPreference;
 	float elevationPreference;

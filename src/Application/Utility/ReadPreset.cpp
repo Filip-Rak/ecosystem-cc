@@ -1,6 +1,7 @@
 #include "Application/Utility/ReadPreset.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <fstream>
 #include <stdexcept>
@@ -99,17 +100,21 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse agent - modifier
 		Preset::Agent::Modifier modifier{
-		    .maxIntake         = get< float >( json, "agent.modifier.maxIntake" ),
-		    .metabolism        = get< float >( json, "agent.modifier.metabolism" ),
-		    .baseTraversalCost = get< float >( json, "agent.modifier.baseTraversalCost" ),
-		    .maxPerception     = get< std::size_t >( json, "agent.modifier.maxPerception" ),
+		    .initialMutation       = get< float >( json, "agent.modifier.initialMutation" ),
+		    .furtherMutations      = get< float >( json, "agent.modifier.furtherMutations" ),
+		    .maxIntake             = get< float >( json, "agent.modifier.maxIntake" ),
+		    .metabolism            = get< float >( json, "agent.modifier.metabolism" ),
+		    .baseTraversalCost     = get< float >( json, "agent.modifier.baseTraversalCost" ),
+		    .climateAdaptationRate = get< float >( json, "agent.modifier.climateAdaptationRate" ),
+		    .maxPerception         = get< std::size_t >( json, "agent.modifier.maxPerception" ),
 		};
 
 		// Parse agent - initialGene
 		Genes initialGenes{
-		    .perception            = get< std::size_t >( json, "agent.initialGene.perception" ),
+		    .perception            = get< std::uint8_t >( json, "agent.initialGene.perception" ),
 		    .refractoryPeriod      = get< int >( json, "agent.initialGene.refractoryPeriod" ),
-		    .maxSatiety            = get< float >( json, "agent.initialGene.satiety" ),
+		    .lifespan              = get< int >( json, "agent.initialGene.lifeSpan" ),
+		    .maxEnergy             = get< float >( json, "agent.initialGene.energy" ),
 		    .temperaturePreference = get< float >( json, "agent.initialGene.temperaturePreference" ),
 		    .humidityPreference    = get< float >( json, "agent.initialGene.humidityPreference" ),
 		    .elevationPreference   = get< float >( json, "agent.initialGene.elevationPreference" ),

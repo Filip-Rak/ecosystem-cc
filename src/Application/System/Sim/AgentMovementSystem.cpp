@@ -27,7 +27,7 @@ auto AgentMovementSystem::update() -> void
 		if ( spatialGrid[ moveIntent.cellIndex ].size() >= cellAgentLimit ) continue;
 
 		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );
-		vitals.satiety -= moveIntent.movemementCost;
+		vitals.energy -= moveIntent.movemementCost;
 	}
 
 	m_registry.remove< component::MoveIntent >( view.begin(), view.end() );
