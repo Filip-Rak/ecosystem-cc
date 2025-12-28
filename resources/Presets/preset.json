@@ -25,7 +25,7 @@
             "initialMutation": 0.2,
             "furtherMutations": 0.1,
             "maxIntake": 0.2,
-            "metabolism": 0.05,
+            "baseEnergyBurn": 0.05,
             "baseTraversalCost": 0.3,
             "climateAdaptationRate": 0.01,
             "maxPerception": 3
@@ -35,9 +35,9 @@
             "refractoryPeriod": 15,
             "lifeSpan": 35,
             "energy": 1.0,
-            "temperaturePreference": 1.0,
-            "humidityPreference": 0.4,
-            "elevationPreference": 0.0
+            "temperaturePreference": 5,
+            "humidityPreference": 0.5,
+            "elevationPreference": 0.5
         }
     }
 }

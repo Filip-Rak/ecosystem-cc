@@ -6,6 +6,6 @@ struct Vitals
 {
 	float energy;
 	int remainingRefractoryPeriod;
-	int lifespanLeft;
+	int age;
 };
 }  // namespace cc::app::component

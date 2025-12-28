@@ -21,18 +21,20 @@ AgentFeedingSystem::AgentFeedingSystem( entt::registry& registry ) : m_registry(
 
 auto AgentFeedingSystem::update() -> void
 {
-	const auto maxIntake = m_registry.ctx().get< Preset >().agent.modifier.maxIntake;
-	auto& grid           = m_registry.ctx().get< Grid >();
-	auto& cells          = grid.cells();
+	const auto maxIntake    = m_registry.ctx().get< Preset >().agent.modifier.maxIntake;
+	auto& grid              = m_registry.ctx().get< Grid >();
+	const auto& spatialGrid = grid.getSpatialGrid();
+	auto& cells             = grid.cells();
 
 	const auto view = m_registry.view< const component::EatIntent, const component::Position, const component::GeneSet,
 	                                   component::Vitals >();
 	for ( const auto [ entity, position, geneSet, vitals ] : view.each() )
 	{
-		auto& vegetation   = cells[ position.cellIndex ].vegetation;
-		const float hunger = geneSet.agentGenes.maxEnergy - vitals.energy;
+		auto& vegetation      = cells[ position.cellIndex ].vegetation;
+		const auto population = static_cast< float >( spatialGrid[ position.cellIndex ].size() );
+		const float hunger    = geneSet.agentGenes.maxEnergy - vitals.energy;
 
-		const float eaten = std::min( { maxIntake, vegetation, hunger } );
+		const float eaten = std::min( { maxIntake, vegetation / population, hunger } );
 		vegetation -= eaten;
 		vitals.energy += eaten;
 	}

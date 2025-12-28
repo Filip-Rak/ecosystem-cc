@@ -28,8 +28,8 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	mutateClamped( newGenes.humidityPreference );
 	mutateClamped( newGenes.elevationPreference );
 
-	// Uncapped mutation for energy
-	// newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
+	// Uncapped mutations
+	newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
 	return newGenes;
 }
 
@@ -43,7 +43,7 @@ auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity
 
 	const auto entity = registry.create();
 	registry.emplace< component::GeneSet >( entity, genes, genes );
-	registry.emplace< component::Vitals >( entity, genes.maxEnergy, genes.refractoryPeriod, genes.lifespan );
+	registry.emplace< component::Vitals >( entity, genes.maxEnergy, genes.refractoryPeriod, 0 );
 	registry.emplace< component::Position >( entity );
 
 	return entity;

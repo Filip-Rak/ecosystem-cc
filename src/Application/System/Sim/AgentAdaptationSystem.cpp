@@ -6,15 +6,16 @@
 
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
+#include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 
 namespace cc::app
 {
 namespace
 {
-auto tickTowards( float& preference, const float cellValue, const float adaptationRate ) -> void
+auto tickTowards( float& value, const float targetValue, const float adaptationRate ) -> void
 {
-	preference += std::clamp( cellValue - preference, -adaptationRate, adaptationRate );
+	value += std::clamp( targetValue - value, -adaptationRate, adaptationRate );
 }
 }  // namespace
 
@@ -29,18 +30,22 @@ auto AgentAdaptationSystem::update() -> void
 	const auto& cells  = m_registry.ctx().get< Grid >().cells();
 	const auto& preset = m_registry.ctx().get< Preset >();
 
-	const auto view = m_registry.view< const component::Position, component::GeneSet >();
-	for ( const auto [ entity, position, geneSet ] : view.each() )
+	const auto view = m_registry.view< const component::Position, const component::Vitals, component::GeneSet >();
+	for ( const auto [ entity, position, vitals, geneSet ] : view.each() )
 	{
 		auto& futureGenes = geneSet.futureGenes;
 		const auto& cell  = cells[ position.cellIndex ];
 
-		{
-			const float rate = preset.agent.modifier.climateAdaptationRate;
-			tickTowards( futureGenes.temperaturePreference, cell.temperature, rate );
-			tickTowards( futureGenes.elevationPreference, cell.elevation, rate );
-			tickTowards( futureGenes.humidityPreference, cell.humidity, rate );
-		}
+		const float climateRate = preset.agent.modifier.climateAdaptationRate;
+		tickTowards( futureGenes.temperaturePreference, cell.temperature, climateRate );
+		tickTowards( futureGenes.elevationPreference, cell.elevation, climateRate );
+		tickTowards( futureGenes.humidityPreference, cell.humidity, climateRate );
+
+		constexpr float energyRate = 0.01f;
+		if ( vitals.energy == geneSet.agentGenes.maxEnergy )
+			geneSet.futureGenes.maxEnergy += energyRate;
+		else
+			tickTowards( futureGenes.maxEnergy, vitals.energy, energyRate );
 	}
 }
 };  // namespace cc::app

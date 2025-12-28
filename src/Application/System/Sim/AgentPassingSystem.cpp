@@ -1,5 +1,6 @@
 #include "Application/System/Sim/AgentPassingSystem.hpp"
 #include "Application/Components/Destroy.hpp"
+#include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
@@ -22,25 +23,27 @@ auto AgentPassingSystem::update() -> void
 {
 	const auto& preset = m_registry.ctx().get< Preset >();
 
-	const auto vitalsView = m_registry.view< component::Vitals >();
-	for ( const auto& [ entity, vitals ] : vitalsView.each() )
+	const auto vitalsView = m_registry.view< const component::GeneSet, component::Vitals >();
+	for ( const auto& [ entity, geneSet, vitals ] : vitalsView.each() )
 	{
+		const auto& agentGenes = geneSet.agentGenes;
+
 		using enum component::Destroy::Reason;
 		if ( vitals.energy <= 0.f )
 		{
 			m_registry.emplace< component::Destroy >( entity, Starvation );
 		}
-		else if ( vitals.lifespanLeft <= 0 )
+		else if ( vitals.age >= agentGenes.lifespan )
 		{
 			m_registry.emplace< component::Destroy >( entity, Age );
 		}
 
-		vitals.lifespanLeft--;
+		vitals.age++;
 		vitals.remainingRefractoryPeriod--;
 
 		if ( m_registry.any_of< component::MoveIntent >( entity ) )
 		{
-			vitals.energy -= preset.agent.modifier.metabolism;
+			vitals.energy -= preset.agent.modifier.baseEnergyBurn;
 		}
 	}
 

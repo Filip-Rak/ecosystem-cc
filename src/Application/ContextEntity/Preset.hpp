@@ -45,7 +45,7 @@ struct Preset
 			float initialMutation;
 			float furtherMutations;
 			float maxIntake;
-			float metabolism;
+			float baseEnergyBurn;
 			float baseTraversalCost;
 			float climateAdaptationRate;
 			std::size_t maxPerception;

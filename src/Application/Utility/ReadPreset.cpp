@@ -103,7 +103,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .initialMutation       = get< float >( json, "agent.modifier.initialMutation" ),
 		    .furtherMutations      = get< float >( json, "agent.modifier.furtherMutations" ),
 		    .maxIntake             = get< float >( json, "agent.modifier.maxIntake" ),
-		    .metabolism            = get< float >( json, "agent.modifier.metabolism" ),
+		    .baseEnergyBurn        = get< float >( json, "agent.modifier.baseEnergyBurn" ),
 		    .baseTraversalCost     = get< float >( json, "agent.modifier.baseTraversalCost" ),
 		    .climateAdaptationRate = get< float >( json, "agent.modifier.climateAdaptationRate" ),
 		    .maxPerception         = get< std::size_t >( json, "agent.modifier.maxPerception" ),
