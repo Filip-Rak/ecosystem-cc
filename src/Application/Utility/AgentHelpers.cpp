@@ -29,7 +29,7 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	mutateClamped( newGenes.elevationPreference );
 
 	// Uncapped mutation for energy
-	newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
+	// newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
 	return newGenes;
 }
 

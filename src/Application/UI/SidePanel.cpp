@@ -98,7 +98,7 @@ auto drawContents( entt::registry& registry ) -> void
 	if ( ImGui::Button( Labels.RestartButton.data() ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-		dispatcher.enqueue< event::ResetGrid >();
+		dispatcher.enqueue< event::ResetSim >();
 		simRunnerData.paused = true;
 
 		std::println( "{}", Labels.RestartButton.data() );

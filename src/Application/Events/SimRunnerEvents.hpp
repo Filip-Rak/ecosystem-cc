@@ -2,7 +2,7 @@
 
 namespace cc::app::event
 {
-struct ResetGrid
+struct ResetSim
 {};
 
 struct ReachedTargetIteration

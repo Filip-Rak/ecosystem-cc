@@ -21,7 +21,7 @@ namespace cc::app
 {
 namespace event
 {
-struct ResetGrid;
+struct ResetSim;
 }
 
 struct SimRunnerData;
@@ -34,7 +34,7 @@ public:
 
 private:
 	auto shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool;
-	auto onResetGrid( const event::ResetGrid& event ) -> void;
+	auto onResetSim( const event::ResetSim& event ) -> void;
 
 	const bool m_speedLimited;
 	entt::registry& m_registry;

@@ -7,8 +7,10 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
+#include "Application/System/Sim/AgentAdaptationSystem.hpp"
 #include "Application/System/Sim/AgentDecisionSystem.hpp"
 #include "Application/System/Sim/AgentFeedingSystem.hpp"
 #include "Application/System/Sim/AgentMovementSystem.hpp"
@@ -25,17 +27,19 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
+	assert( registry.ctx().contains< SimLog >() );
 	assert( registry.ctx().contains< Preset >() );
 	assert( registry.ctx().contains< Time >() );
 
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
-	dispatcher.sink< event::ResetGrid >().connect< &SimRunnerSystem::onResetGrid >( *this );
+	dispatcher.sink< event::ResetSim >().connect< &SimRunnerSystem::onResetSim >( *this );
 
 	m_simSystems.emplace_back( std::make_unique< VegetationSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentDecisionSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentMovementSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentFeedingSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentPassingSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< AgentAdaptationSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentOffspringSystem >( registry ) );
 
 	if ( !cliOptions.gui )
@@ -93,17 +97,20 @@ auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time 
 	return true;
 }
 
-auto SimRunnerSystem::onResetGrid( const event::ResetGrid& /*event*/ ) -> void
+auto SimRunnerSystem::onResetSim( const event::ResetSim& /*event*/ ) -> void
 {
+	auto& simLog = m_registry.ctx().get< SimLog >();
+	simLog       = SimLog{};
+
 	m_registry.clear();
 
 	const auto gridArgs = m_registry.ctx().get< Grid >().copyCreationArguments();
 	m_registry.ctx().erase< Grid >();
 	m_registry.ctx().emplace< Grid >( gridArgs );
 
-	auto& data         = m_registry.ctx().get< SimRunnerData >();
-	data.targetReached = false;
-	data.iteration     = 0;
-	m_iteration        = 0;
+	auto& runnerData         = m_registry.ctx().get< SimRunnerData >();
+	runnerData.targetReached = false;
+	runnerData.iteration     = 0;
+	m_iteration              = 0;
 }
 }  // namespace cc::app

@@ -48,7 +48,7 @@ Grid::Grid( const Args& args )
 		constexpr auto preallocatedEntities = 4uz;
 		spatialCell.reserve( preallocatedEntities );
 
-		const std::size_t agentCount        = 100;
+		constexpr std::size_t agentCount    = 1;
 		const std::size_t agentCountDivisor = m_cellCount / agentCount;
 		if ( index % agentCountDivisor == 0 )
 		{

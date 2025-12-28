@@ -205,9 +205,9 @@ auto getStayAction( const Genes& genes, const Cell& cell, const Preset& preset, 
 		return Action::ExploreFull;
 	}
 
-	const float energyCost     = getEnergyCost( genes, cell, preset.agent.modifier.metabolism );
-	const float sustainability = cell.vegetation / energyCost;
-	const bool unsustainable   = energyCost > preset.agent.modifier.maxIntake || sustainability < 1.f;
+	const float energyCost           = getEnergyCost( genes, cell, preset.agent.modifier.metabolism );
+	const float sustainabilityFactor = cell.vegetation / energyCost;
+	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 
 	if ( unsustainable )
 	{
@@ -256,10 +256,12 @@ auto AgentDecisionSystem::update() -> void
 		if ( action == Mate )
 		{
 			m_registry.emplace< component::OffspringIntent >( entity );
+			m_moveIntentions[ position.cellIndex ]++;
 		}
 		else if ( action == Eat )
 		{
 			m_registry.emplace< component::EatIntent >( entity );
+			m_moveIntentions[ position.cellIndex ]++;
 		}
 		else if ( action == ExploreStarving || action == ExploreFull )
 		{
