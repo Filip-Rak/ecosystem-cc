@@ -29,15 +29,15 @@ auto AgentOffspringSystem::update() -> void
 	                                   const component::Position, component::Vitals >();
 	for ( const auto [ entity, geneSet, position, vitals ] : view.each() )
 	{
+		constexpr float half = 2.f;
+		vitals.energy /= half;
+
 		const float mutationOffset = preset.agent.modifier.furtherMutations;
 		const auto newGenes        = mutateGenes( geneSet.futureGenes, mutationOffset );
-		const auto childEntity     = createAgent( m_registry, newGenes );
+		const auto childEntity     = createAgent( m_registry, newGenes, vitals.energy );
 		grid.addToSpatialGrid( childEntity, position.cellIndex );
 
 		vitals.remainingRefractoryPeriod = geneSet.agentGenes.refractoryPeriod;
-
-		constexpr float half = 2.f;
-		vitals.energy /= half;
 	}
 
 	m_registry.remove< component::OffspringIntent >( view.begin(), view.end() );

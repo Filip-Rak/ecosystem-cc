@@ -1,4 +1,9 @@
 #include "Application/System/Sim/AgentPassingSystem.hpp"
+
+#include <cassert>
+
+#include <entt/entt.hpp>
+
 #include "Application/Components/Destroy.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
@@ -6,9 +11,6 @@
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/SimLog.hpp"
-
-#include <cassert>
-#include <entt/entt.hpp>
 
 namespace cc::app
 {

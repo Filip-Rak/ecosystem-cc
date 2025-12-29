@@ -35,7 +35,7 @@ struct UI_t
 		struct Contents_t
 		{
 			const int minSpeed                     = 1;
-			const int maxSpeed                     = 480;
+			const int maxSpeed                     = 720;
 			const float maxUIScale                 = 5.f;
 			const float minUIScale                 = 0.5f;
 			const float GradientBoxHeight          = 40.f;

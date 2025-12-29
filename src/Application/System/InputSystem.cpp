@@ -54,15 +54,13 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			const auto cellPopulation = spatialCell.size();
 			const Cell& cell          = cells[ cellIndex ];
 
-			const auto totalPopulation =
-			    std::ranges::fold_left( spatialGrid | std::views::transform( std::ranges::size ), 0, std::plus<>() );
 			const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
 
 			std::print( "Increment: {} \n->Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> "
 			            "Elevation: {}\n-> "
-			            "Population: {}\n-> Total Population {}\n-> Highest Population {}\n",
+			            "Population: {}\n-> Highest Population {}\n",
 			            runnerData.iteration, cellIndex, cell.vegetation, cell.temperature, cell.humidity,
-			            cell.elevation, cellPopulation, totalPopulation, highestPopulation );
+			            cell.elevation, cellPopulation, highestPopulation );
 
 			std::println( "Population: " );
 			for ( const auto entity : spatialCell )
@@ -71,9 +69,9 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 				const auto genes  = registry.get< component::GeneSet >( entity ).agentGenes;
 
 				std::print( "\tEnergy: {}\n\tMaxEnergy: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
-				            "Elevation Preference: {}\n\tRefractor: {}\n",
+				            "Elevation Preference: {}\n\tRefractor: {}\n\tAge: {} / {}\n",
 				            vitals.energy, genes.maxEnergy, genes.temperaturePreference, genes.humidityPreference,
-				            genes.elevationPreference, vitals.remainingRefractoryPeriod );
+				            genes.elevationPreference, vitals.remainingRefractoryPeriod, vitals.age, genes.lifespan );
 			}
 			std::print( "------------\n" );
 		}

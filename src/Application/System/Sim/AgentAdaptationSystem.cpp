@@ -4,7 +4,9 @@
 
 #include <entt/entt.hpp>
 
+#include "Application/Components/FailedToMate.hpp"
 #include "Application/Components/GeneSet.hpp"
+#include "Application/Components/OffspringIntent.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
@@ -42,10 +44,14 @@ auto AgentAdaptationSystem::update() -> void
 		tickTowards( futureGenes.humidityPreference, cell.humidity, climateRate );
 
 		constexpr float energyRate = 0.01f;
-		if ( vitals.energy == geneSet.agentGenes.maxEnergy )
-			geneSet.futureGenes.maxEnergy += energyRate;
-		else
-			tickTowards( futureGenes.maxEnergy, vitals.energy, energyRate );
+		auto& maxEnergy            = geneSet.futureGenes.maxEnergy;
+		if ( m_registry.any_of< component::OffspringIntent >( entity ) )
+			maxEnergy += energyRate;
+		else if ( m_registry.any_of< component::FailedToMate >( entity ) )
+			maxEnergy -= energyRate;
 	}
+
+	const auto toDelete = m_registry.view< component::FailedToMate >();
+	m_registry.erase< component::FailedToMate >( toDelete.begin(), toDelete.end() );
 }
 };  // namespace cc::app

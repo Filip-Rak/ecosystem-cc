@@ -9,6 +9,7 @@
 #include <entt/entt.hpp>
 
 #include "Application/Components/EatIntent.hpp"
+#include "Application/Components/FailedToMate.hpp"
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/MoveIntent.hpp"
 #include "Application/Components/OffspringIntent.hpp"
@@ -60,17 +61,21 @@ auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targe
 auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, const Cell& cell, float baseCost )
     -> float
 {
-	const float tempCost = cell.temperature - agentGenes.temperaturePreference;
-	const float elevCost = cell.elevation - agentGenes.elevationPreference;
-	const float humCost  = cell.humidity - agentGenes.humidityPreference;
+	const float tDiff = std::abs( cell.temperature - agentGenes.temperaturePreference );
+	const float eDiff = std::abs( cell.elevation - agentGenes.elevationPreference );
+	const float hDiff = std::abs( cell.humidity - agentGenes.humidityPreference );
 
-	const float basePenalty = std::pow( tempCost, 2.f ) + std::pow( elevCost, 2.f ) + std::pow( humCost, 8.f );
-	const int refractory    = agentGenes.refractoryPeriod;
+	const float tempPenalty = std::pow( tDiff, 0.4f );
+	const float elevPenalty = std::pow( eDiff, 0.4f );
+	const float humPenalty  = std::pow( hDiff, 0.4f );
+
+	const float basePenalty = tempPenalty + elevPenalty + humPenalty;
+
+	const int refractory = agentGenes.refractoryPeriod;
 	const float underageFactor =
 	    ( vitals.age < refractory ) ? 0.5f + ( 0.5f / static_cast< float >( refractory ) ) : 1.f;
-	const float penalty = basePenalty / underageFactor;
 
-	return penalty * baseCost;
+	return basePenalty * underageFactor * baseCost;
 }
 
 auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Genes& agentGenes,
@@ -147,9 +152,44 @@ enum class Action : std::uint8_t
 	ExploreFull
 };
 
-auto getAction( const Genes& genes, const Cell& cell, const Preset& preset, const component::Vitals& vitals,
-                float population ) -> Action
+auto averageSustainAround( const Grid& grid, const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets,
+                           std::size_t centerIndex, std::size_t perception, float energyCost ) -> float
 {
+	const auto& cells       = grid.cells();
+	const auto& spatialGrid = grid.getSpatialGrid();
+
+	const auto centerIndexSigned = static_cast< std::ptrdiff_t >( centerIndex );
+
+	float totalFood      = 0.f;
+	std::size_t totalPop = 0uz;
+
+	for ( const auto offset : rangeOffsets[ perception - 1 ] )
+	{
+		// Clip at borders.
+		const auto newIndex = centerIndexSigned + offset;
+		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 ) continue;
+
+		totalFood += cells[ newIndex ].vegetation;
+		totalPop += spatialGrid[ newIndex ].size();
+	}
+
+	const float avgSustain = totalFood / static_cast< float >( totalPop ) / energyCost;
+	return avgSustain;
+}
+
+auto getAction( entt::registry& registry, entt::entity entity,
+                const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets ) -> Action
+{
+	const auto& grid   = registry.ctx().get< Grid >();
+	const auto& preset = registry.ctx().get< Preset >();
+
+	const auto index      = registry.get< component::Position >( entity ).cellIndex;
+	const auto population = grid.getSpatialGrid()[ index ].size();
+	const auto& genes     = registry.get< component::GeneSet >( entity ).agentGenes;
+	const auto& vitals    = registry.get< component::Vitals >( entity );
+
+	const auto& cell = grid.cells()[ index ];
+
 	constexpr bool inDanger = false;
 	if ( inDanger )
 	{
@@ -159,18 +199,24 @@ auto getAction( const Genes& genes, const Cell& cell, const Preset& preset, cons
 	const float fullnessFactor               = vitals.energy / genes.maxEnergy;
 	constexpr float offspringRequiredFulness = 0.95f;
 	const bool canBearOffspring = vitals.remainingRefractoryPeriod <= 0 && fullnessFactor >= offspringRequiredFulness;
+	const float energyCost      = getEnergyCost( vitals, genes, cell, preset.agent.modifier.baseEnergyBurn );
 
 	if ( canBearOffspring )
 	{
-		return Action::Mate;
+		constexpr float threshold = 2.f;
+		if ( averageSustainAround( grid, rangeOffsets, index, genes.perception, energyCost ) > threshold )
+		{
+			return Action::Mate;
+		}
+
+		registry.emplace< component::FailedToMate >( entity );
 	}
 	if ( fullnessFactor == 1.f )
 	{
 		return Action::ExploreFull;
 	}
 
-	const float energyCost           = getEnergyCost( vitals, genes, cell, preset.agent.modifier.baseEnergyBurn );
-	const float sustainabilityFactor = cell.vegetation / energyCost / population;
+	const float sustainabilityFactor = cell.vegetation / energyCost / static_cast< float >( population );
 	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 
 	if ( unsustainable )
@@ -217,7 +263,7 @@ auto AgentDecisionSystem::update() -> void
 		const auto& cell = cells[ position.cellIndex ];
 
 		const auto population = static_cast< float >( spatialGrid[ position.cellIndex ].size() );
-		const Action action   = getAction( geneSet.agentGenes, cell, preset, vitals, population );
+		const Action action   = getAction( m_registry, entity, m_rangeOffsets );
 
 		using enum Action;
 		if ( action == Mate )
@@ -237,6 +283,7 @@ auto AgentDecisionSystem::update() -> void
 			const std::size_t betterCell = bestCell( m_moveIntentions, grid, geneSet.agentGenes, vitals, preset,
 			                                         m_rangeOffsets, position.cellIndex );
 
+			assert( betterCell != position.cellIndex );
 			const std::size_t nextCellIndex = nextStepUnsafe( grid, position.cellIndex, betterCell );
 			const auto nextCell             = cells[ nextCellIndex ];
 			const auto traverseCost         = preset.agent.modifier.baseTraversalCost;

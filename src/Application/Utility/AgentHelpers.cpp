@@ -1,5 +1,6 @@
 #include "Application/Utility/AgentHelpers.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <random>
 
@@ -33,17 +34,18 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 	return newGenes;
 }
 
-auto createAgent( entt::registry& registry, const Genes& genes ) -> entt::entity
+auto createAgent( entt::registry& registry, const Genes& genes, float energy ) -> entt::entity
 {
 	assert( registry.ctx().contains< SimLog >() );
 	auto& simLog = registry.ctx().get< SimLog >();
 
 	simLog.currentPopulation++;
 	simLog.totalBirths++;
+	simLog.highestPopulation = std::max( simLog.highestPopulation, simLog.currentPopulation );
 
 	const auto entity = registry.create();
 	registry.emplace< component::GeneSet >( entity, genes, genes );
-	registry.emplace< component::Vitals >( entity, genes.maxEnergy, genes.refractoryPeriod, 0 );
+	registry.emplace< component::Vitals >( entity, energy, genes.refractoryPeriod, 0 );
 	registry.emplace< component::Position >( entity );
 
 	return entity;

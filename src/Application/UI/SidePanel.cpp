@@ -48,6 +48,7 @@ auto drawSimLog( const SimLog& log ) -> void
 {
 	ImGui::NewLine();
 	ImGui::Text( "Total Births: %zu", log.totalBirths );
+	ImGui::Text( "Highest population: %zu", log.highestPopulation );
 	ImGui::Text( "Current Population: %zu", log.currentPopulation );
 	ImGui::Text( "Starvations: %zu", log.starvations );
 	ImGui::Text( "Old Age Deaths: %zu", log.oldAgeDeaths );

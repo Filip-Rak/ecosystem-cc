@@ -53,8 +53,8 @@ Grid::Grid( const Args& args )
 		if ( index % agentCountDivisor == 0 )
 		{
 			const float mutationOffset = preset.agent.modifier.initialMutation;
-			const auto randomizedGenes = mutateGenes( initialGenes, mutationOffset );
-			const auto& entity         = createAgent( m_registry, randomizedGenes );
+			const auto randomizedGenes = initialGenes;  // mutateGenes( initialGenes, mutationOffset );
+			const auto& entity         = createAgent( m_registry, randomizedGenes, randomizedGenes.maxEnergy );
 			addToSpatialGrid( entity, index );
 		}
 	}
