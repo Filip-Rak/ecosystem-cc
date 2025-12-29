@@ -152,28 +152,34 @@ enum class Action : std::uint8_t
 	ExploreFull
 };
 
-auto averageSustainAround( const Grid& grid, const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets,
-                           std::size_t centerIndex, std::size_t perception, float energyCost ) -> float
+auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGenes, const Grid& grid,
+                           const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, std::size_t centerIndex,
+                           float baseCost ) -> float
 {
 	const auto& cells       = grid.cells();
 	const auto& spatialGrid = grid.getSpatialGrid();
+	const auto perception   = agentGenes.perception;
 
 	const auto centerIndexSigned = static_cast< std::ptrdiff_t >( centerIndex );
 
-	float totalFood      = 0.f;
-	std::size_t totalPop = 0uz;
-
+	float sustain = 0.f;
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
 		// Clip at borders.
 		const auto newIndex = centerIndexSigned + offset;
 		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 ) continue;
 
-		totalFood += cells[ newIndex ].vegetation;
-		totalPop += spatialGrid[ newIndex ].size();
+		const auto& cell = cells[ newIndex ];
+
+		const auto population      = spatialGrid[ newIndex ].size();
+		const auto energyCost      = getEnergyCost( vitals, agentGenes, cell, baseCost );
+		const auto sustainAddition = cell.vegetation / energyCost;
+
+		sustain += ( population > 0 ) ? sustainAddition / static_cast< float >( population ) : sustainAddition;
 	}
 
-	const float avgSustain = totalFood / static_cast< float >( totalPop ) / energyCost;
+	const auto cellCount   = static_cast< float >( rangeOffsets[ perception - 1 ].size() );
+	const float avgSustain = sustain / cellCount;
 	return avgSustain;
 }
 
@@ -203,13 +209,16 @@ auto getAction( entt::registry& registry, entt::entity entity,
 
 	if ( canBearOffspring )
 	{
-		constexpr float threshold = 2.f;
-		if ( averageSustainAround( grid, rangeOffsets, index, genes.perception, energyCost ) > threshold )
+		constexpr float threshold = 1.1f;
+		const float avgSustain =
+		    averageSustainAround( vitals, genes, grid, rangeOffsets, index, preset.agent.modifier.baseTraversalCost );
+		if ( avgSustain > threshold )
 		{
 			return Action::Mate;
 		}
 
 		registry.emplace< component::FailedToMate >( entity );
+		return Action::ExploreStarving;
 	}
 	if ( fullnessFactor == 1.f )
 	{

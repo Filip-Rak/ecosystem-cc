@@ -33,7 +33,7 @@
         "initialGene": {
             "perception": 2,
             "refractoryPeriod": 15,
-            "lifeSpan": 35,
+            "lifeSpan": 50,
             "energy": 1.0,
             "temperaturePreference": 0.97,
             "humidityPreference": 0.41,
