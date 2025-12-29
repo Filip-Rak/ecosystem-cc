@@ -48,9 +48,10 @@ Grid::Grid( const Args& args )
 		constexpr auto preallocatedEntities = 4uz;
 		spatialCell.reserve( preallocatedEntities );
 
-		constexpr std::size_t agentCount    = 1;
-		const std::size_t agentCountDivisor = m_cellCount / agentCount;
-		if ( index % agentCountDivisor == 0 )
+		// constexpr std::size_t agentCount    = 1;
+		// const std::size_t agentCountDivisor = m_cellCount / agentCount;
+		constexpr auto cellToSpawn = 3302uz;
+		if ( index == cellToSpawn )
 		{
 			const float mutationOffset = preset.agent.modifier.initialMutation;
 			const auto randomizedGenes = initialGenes;  // mutateGenes( initialGenes, mutationOffset );

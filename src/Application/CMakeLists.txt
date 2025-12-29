@@ -13,6 +13,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentOffspringSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/AgentPassingSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/CLILoggerSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/SimLogSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/SimRunnerSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/VegetationSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/UISystem.cpp

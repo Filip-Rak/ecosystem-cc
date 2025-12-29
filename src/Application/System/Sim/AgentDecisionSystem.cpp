@@ -75,7 +75,10 @@ auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, co
 	const float underageFactor =
 	    ( vitals.age < refractory ) ? 0.5f + ( 0.5f / static_cast< float >( refractory ) ) : 1.f;
 
-	return basePenalty * underageFactor * baseCost;
+	const float finalCost = basePenalty * underageFactor * baseCost;
+
+	constexpr float energyCostVitalsThreshold = 0.99f;
+	return std::min( finalCost, agentGenes.maxEnergy * energyCostVitalsThreshold );
 }
 
 auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Genes& agentGenes,
@@ -209,7 +212,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 
 	if ( canBearOffspring )
 	{
-		constexpr float threshold = 1.1f;
+		constexpr float threshold = 0.8f;
 		const float avgSustain =
 		    averageSustainAround( vitals, genes, grid, rangeOffsets, index, preset.agent.modifier.baseTraversalCost );
 		if ( avgSustain > threshold )

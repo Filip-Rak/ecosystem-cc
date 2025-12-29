@@ -52,6 +52,8 @@ auto drawSimLog( const SimLog& log ) -> void
 	ImGui::Text( "Current Population: %zu", log.currentPopulation );
 	ImGui::Text( "Starvations: %zu", log.starvations );
 	ImGui::Text( "Old Age Deaths: %zu", log.oldAgeDeaths );
+	ImGui::Text( "Average energy: %f", log.averageEnergy );
+	ImGui::Text( "Average adaptation: %f", log.averageAdaptation );
 }
 
 auto drawContents( entt::registry& registry ) -> void
