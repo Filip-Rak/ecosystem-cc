@@ -22,7 +22,7 @@
     },
     "agent": {
         "modifier": {
-            "initialMutation": 0.2,
+            "initialMutation": 0.0,
             "furtherMutations": 0.1,
             "maxIntake": 0.2,
             "baseEnergyBurn": 0.05,

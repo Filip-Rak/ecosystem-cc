@@ -213,7 +213,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 
 	if ( canBearOffspring )
 	{
-		constexpr float threshold = 1.6f;
+		constexpr float threshold = 0.8f;
 		const float avgSustain =
 		    averageSustainAround( vitals, genes, grid, rangeOffsets, index, preset.agent.modifier.baseTraversalCost );
 		if ( avgSustain > threshold )
