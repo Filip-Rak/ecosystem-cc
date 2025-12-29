@@ -18,12 +18,15 @@ AgentOffspringSystem::AgentOffspringSystem( entt::registry& registry ) : m_regis
 {
 	assert( registry.ctx().contains< Grid >() );
 	assert( registry.ctx().contains< Preset >() );
+
+	const auto prealloc = 100uz;
+	m_agentsToCreate.reserve( prealloc );
 }
 
 auto AgentOffspringSystem::update() -> void
 {
-	auto& grid   = m_registry.ctx().get< Grid >();
-	auto& preset = m_registry.ctx().get< Preset >();
+	auto& grid = m_registry.ctx().get< Grid >();
+	m_agentsToCreate.clear();
 
 	const auto view = m_registry.view< const component::OffspringIntent, const component::GeneSet,
 	                                   const component::Position, component::Vitals >();
@@ -31,15 +34,20 @@ auto AgentOffspringSystem::update() -> void
 	{
 		constexpr float half = 2.f;
 		vitals.energy /= half;
-
-		const float mutationOffset = preset.agent.modifier.furtherMutations;
-		const auto newGenes        = mutateGenes( geneSet.futureGenes, mutationOffset );
-		const auto childEntity     = createAgent( m_registry, newGenes, vitals.energy );
-		grid.addToSpatialGrid( childEntity, position.cellIndex );
-
 		vitals.remainingRefractoryPeriod = geneSet.agentGenes.refractoryPeriod;
+		m_agentsToCreate.emplace_back( geneSet.futureGenes, position.cellIndex, vitals.energy );
 	}
 
 	m_registry.remove< component::OffspringIntent >( view.begin(), view.end() );
+
+	auto& preset               = m_registry.ctx().get< Preset >();
+	const float mutationOffset = preset.agent.modifier.furtherMutations;
+
+	for ( const auto& args : m_agentsToCreate )
+	{
+		const auto newGenes    = mutateGenes( args.parentFutureGenes, mutationOffset );
+		const auto childEntity = createAgent( m_registry, newGenes, args.energy );
+		grid.addToSpatialGrid( childEntity, args.position );
+	}
 }
 }  // namespace cc::app

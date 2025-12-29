@@ -23,7 +23,6 @@ namespace cc::app
 {
 namespace
 {
-// TODO: Cheybyshev - consider Manhattan for better performance.
 auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::ptrdiff_t >
 {
 	std::vector< std::ptrdiff_t > offsets;
@@ -43,7 +42,6 @@ auto rangeOffsets( const Grid& grid, std::size_t range ) -> std::vector< std::pt
 	return offsets;
 }
 
-// TODO: Cheybyshev - consider Manhattan for better performance.
 auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targetIndex ) -> std::size_t
 {
 	auto startPosition        = grid.indexToPosition( startIndex );
@@ -65,9 +63,10 @@ auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, co
 	const float eDiff = std::abs( cell.elevation - agentGenes.elevationPreference );
 	const float hDiff = std::abs( cell.humidity - agentGenes.humidityPreference );
 
-	const float tempPenalty = std::pow( tDiff, 0.4f );
-	const float elevPenalty = std::pow( eDiff, 0.4f );
-	const float humPenalty  = std::pow( hDiff, 0.4f );
+	constexpr float power   = 0.4f;
+	const float tempPenalty = std::pow( tDiff, power );
+	const float elevPenalty = std::pow( eDiff, power );
+	const float humPenalty  = std::pow( hDiff, power );
 
 	const float basePenalty = tempPenalty + elevPenalty + humPenalty;
 
@@ -156,12 +155,16 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 
 	const auto centerIndexSigned = static_cast< std::ptrdiff_t >( centerIndex );
 
-	float sustain = 0.f;
+	float sustain    = 0.f;
+	float validCells = 0.f;
+
 	for ( const auto offset : rangeOffsets[ perception - 1 ] )
 	{
 		// Clip at borders.
 		const auto newIndex = centerIndexSigned + offset;
 		if ( newIndex >= grid.getSignedCellCount() || newIndex < 0 ) continue;
+
+		validCells += 1.f;
 
 		const auto& cell = cells[ newIndex ];
 
@@ -172,8 +175,7 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 		sustain += ( population > 0 ) ? sustainAddition / static_cast< float >( population ) : sustainAddition;
 	}
 
-	const auto cellCount   = static_cast< float >( rangeOffsets[ perception - 1 ].size() );
-	const float avgSustain = sustain / cellCount;
+	const float avgSustain = sustain / validCells;
 	return avgSustain;
 }
 
@@ -208,11 +210,10 @@ auto getAction( entt::registry& registry, entt::entity entity,
 	const float fullnessFactor               = vitals.energy / genes.maxEnergy;
 	constexpr float offspringRequiredFulness = 0.95f;
 	const bool canBearOffspring = vitals.remainingRefractoryPeriod <= 0 && fullnessFactor >= offspringRequiredFulness;
-	const float energyCost      = getEnergyCost( vitals, genes, cell, preset.agent.modifier.baseEnergyBurn );
 
 	if ( canBearOffspring )
 	{
-		constexpr float threshold = 0.8f;
+		constexpr float threshold = 1.6f;
 		const float avgSustain =
 		    averageSustainAround( vitals, genes, grid, rangeOffsets, index, preset.agent.modifier.baseTraversalCost );
 		if ( avgSustain > threshold )
@@ -221,13 +222,14 @@ auto getAction( entt::registry& registry, entt::entity entity,
 		}
 
 		registry.emplace< component::FailedToMate >( entity );
-		return Action::ExploreStarving;
+		return Action::ExploreFull;
 	}
 	if ( fullnessFactor == 1.f )
 	{
 		return Action::ExploreFull;
 	}
 
+	const float energyCost           = getEnergyCost( vitals, genes, cell, preset.agent.modifier.baseEnergyBurn );
 	const float sustainabilityFactor = cell.vegetation / energyCost / static_cast< float >( population );
 	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 
@@ -290,8 +292,6 @@ auto AgentDecisionSystem::update() -> void
 		}
 		else if ( action == ExploreStarving || action == ExploreFull )
 		{
-			// const std::size_t betterCell = findBetterCell( position.cellIndex, geneSet.agentGenes, grid, preset,
-			// vitals, m_rangeOffsets );
 			const std::size_t betterCell = bestCell( m_moveIntentions, grid, geneSet.agentGenes, vitals, preset,
 			                                         m_rangeOffsets, position.cellIndex );
 

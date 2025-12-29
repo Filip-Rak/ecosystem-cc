@@ -27,13 +27,13 @@
             "maxIntake": 0.2,
             "baseEnergyBurn": 0.05,
             "baseTraversalCost": 0.3,
-            "climateAdaptationRate": 0.005,
+            "climateAdaptationRate": 0.001,
             "maxPerception": 3
         },
         "initialGene": {
             "perception": 2,
-            "refractoryPeriod": 15,
-            "lifeSpan": 50,
+            "refractoryPeriod": 35,
+            "lifeSpan": 100,
             "energy": 1.0,
             "temperaturePreference": 0.97,
             "humidityPreference": 0.41,
