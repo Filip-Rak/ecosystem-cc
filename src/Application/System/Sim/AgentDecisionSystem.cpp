@@ -146,15 +146,6 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 	return bestCell;
 }
 
-enum class Action : std::uint8_t
-{
-	Flee,
-	Eat,
-	Mate,
-	ExploreStarving,
-	ExploreFull
-};
-
 auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGenes, const Grid& grid,
                            const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, std::size_t centerIndex,
                            float baseCost ) -> float
@@ -185,6 +176,15 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 	const float avgSustain = sustain / cellCount;
 	return avgSustain;
 }
+
+enum class Action : std::uint8_t
+{
+	Flee,
+	Eat,
+	Mate,
+	ExploreStarving,
+	ExploreFull
+};
 
 auto getAction( entt::registry& registry, entt::entity entity,
                 const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets ) -> Action
