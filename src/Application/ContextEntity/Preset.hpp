@@ -40,6 +40,15 @@ struct Preset
 
 	struct Agent
 	{
+		struct EnvironmentalSensitivity
+		{
+			const float base;
+
+			const float temperature;
+			const float humidity;
+			const float elevation;
+		} const environmentalSensitivity;
+
 		struct Modifier
 		{
 			float initialMutation;

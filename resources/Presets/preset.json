@@ -21,6 +21,12 @@
         }
     },
     "agent": {
+        "environmentalSensitivity": {
+            "base": 0.4,
+            "temperature": 1.0,
+            "humidity": 1.0,
+            "elevation": 1.0
+        },
         "modifier": {
             "initialMutation": 0.0,
             "furtherMutations": 0.1,

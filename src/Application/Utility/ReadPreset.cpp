@@ -98,6 +98,14 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .elevSteepness = get< float >( json, "vegetation.limit.elevSteepness" ),
 		};
 
+		// Parse agent - environmentalSensitivity
+		Preset::Agent::EnvironmentalSensitivity sensitivity{
+		    .base        = get< float >( json, "agent.environmentalSensitivity.base" ),
+		    .temperature = get< float >( json, "agent.environmentalSensitivity.temperature" ),
+		    .humidity    = get< float >( json, "agent.environmentalSensitivity.humidity" ),
+		    .elevation   = get< float >( json, "agent.environmentalSensitivity.elevation" ),
+		};
+
 		// Parse agent - modifier
 		Preset::Agent::Modifier modifier{
 		    .initialMutation       = get< float >( json, "agent.modifier.initialMutation" ),
@@ -122,8 +130,8 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Construct preset
 		return Preset{
-		    .vegetation        = { .speed = speed, .limit = limit },
-		    .agent             = { .modifier = modifier, .initialGenes = initialGenes },
+		    .vegetation = { .speed = speed, .limit = limit },
+		    .agent = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
 		    .presetName        = path.filename().string(),
 		    .gridDirectoryPath = gridPath,
 		    .iterationTarget   = iterationTarget,

@@ -56,31 +56,33 @@ auto nextStepUnsafe( const Grid& grid, std::size_t startIndex, std::size_t targe
 	return grid.PositionToIndex( startPosition );
 }
 
-auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, const Cell& cell, float baseCost )
-    -> float
+auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, const Cell& cell, const Preset& preset,
+                    float baseCost ) -> float
 {
 	const float tDiff = std::abs( cell.temperature - agentGenes.temperaturePreference );
 	const float eDiff = std::abs( cell.elevation - agentGenes.elevationPreference );
 	const float hDiff = std::abs( cell.humidity - agentGenes.humidityPreference );
 
-	constexpr float power   = 0.4f;
-	const float tempPenalty = std::pow( tDiff, power );
-	const float elevPenalty = std::pow( eDiff, power );
-	const float humPenalty  = std::pow( hDiff, power );
+	const auto sensitivity = preset.agent.environmentalSensitivity;
+	const float base       = sensitivity.base;
 
-	const float basePenalty = tempPenalty + elevPenalty + humPenalty;
+	const float tPenalty = std::pow( tDiff, base * sensitivity.temperature );
+	const float ePenalty = std::pow( eDiff, base * sensitivity.elevation );
+	const float hPenalty = std::pow( hDiff, base * sensitivity.humidity );
+
+	const float combinedPenalty = tPenalty + ePenalty + hPenalty;
 
 	const int refractory = agentGenes.refractoryPeriod;
 	const float underageFactor =
 	    ( vitals.age < refractory ) ? 0.5f + ( 0.5f / static_cast< float >( refractory ) ) : 1.f;
 
-	const float finalCost = basePenalty * underageFactor * baseCost;
+	const float finalCost = combinedPenalty * underageFactor * baseCost;
 
 	constexpr float energyCostVitalsThreshold = 0.99f;
 	return std::min( finalCost, agentGenes.maxEnergy * energyCostVitalsThreshold );
 }
 
-auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Genes& agentGenes,
+auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Genes& agentGenes, const Preset& preset,
                    const std::size_t startPos, const std::size_t targetPos, float baseCost ) -> float
 {
 	float totalCost   = 0.f;
@@ -90,7 +92,7 @@ auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Gene
 	while ( currentPos != targetPos )
 	{
 		currentPos = nextStepUnsafe( grid, currentPos, targetPos );
-		totalCost += getEnergyCost( vitals, agentGenes, cells[ currentPos ], baseCost );
+		totalCost += getEnergyCost( vitals, agentGenes, cells[ currentPos ], preset, baseCost );
 	}
 
 	return totalCost;
@@ -130,9 +132,9 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 		constexpr float crowdPenalty = 0.5f;
 		const float crowdScore       = static_cast< float >( crowdMax ) * crowdPenalty;
 
-		const auto food          = cell.vegetation;
-		const float moveCost     = calcMoveCost( vitals, grid, genes, cellIndex, newIndexUnsigned, traversalCost );
-		const float sustainScore = food / getEnergyCost( vitals, genes, cell, baseEnergyBurn );
+		const auto food      = cell.vegetation;
+		const float moveCost = calcMoveCost( vitals, grid, genes, preset, cellIndex, newIndexUnsigned, traversalCost );
+		const float sustainScore = food / getEnergyCost( vitals, genes, cell, preset, baseEnergyBurn );
 
 		const float score = sustainScore - crowdScore - moveCost;
 		if ( score > bestScore )
@@ -146,14 +148,15 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 }
 
 auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGenes, const Grid& grid,
-                           const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets, std::size_t centerIndex,
-                           float baseCost ) -> float
+                           const Preset& preset, const std::vector< std::vector< std::ptrdiff_t > >& rangeOffsets,
+                           std::size_t centerIndex ) -> float
 {
 	const auto& cells       = grid.cells();
 	const auto& spatialGrid = grid.getSpatialGrid();
 	const auto perception   = agentGenes.perception;
 
 	const auto centerIndexSigned = static_cast< std::ptrdiff_t >( centerIndex );
+	const auto baseCost          = preset.agent.modifier.baseTraversalCost;
 
 	float sustain    = 0.f;
 	float validCells = 0.f;
@@ -169,7 +172,7 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 		const auto& cell = cells[ newIndex ];
 
 		const auto population      = spatialGrid[ newIndex ].size();
-		const auto energyCost      = getEnergyCost( vitals, agentGenes, cell, baseCost );
+		const auto energyCost      = getEnergyCost( vitals, agentGenes, cell, preset, baseCost );
 		const auto sustainAddition = cell.vegetation / energyCost;
 
 		sustain += ( population > 0 ) ? sustainAddition / static_cast< float >( population ) : sustainAddition;
@@ -214,8 +217,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 	if ( canBearOffspring )
 	{
 		constexpr float threshold = 0.8f;
-		const float avgSustain =
-		    averageSustainAround( vitals, genes, grid, rangeOffsets, index, preset.agent.modifier.baseTraversalCost );
+		const float avgSustain    = averageSustainAround( vitals, genes, grid, preset, rangeOffsets, index );
 		if ( avgSustain > threshold )
 		{
 			return Action::Mate;
@@ -229,7 +231,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 		return Action::ExploreFull;
 	}
 
-	const float energyCost           = getEnergyCost( vitals, genes, cell, preset.agent.modifier.baseEnergyBurn );
+	const float energyCost = getEnergyCost( vitals, genes, cell, preset, preset.agent.modifier.baseEnergyBurn );
 	const float sustainabilityFactor = cell.vegetation / energyCost / static_cast< float >( population );
 	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 
@@ -300,7 +302,7 @@ auto AgentDecisionSystem::update() -> void
 			const auto nextCell             = cells[ nextCellIndex ];
 			const auto traverseCost         = preset.agent.modifier.baseTraversalCost;
 
-			const float moveCost = getEnergyCost( vitals, geneSet.agentGenes, nextCell, traverseCost );
+			const float moveCost = getEnergyCost( vitals, geneSet.agentGenes, nextCell, preset, traverseCost );
 
 			m_registry.emplace< component::MoveIntent >( entity, nextCellIndex, moveCost );
 			m_moveIntentions[ nextCellIndex ]++;
