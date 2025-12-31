@@ -43,8 +43,9 @@ auto AgentAdaptationSystem::update() -> void
 		tickTowards( futureGenes.elevationPreference, cell.elevation, climateRate );
 		tickTowards( futureGenes.humidityPreference, cell.humidity, climateRate );
 
-		constexpr float energyRate = 0.01f;
-		auto& maxEnergy            = geneSet.futureGenes.maxEnergy;
+		const float energyRate = preset.agent.environmentalSensitivity.energyAdaptationRate;
+		auto& maxEnergy        = geneSet.futureGenes.maxEnergy;
+
 		if ( m_registry.any_of< component::OffspringIntent >( entity ) )
 			maxEnergy += energyRate;
 		else if ( m_registry.any_of< component::FailedToMate >( entity ) )

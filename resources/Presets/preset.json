@@ -22,10 +22,16 @@
     },
     "agent": {
         "environmentalSensitivity": {
-            "base": 0.4,
-            "temperature": 1.0,
-            "humidity": 1.0,
-            "elevation": 1.0
+            "basePower": 0.4,
+            "temperaturePower": 1.0,
+            "humidityPower": 1.0,
+            "elevationPower": 1.0,
+            "youthPayFactor": 0.5,
+            "acclimationIncrement": 0.5,
+            "maxDrainCap": 0.99,
+            "crowdPenalty": 0.5,
+            "offspringSustainmentNeed": 0.8,
+            "energyAdaptationRate": 0.01
         },
         "modifier": {
             "initialMutation": 0.0,
@@ -34,7 +40,9 @@
             "baseEnergyBurn": 0.05,
             "baseTraversalCost": 0.3,
             "climateAdaptationRate": 0.001,
-            "maxPerception": 3
+            "offspringRequiredFulness": 0.95,
+            "maxPerception": 3,
+            "cellAgentLimit": 10
         },
         "initialGene": {
             "perception": 2,

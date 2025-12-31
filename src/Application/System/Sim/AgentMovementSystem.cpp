@@ -7,6 +7,7 @@
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
 {
@@ -17,13 +18,14 @@ AgentMovementSystem::AgentMovementSystem( entt::registry& registry ) : m_registr
 
 auto AgentMovementSystem::update() -> void
 {
-	auto& grid              = m_registry.ctx().get< Grid >();
-	const auto& spatialGrid = m_registry.ctx().get< Grid >().getSpatialGrid();
-	const auto view = m_registry.view< const component::MoveIntent, const component::Position, component::Vitals >();
+	auto& grid                = m_registry.ctx().get< Grid >();
+	const auto& spatialGrid   = grid.getSpatialGrid();
+	const auto& preset        = m_registry.ctx().get< Preset >();
+	const auto cellAgentLimit = preset.agent.modifier.cellAgentLimit;
 
+	const auto view = m_registry.view< const component::MoveIntent, const component::Position, component::Vitals >();
 	for ( const auto& [ entity, moveIntent, position, vitals ] : view.each() )
 	{
-		constexpr std::size_t cellAgentLimit = 10;
 		if ( spatialGrid[ moveIntent.cellIndex ].size() >= cellAgentLimit ) continue;
 
 		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );

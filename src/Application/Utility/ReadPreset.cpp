@@ -100,21 +100,29 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse agent - environmentalSensitivity
 		Preset::Agent::EnvironmentalSensitivity sensitivity{
-		    .base        = get< float >( json, "agent.environmentalSensitivity.base" ),
-		    .temperature = get< float >( json, "agent.environmentalSensitivity.temperature" ),
-		    .humidity    = get< float >( json, "agent.environmentalSensitivity.humidity" ),
-		    .elevation   = get< float >( json, "agent.environmentalSensitivity.elevation" ),
+		    .basePower                = get< float >( json, "agent.environmentalSensitivity.basePower" ),
+		    .temperaturePower         = get< float >( json, "agent.environmentalSensitivity.temperaturePower" ),
+		    .humidityPower            = get< float >( json, "agent.environmentalSensitivity.humidityPower" ),
+		    .elevationPower           = get< float >( json, "agent.environmentalSensitivity.elevationPower" ),
+		    .youthPayFactor           = get< float >( json, "agent.environmentalSensitivity.youthPayFactor" ),
+		    .acclimationIncrement     = get< float >( json, "agent.environmentalSensitivity.acclimationIncrement" ),
+		    .maxDrainCap              = get< float >( json, "agent.environmentalSensitivity.maxDrainCap" ),
+		    .crowdPenalty             = get< float >( json, "agent.environmentalSensitivity.crowdPenalty" ),
+		    .offspringSustainmentNeed = get< float >( json, "agent.environmentalSensitivity.offspringSustainmentNeed" ),
+		    .energyAdaptationRate     = get< float >( json, "agent.environmentalSensitivity.energyAdaptationRate" ),
 		};
 
 		// Parse agent - modifier
 		Preset::Agent::Modifier modifier{
-		    .initialMutation       = get< float >( json, "agent.modifier.initialMutation" ),
-		    .furtherMutations      = get< float >( json, "agent.modifier.furtherMutations" ),
-		    .maxIntake             = get< float >( json, "agent.modifier.maxIntake" ),
-		    .baseEnergyBurn        = get< float >( json, "agent.modifier.baseEnergyBurn" ),
-		    .baseTraversalCost     = get< float >( json, "agent.modifier.baseTraversalCost" ),
-		    .climateAdaptationRate = get< float >( json, "agent.modifier.climateAdaptationRate" ),
-		    .maxPerception         = get< std::size_t >( json, "agent.modifier.maxPerception" ),
+		    .initialMutation           = get< float >( json, "agent.modifier.initialMutation" ),
+		    .furtherMutations          = get< float >( json, "agent.modifier.furtherMutations" ),
+		    .maxIntake                 = get< float >( json, "agent.modifier.maxIntake" ),
+		    .baseEnergyBurn            = get< float >( json, "agent.modifier.baseEnergyBurn" ),
+		    .baseTraversalCost         = get< float >( json, "agent.modifier.baseTraversalCost" ),
+		    .climateAdaptationRate     = get< float >( json, "agent.modifier.climateAdaptationRate" ),
+		    .offspringRequiredFullness = get< float >( json, "agent.modifier.offspringRequiredFulness" ),
+		    .maxPerception             = get< std::size_t >( json, "agent.modifier.maxPerception" ),
+		    .cellAgentLimit            = get< std::size_t >( json, "agent.modifier.cellAgentLimit" ),
 		};
 
 		// Parse agent - initialGene

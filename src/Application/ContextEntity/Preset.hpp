@@ -42,22 +42,32 @@ struct Preset
 	{
 		struct EnvironmentalSensitivity
 		{
-			const float base;
+			const float basePower;
+			const float temperaturePower;
+			const float humidityPower;
+			const float elevationPower;
 
-			const float temperature;
-			const float humidity;
-			const float elevation;
+			const float youthPayFactor;
+			const float acclimationIncrement;
+			const float maxDrainCap;
+
+			const float crowdPenalty;
+			const float offspringSustainmentNeed;
+
+			const float energyAdaptationRate;
 		} const environmentalSensitivity;
 
 		struct Modifier
 		{
-			float initialMutation;
-			float furtherMutations;
-			float maxIntake;
-			float baseEnergyBurn;
-			float baseTraversalCost;
-			float climateAdaptationRate;
-			std::size_t maxPerception;
+			const float initialMutation;
+			const float furtherMutations;
+			const float maxIntake;
+			const float baseEnergyBurn;
+			const float baseTraversalCost;
+			const float climateAdaptationRate;
+			const float offspringRequiredFullness;
+			const std::size_t maxPerception;
+			const std::size_t cellAgentLimit;
 		} const modifier;
 
 		const Genes initialGenes;

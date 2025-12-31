@@ -63,23 +63,25 @@ auto getEnergyCost( const component::Vitals& vitals, const Genes& agentGenes, co
 	const float eDiff = std::abs( cell.elevation - agentGenes.elevationPreference );
 	const float hDiff = std::abs( cell.humidity - agentGenes.humidityPreference );
 
-	const auto sensitivity = preset.agent.environmentalSensitivity;
-	const float base       = sensitivity.base;
+	const auto& sensitivity = preset.agent.environmentalSensitivity;
+	const float base        = sensitivity.basePower;
 
-	const float tPenalty = std::pow( tDiff, base * sensitivity.temperature );
-	const float ePenalty = std::pow( eDiff, base * sensitivity.elevation );
-	const float hPenalty = std::pow( hDiff, base * sensitivity.humidity );
+	const float tPenalty = std::pow( tDiff, base * sensitivity.temperaturePower );
+	const float ePenalty = std::pow( eDiff, base * sensitivity.elevationPower );
+	const float hPenalty = std::pow( hDiff, base * sensitivity.humidityPower );
 
 	const float combinedPenalty = tPenalty + ePenalty + hPenalty;
 
 	const int refractory = agentGenes.refractoryPeriod;
+	assert( refractory > 0 );
+
 	const float underageFactor =
-	    ( vitals.age < refractory ) ? 0.5f + ( 0.5f / static_cast< float >( refractory ) ) : 1.f;
+	    ( vitals.age < refractory )
+	        ? sensitivity.youthPayFactor + ( sensitivity.acclimationIncrement / static_cast< float >( refractory ) )
+	        : 1.f;
 
 	const float finalCost = combinedPenalty * underageFactor * baseCost;
-
-	constexpr float energyCostVitalsThreshold = 0.99f;
-	return std::min( finalCost, agentGenes.maxEnergy * energyCostVitalsThreshold );
+	return std::min( finalCost, agentGenes.maxEnergy * sensitivity.maxDrainCap );
 }
 
 auto calcMoveCost( const component::Vitals& vitals, const Grid& grid, const Genes& agentGenes, const Preset& preset,
@@ -107,10 +109,12 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 	const auto& spatialCells  = grid.getSpatialGrid();
 	const auto perception     = static_cast< std::uint8_t >( genes.perception );
 	const auto startSigned    = static_cast< std::ptrdiff_t >( cellIndex );
-	const auto traversalCost  = preset.agent.modifier.baseTraversalCost;
-	const auto baseEnergyBurn = preset.agent.modifier.baseEnergyBurn;
+	const float crowdPenalty  = preset.agent.environmentalSensitivity.crowdPenalty;
 	const auto energyFactor   = vitals.energy / genes.maxEnergy;
-	const auto maxIntake      = preset.agent.modifier.maxIntake;
+	const auto& modifiers     = preset.agent.modifier;
+	const auto traversalCost  = modifiers.baseTraversalCost;
+	const auto baseEnergyBurn = modifiers.baseEnergyBurn;
+	const auto maxIntake      = modifiers.maxIntake;
 
 	assert( cellIndex < cells.size() );
 
@@ -126,11 +130,10 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 		const auto newIndexUnsigned = static_cast< std::size_t >( newIndex );
 		const auto& cell            = cells[ newIndexUnsigned ];
 
-		const auto crowdCurrent      = spatialCells[ newIndexUnsigned ].size();
-		const auto crowdFuture       = moveIntentions[ newIndexUnsigned ];
-		const auto crowdMax          = crowdCurrent + crowdFuture;
-		constexpr float crowdPenalty = 0.5f;
-		const float crowdScore       = static_cast< float >( crowdMax ) * crowdPenalty;
+		const auto crowdCurrent = spatialCells[ newIndexUnsigned ].size();
+		const auto crowdFuture  = moveIntentions[ newIndexUnsigned ];
+		const auto crowdMax     = crowdCurrent + crowdFuture;
+		const float crowdScore  = static_cast< float >( crowdMax ) * crowdPenalty;
 
 		const auto food      = cell.vegetation;
 		const float moveCost = calcMoveCost( vitals, grid, genes, preset, cellIndex, newIndexUnsigned, traversalCost );
@@ -210,14 +213,14 @@ auto getAction( entt::registry& registry, entt::entity entity,
 		return Action::Flee;
 	}
 
-	const float fullnessFactor               = vitals.energy / genes.maxEnergy;
-	constexpr float offspringRequiredFulness = 0.95f;
+	const float fullnessFactor           = vitals.energy / genes.maxEnergy;
+	const float offspringRequiredFulness = preset.agent.modifier.offspringRequiredFullness;
 	const bool canBearOffspring = vitals.remainingRefractoryPeriod <= 0 && fullnessFactor >= offspringRequiredFulness;
 
 	if ( canBearOffspring )
 	{
-		constexpr float threshold = 0.8f;
-		const float avgSustain    = averageSustainAround( vitals, genes, grid, preset, rangeOffsets, index );
+		const float threshold  = preset.agent.environmentalSensitivity.offspringSustainmentNeed;
+		const float avgSustain = averageSustainAround( vitals, genes, grid, preset, rangeOffsets, index );
 		if ( avgSustain > threshold )
 		{
 			return Action::Mate;
@@ -256,9 +259,9 @@ AgentDecisionSystem::AgentDecisionSystem( entt::registry& registry )
 	assert( registry.ctx().contains< Grid >() );
 	auto& grid = registry.ctx().get< Grid >();
 
-	m_moveIntentions.resize( grid.getCellCount(), 0 );
+	m_moveIntentions.resize( grid.getCellCount() );
 
-	for ( auto range = 0uz; range < m_maxPerception; range++ )
+	for ( auto range{ 0uz }; range < m_maxPerception; range++ )
 	{
 		m_rangeOffsets.emplace_back( rangeOffsets( grid, range ) );
 	}
@@ -271,7 +274,7 @@ auto AgentDecisionSystem::update() -> void
 	const auto& spatialGrid = grid.getSpatialGrid();
 	const auto& cells       = grid.cells();
 
-	std::ranges::fill( m_moveIntentions, 0 );
+	std::ranges::fill( m_moveIntentions, std::uint8_t{ 0 } );
 
 	const auto view = m_registry.view< const component::Position, const component::GeneSet, component::Vitals >();
 	for ( const auto& [ entity, position, geneSet, vitals ] : view.each() )
