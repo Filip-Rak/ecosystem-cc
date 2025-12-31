@@ -41,7 +41,7 @@ struct UI_t
 			const float GradientBoxHeight          = 40.f;
 			const float LegendLabelsMinDistX       = 10.f;
 			const std::string_view sliderPrecision = "%.2f";
-		} const Contents;
+		} const contents;
 
 		struct WidgetLabels_t
 		{

@@ -20,8 +20,8 @@ namespace cc::app
 {
 namespace
 {
-constexpr const auto& Constants = constant::UI.SidePanel;
-constexpr const auto& Labels    = Constants.WidgetLabels;
+constexpr const auto& constants = constant::UI.SidePanel;
+constexpr const auto& Labels    = constants.WidgetLabels;
 
 auto toImGui( Color color ) -> ImU32
 {
@@ -58,7 +58,7 @@ auto drawSimLog( const SimLog& log ) -> void
 
 auto drawContents( entt::registry& registry ) -> void
 {
-	constexpr const auto& Contents = Constants.Contents;
+	constexpr const auto& contents = constants.contents;
 	constexpr const auto& Visual   = constant::Visual;
 	auto& panelConfig              = registry.ctx().get< UIConfig >().sidePanel;
 	auto& cam                      = registry.ctx().get< Camera >();
@@ -69,8 +69,8 @@ auto drawContents( entt::registry& registry ) -> void
 	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
 
 	ImGui::SliderFloat( Labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
-	                    Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
-	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, Contents.minSpeed, Contents.maxSpeed, "%d",
+	                    contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
+	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, contents.minSpeed, contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
 
 	auto& config = registry.ctx().get< UIConfig >();
@@ -109,8 +109,8 @@ auto drawContents( entt::registry& registry ) -> void
 	ImGui::EndDisabled();
 
 	float& uiScale = ImGui::GetIO().FontGlobalScale;
-	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, Contents.minUIScale, Contents.maxUIScale,
-	                         Contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp ) )
+	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, contents.minUIScale, contents.maxUIScale,
+	                         contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< cc::event::GUIResized >();
@@ -143,8 +143,8 @@ auto drawContents( entt::registry& registry ) -> void
 		const ImU32 leftColor  = toImGui( visModeData.LowEndColor );
 		const ImU32 rightColor = toImGui( visModeData.HighEndColor );
 
-		const float boxWidth = ImGui::GetContentRegionAvail().x * Constants.ScrollablePanel.DefaultWidgetWidthFactor;
-		const ImVec2 boxSize( boxWidth, Contents.GradientBoxHeight * uiScale );
+		const float boxWidth = ImGui::GetContentRegionAvail().x * constants.ScrollablePanel.DefaultWidgetWidthFactor;
+		const ImVec2 boxSize( boxWidth, contents.GradientBoxHeight * uiScale );
 		const ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -161,7 +161,7 @@ auto drawContents( entt::registry& registry ) -> void
 		const float rightTextWidth  = ImGui::CalcTextSize( rightLabel ).x;
 		const float rightTextBeginX = boxWidth - rightTextWidth;
 
-		const float minimumDistX = Contents.LegendLabelsMinDistX * uiScale;
+		const float minimumDistX = contents.LegendLabelsMinDistX * uiScale;
 		if ( boxWidth >= rightTextWidth + leftTextWidth + minimumDistX )
 		{
 			ImGui::SameLine();
@@ -183,11 +183,11 @@ auto drawContents( entt::registry& registry ) -> void
 auto drawPanel( entt::registry& registry ) -> void
 {
 	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, Constants.MainWindowFlags ) )
+	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, constants.MainWindowFlags ) )
 	{
 		panelConfig.width = ImGui::GetWindowSize().x;
 
-		constexpr const auto& ScrollPanel = Constants.ScrollablePanel;
+		constexpr const auto& ScrollPanel = constants.ScrollablePanel;
 		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags,
 		                        ScrollPanel.WindowFlags ) )
 		{
