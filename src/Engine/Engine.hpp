@@ -20,10 +20,10 @@ struct WindowClosed;
 
 struct Args
 {
-	const std::string Title = "Engine";
-	const uint16_t WindowWidth = 1280u;
-	const uint16_t WindowHeight = 720u;
-	const bool EnableGUI = true;
+	const std::string title     = "Engine";
+	const uint16_t windowWidth  = 1280u;
+	const uint16_t windowHeight = 720u;
+	const bool enableGUI        = true;
 };
 
 class Engine : NonMoveable, NonCopyable
@@ -37,7 +37,7 @@ public:
 	requires std::derived_from< T, ISystem >
 	auto addSystem( Args&&... args ) -> T&
 	{
-		auto ptr = std::make_unique< T >( std::forward< Args >( args )... );
+		auto ptr  = std::make_unique< T >( std::forward< Args >( args )... );
 		auto& ref = *ptr;
 		m_systems.push_back( std::move( ptr ) );
 		return ref;
@@ -50,7 +50,7 @@ private:
 	requires std::derived_from< T, IFrameService >
 	auto addService( Args&&... args ) -> T&
 	{
-		auto ptr = std::make_unique< T >( std::forward< Args >( args )... );
+		auto ptr  = std::make_unique< T >( std::forward< Args >( args )... );
 		auto& ref = *ptr;
 		m_registry.ctx().emplace< T& >( ref );
 		m_services.push_back( std::move( ptr ) );

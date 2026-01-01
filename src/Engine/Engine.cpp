@@ -19,7 +19,7 @@ Engine::Engine( const Args& args )
 	setupDispatcher();
 	createCoreServices();
 
-	if ( args.EnableGUI )
+	if ( args.enableGUI )
 	{
 		initWindowEntities();
 		createWindowServices( args );
@@ -63,7 +63,7 @@ auto Engine::createCoreServices() -> void
 
 auto Engine::createWindowServices( const Args& args ) -> void
 {
-	auto& window = addService< SFWindowService >( m_registry, args.WindowWidth, args.WindowHeight, args.Title );
+	auto& window = addService< SFWindowService >( m_registry, args.windowWidth, args.windowHeight, args.title );
 	addService< InputService >( m_registry );
 	addService< GUIService >( m_registry );
 	addService< SFRenderService >( m_registry, window.getWindow() );

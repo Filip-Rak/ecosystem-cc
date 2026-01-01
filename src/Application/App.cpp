@@ -34,10 +34,10 @@ constexpr std::string_view Title = "Ecosystem";
 
 App::App( const cli::Options& options )
     : m_cliOptions( options ),
-      m_engine( { .Title        = Title.data(),
-                  .WindowWidth  = WindowWidth,
-                  .WindowHeight = WindowHeight,
-                  .EnableGUI    = options.gui } )
+      m_engine( { .title        = Title.data(),
+                  .windowWidth  = WindowWidth,
+                  .windowHeight = WindowHeight,
+                  .enableGUI    = options.gui } )
 {}
 
 auto App::init() -> std::optional< InitError >
