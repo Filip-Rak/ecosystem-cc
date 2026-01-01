@@ -34,6 +34,21 @@ Cell::Cell( float vegetation, float temperature, float elevation, float humidity
 	this->vegetation = growthParameters.effectiveLimit;
 }
 
+auto Cell::getFoodGain( const Genes& genes ) const -> FoodGain
+{
+	const float foodPref       = genes.foodPreference;
+	const float vegetationGain = vegetation * ( 1.f - foodPref );
+	const float fleshGain      = flesh * foodPref;
+
+	return { .vegetation = vegetationGain, .flesh = fleshGain };
+}
+
+auto Cell::getCombinedFoodGain( const Genes& genes ) const -> float
+{
+	const auto gain = getFoodGain( genes );
+	return gain.vegetation + gain.flesh;
+}
+
 auto Cell::calculateGrowthParameters( const Preset::Cell& preset ) const -> GrowthParameters
 {
 	constexpr const auto cellConstants = constant::cell;

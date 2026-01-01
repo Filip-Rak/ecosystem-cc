@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+
 #include <entt/entt.hpp>
 
 #include "Application/Components/EatIntent.hpp"
@@ -13,6 +14,26 @@
 
 namespace cc::app
 {
+namespace
+{
+/*auto eat( float& source, float& energy, const float maxEnergy, const float maxIntake ) -> void
+{
+    const float hunger = std::max( 0.f, maxEnergy - energy );
+    const float eaten  = std::max( std::min( { maxIntake, source, hunger } ), 0.f );
+
+    energy += eaten;
+    source -= eaten;
+}*/
+auto eat( float& source, float& energy, const float maxEnergy, const float maxIntake, const float population )
+{
+	const float hunger       = maxEnergy - energy;
+	const float perAgentFood = ( population > 0 ) ? source / population : source;
+	const float eaten        = std::min( { maxIntake, perAgentFood, hunger } );
+
+	source -= eaten;
+	energy += eaten;
+}
+}  // namespace
 AgentFeedingSystem::AgentFeedingSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( m_registry.ctx().contains< Grid >() );
@@ -30,13 +51,14 @@ auto AgentFeedingSystem::update() -> void
 	                                   component::Vitals >();
 	for ( const auto [ entity, position, geneSet, vitals ] : view.each() )
 	{
-		auto& vegetation      = cells[ position.cellIndex ].vegetation;
+		auto& cell            = cells[ position.cellIndex ];
+		auto& energy          = vitals.energy;
+		const auto maxEnergy  = geneSet.agentGenes.maxEnergy;
 		const auto population = static_cast< float >( spatialGrid[ position.cellIndex ].size() );
-		const float hunger    = geneSet.agentGenes.maxEnergy - vitals.energy;
+		const auto foodGain   = cell.getFoodGain( geneSet.agentGenes );
 
-		const float eaten = std::min( { maxIntake, vegetation / population, hunger } );
-		vegetation -= eaten;
-		vitals.energy += eaten;
+		auto& foodSource = ( foodGain.flesh > foodGain.vegetation ) ? cell.flesh : cell.vegetation;
+		eat( foodSource, energy, maxEnergy, maxIntake, population );
 	}
 
 	m_registry.remove< component::EatIntent >( view.begin(), view.end() );

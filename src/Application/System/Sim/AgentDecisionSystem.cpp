@@ -135,7 +135,7 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 		const auto crowdMax     = crowdCurrent + crowdFuture;
 		const float crowdScore  = static_cast< float >( crowdMax ) * crowdPenalty;
 
-		const auto food      = cell.vegetation;
+		const auto food      = cell.getCombinedFoodGain( genes );
 		const float moveCost = calcMoveCost( vitals, grid, genes, preset, cellIndex, newIndexUnsigned, traversalCost );
 		const float sustainScore = food / getEnergyCost( vitals, genes, cell, preset, baseEnergyBurn );
 
@@ -174,10 +174,10 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 
 		const auto& cell = cells[ newIndex ];
 
-		const auto population      = spatialGrid[ newIndex ].size();
-		const auto energyCost      = getEnergyCost( vitals, agentGenes, cell, preset, baseCost );
-		const auto sustainAddition = cell.vegetation / energyCost;
+		const auto population = spatialGrid[ newIndex ].size();
+		const auto energyCost = getEnergyCost( vitals, agentGenes, cell, preset, baseCost );
 
+		const auto sustainAddition = ( cell.getCombinedFoodGain( agentGenes ) ) / energyCost;
 		sustain += ( population > 0 ) ? sustainAddition / static_cast< float >( population ) : sustainAddition;
 	}
 
@@ -221,6 +221,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 	{
 		const float threshold  = preset.agent.environmentalSensitivity.offspringSustainmentNeed;
 		const float avgSustain = averageSustainAround( vitals, genes, grid, preset, rangeOffsets, index );
+
 		if ( avgSustain > threshold )
 		{
 			return Action::Mate;
@@ -234,8 +235,9 @@ auto getAction( entt::registry& registry, entt::entity entity,
 		return Action::ExploreFull;
 	}
 
-	const float energyCost = getEnergyCost( vitals, genes, cell, preset, preset.agent.modifier.baseEnergyBurn );
-	const float sustainabilityFactor = cell.vegetation / energyCost / static_cast< float >( population );
+	const float energyCost      = getEnergyCost( vitals, genes, cell, preset, preset.agent.modifier.baseEnergyBurn );
+	const float combinedSustain = cell.getCombinedFoodGain( genes );
+	const float sustainabilityFactor = combinedSustain / energyCost / static_cast< float >( population );
 	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 
 	if ( unsustainable )
