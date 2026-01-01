@@ -9,51 +9,57 @@
 
 namespace cc::app::constant
 {
-struct Visual_t
+struct Visual
 {
-	struct VisMode_t
+	struct VisMode
 	{
-		const std::string_view Name;
-		const std::string_view LowEndName;
-		const std::string_view HighEndName;
-		const Color LowEndColor;
-		const Color HighEndColor;
+		const std::string_view name;
+		const std::string_view lowEndName;
+		const std::string_view highEndName;
+		const Color lowEndColor;
+		const Color highEndColor;
 	};
 
-	struct VisModes_t
+	struct VisModes
 	{
-		const VisMode_t Vegetation{ .Name         = "Vegetation",
-		                            .LowEndName   = "Barren",
-		                            .HighEndName  = "Lush",
-		                            .LowEndColor  = Color{ .red = 139, .green = 69, .blue = 19 },
-		                            .HighEndColor = Color{ .green = 255 } };
+		const VisMode vegetation{ .name         = "Vegetation",
+		                          .lowEndName   = "Barren",
+		                          .highEndName  = "Lush",
+		                          .lowEndColor  = Color{ .red = 139, .green = 69, .blue = 19 },
+		                          .highEndColor = Color{ .green = 255 } };
 
-		const VisMode_t Elevation{ .Name         = "Elevation",
-		                           .LowEndName   = "Lowland",
-		                           .HighEndName  = "Highland",
-		                           .LowEndColor  = Color{ .red = 60, .green = 180, .blue = 74 },
-		                           .HighEndColor = Color{ .red = 139, .green = 69, .blue = 19 } };
+		const VisMode population{ .name         = "Population",
+		                          .lowEndName   = "Sparse",
+		                          .highEndName  = "Crowded",
+		                          .lowEndColor  = Color{ .red = 170, .green = 180, .blue = 120 },
+		                          .highEndColor = Color{ .red = 20, .green = 120, .blue = 20 } };
 
-		const VisMode_t Humidity{ .Name         = "Humidity",
-		                          .LowEndName   = "Arid",
-		                          .HighEndName  = "Water",
-		                          .LowEndColor  = Color{ .red = 139, .green = 69, .blue = 19 },
-		                          .HighEndColor = Color{ .green = 120, .blue = 255 } };
+		const VisMode flesh{ .name         = "Flesh",
+		                     .lowEndName   = "Residual",
+		                     .highEndName  = "Fresh",
+		                     .lowEndColor  = Color{ .red = 220, .green = 210, .blue = 190 },
+		                     .highEndColor = Color{ .red = 220, .green = 30, .blue = 30 } };
 
-		const VisMode_t Temperature{ .Name         = "Temperature",
-		                             .LowEndName   = "Cold",
-		                             .HighEndName  = "Hot",
-		                             .LowEndColor  = Color{ .blue = 255 },
-		                             .HighEndColor = Color{ .red = 255 } };
+		const VisMode temperature{ .name         = "Temperature",
+		                           .lowEndName   = "Cold",
+		                           .highEndName  = "Hot",
+		                           .lowEndColor  = Color{ .blue = 255 },
+		                           .highEndColor = Color{ .red = 255 } };
 
-		const VisMode_t Population{ .Name         = "Population",
-		                            .LowEndName   = "Sparse",
-		                            .HighEndName  = "Crowded",
-		                            .LowEndColor  = Color{ .red = 170, .green = 180, .blue = 120 },
-		                            .HighEndColor = Color{ .red = 20, .green = 120, .blue = 20 } };
+		const VisMode humidity{ .name         = "Humidity",
+		                        .lowEndName   = "Arid",
+		                        .highEndName  = "Water",
+		                        .lowEndColor  = Color{ .red = 139, .green = 69, .blue = 19 },
+		                        .highEndColor = Color{ .green = 120, .blue = 255 } };
 
-		const std::array< VisMode_t, 5 > Array = { Vegetation, Elevation, Humidity, Temperature, Population };
-	} const VisModes;
+		const VisMode elevation{ .name         = "Elevation",
+		                         .lowEndName   = "Lowland",
+		                         .highEndName  = "Highland",
+		                         .lowEndColor  = Color{ .red = 60, .green = 180, .blue = 74 },
+		                         .highEndColor = Color{ .red = 139, .green = 69, .blue = 19 } };
+
+		const std::array< VisMode, 6 > array = { vegetation, flesh, population, temperature, humidity, elevation };
+	} const visModes;
 
 	const float MovementSpeed     = 100.f;
 	const float FastMovementSpeed = 250.f;
@@ -67,11 +73,11 @@ struct Visual_t
 	const float ZoomScrollSpeed     = 0.05f;
 	const float FastZoomScrollSpeed = 0.10f;
 
-} inline constexpr Visual;
+} inline constexpr visual;
 
-[[nodiscard]] constexpr auto getVisModeData( VisModeEnum visMode ) -> Visual_t::VisMode_t
+[[nodiscard]] constexpr auto getVisModeData( VisModeEnum visMode ) -> Visual::VisMode
 {
 	const auto index = static_cast< std::size_t >( visMode );
-	return Visual.VisModes.Array[ index ];
+	return visual.visModes.array[ index ];
 }
 }  // namespace cc::app::constant

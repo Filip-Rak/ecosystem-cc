@@ -27,8 +27,8 @@ Grid::Grid( const Args& args )
 	m_spatialGrid.resize( m_cellCount );
 	m_cells.reserve( m_cellCount );
 
-	const auto preset                          = m_registry.ctx().get< Preset >();
-	const Preset::Vegetation& vegetationPreset = preset.vegetation;
+	const auto preset                    = m_registry.ctx().get< Preset >();
+	const Preset::Cell& vegetationPreset = preset.vegetation;
 
 	for ( std::size_t index = 0; index < m_cellCount; index++ )
 	{

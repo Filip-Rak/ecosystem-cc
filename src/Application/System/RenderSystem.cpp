@@ -38,7 +38,7 @@ auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> Gri
 
 template < auto CellPropertyPtr >
 auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float propertyRange,
-                    const constant::Visual_t::VisMode_t& visMode ) -> void
+                    const constant::Visual::VisMode& visMode ) -> void
 {
 	const auto& cells = grid.cells();
 	for ( std::size_t index = 0; index < cells.size(); index++ )
@@ -47,7 +47,7 @@ auto colorizeCells( std::vector< Color >& colors, const Grid& grid, float proper
 		Color& color     = colors[ index ];
 
 		const float factor = std::min( cell.*CellPropertyPtr / propertyRange, 1.f );
-		color              = lerpColor( visMode.LowEndColor, visMode.HighEndColor, factor );
+		color              = lerpColor( visMode.lowEndColor, visMode.highEndColor, factor );
 	}
 }
 
@@ -56,9 +56,8 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 {
 	// TODO: Consider performance.
 	const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
-	// const auto highestPopulation = 2uz;
 
-	constexpr const auto& Constants = constant::Visual.VisModes.Population;
+	constexpr const auto& Constants = constant::visual.visModes.population;
 	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
 	{
 		const std::size_t cellPopulation = spatialGrid[ index ].size();
@@ -66,7 +65,7 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 
 		const float popFactor =
 		    std::min( static_cast< float >( cellPopulation ) / static_cast< float >( highestPopulation ), 1.f );
-		color = lerpColor( Constants.LowEndColor, Constants.HighEndColor, popFactor );
+		color = lerpColor( Constants.lowEndColor, Constants.highEndColor, popFactor );
 	}
 }
 }  // namespace
@@ -92,44 +91,49 @@ auto RenderSystem::update() -> void
 	updateCameraHandle( camera );
 }
 
-auto RenderSystem::updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void
+auto RenderSystem::updateGridHandle( const Grid& logicalGrid, VisualGrid& visualGrid ) -> void
 {
-	constexpr const auto& VisMode = constant::Visual.VisModes;
-	constexpr const auto& Cell    = constant::cell;
-	auto& colors                  = visualGrid.colors;
+	constexpr const auto& visMode = constant::visual.visModes;
+	constexpr const auto& cell    = constant::cell;
+	auto& gridColors              = visualGrid.colors;
 
 	using enum VisModeEnum;
 	switch ( visualGrid.visMode )
 	{
 	case Vegetation:
 	{
-		colorizeCells< &Cell::vegetation >( colors, grid, Cell.vegetationRange, VisMode.Vegetation );
+		colorizeCells< &Cell::vegetation >( gridColors, logicalGrid, cell.vegetationRange, visMode.vegetation );
 		break;
 	}
-	case Elevation:
+	case Flesh:
 	{
-		colorizeCells< &Cell::elevation >( colors, grid, Cell.elevationRange, VisMode.Elevation );
-		break;
-	}
-	case Humidity:
-	{
-		colorizeCells< &Cell::humidity >( colors, grid, Cell.humidityRange, VisMode.Humidity );
-		break;
-	}
-	case Temperature:
-	{
-		colorizeCells< &Cell::temperature >( colors, grid, Cell.temperatureRange, VisMode.Temperature );
+		colorizeCells< &Cell::flesh >( gridColors, logicalGrid, cell.fleshRange, visMode.flesh );
 		break;
 	}
 	case Population:
 	{
-		colorizePopulationCells( colors, grid.getSpatialGrid() );
+		colorizePopulationCells( gridColors, logicalGrid.getSpatialGrid() );
+		break;
+	}
+	case Temperature:
+	{
+		colorizeCells< &Cell::temperature >( gridColors, logicalGrid, cell.temperatureRange, visMode.temperature );
+		break;
+	}
+	case Humidity:
+	{
+		colorizeCells< &Cell::humidity >( gridColors, logicalGrid, cell.humidityRange, visMode.humidity );
+		break;
+	}
+	case Elevation:
+	{
+		colorizeCells< &Cell::elevation >( gridColors, logicalGrid, cell.elevationRange, visMode.elevation );
 		break;
 	}
 	default: assert( false );
 	}
 
-	m_renderer.setGridColors( m_gridHandle, colors );
+	m_renderer.setGridColors( m_gridHandle, gridColors );
 }
 
 auto RenderSystem::updateCameraHandle( const Camera& camera ) -> void

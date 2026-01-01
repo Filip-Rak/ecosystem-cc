@@ -1,6 +1,7 @@
 #include "InputService.hpp"
 
 #include <cassert>
+#include <cstdint>
 
 #include <entt/entt.hpp>
 
@@ -11,14 +12,14 @@ namespace cc
 {
 namespace
 {
-auto toKeyIndex( keyboard::Key key ) -> uint8_t
+auto toKeyIndex( keyboard::Key key ) -> std::uint8_t
 {
-	return static_cast< uint8_t >( key );
+	return static_cast< std::uint8_t >( key );
 }
 
-auto toButtonIndex( mouse::Button button ) -> uint8_t
+auto toButtonIndex( mouse::Button button ) -> std::uint8_t
 {
-	return static_cast< uint8_t >( button );
+	return static_cast< std::uint8_t >( button );
 }
 }  // namespace
 
@@ -36,15 +37,15 @@ auto InputService::beginFrame() -> void
 	const auto& inputMap = m_registry.ctx().get< InputMap >();
 	if ( inputMap.windowInFocus )
 	{
-		m_keyboard.current = inputMap.keySates;
-		m_mouse.current = inputMap.buttonSates;
+		m_keyboard.current      = inputMap.keySates;
+		m_mouse.current         = inputMap.buttonSates;
 		m_mouse.currentPosition = inputMap.mousePos;
-		m_mouse.scrollDelta = inputMap.mouseScrollDelta;
+		m_mouse.scrollDelta     = inputMap.mouseScrollDelta;
 
 		if ( !m_wasIsInFocus )
 		{
 			m_mouse.lastPosition = m_mouse.currentPosition;
-			m_wasIsInFocus = true;
+			m_wasIsInFocus       = true;
 		}
 	}
 
@@ -53,8 +54,8 @@ auto InputService::beginFrame() -> void
 
 auto InputService::endFrame() -> void
 {
-	m_keyboard.previous = m_keyboard.current;
-	m_mouse.previous = m_mouse.current;
+	m_keyboard.previous  = m_keyboard.current;
+	m_mouse.previous     = m_mouse.current;
 	m_mouse.lastPosition = m_mouse.currentPosition;
 }
 
@@ -129,7 +130,7 @@ auto InputService::getMouseScrollDelta() const -> float
 auto InputService::zeroInput() -> void
 {
 	m_keyboard = {};
-	m_mouse = {};
+	m_mouse    = {};
 }
 
 auto InputService::onLoseFocus( const event::LostFocus& /*lostFocus*/ ) -> void

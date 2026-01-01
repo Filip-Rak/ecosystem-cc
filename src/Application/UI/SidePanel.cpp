@@ -21,7 +21,7 @@ namespace cc::app
 namespace
 {
 constexpr const auto& constants = constant::UI.SidePanel;
-constexpr const auto& Labels    = constants.WidgetLabels;
+constexpr const auto& labels    = constants.WidgetLabels;
 
 auto toImGui( Color color ) -> ImU32
 {
@@ -59,24 +59,24 @@ auto drawSimLog( const SimLog& log ) -> void
 auto drawContents( entt::registry& registry ) -> void
 {
 	constexpr const auto& contents = constants.contents;
-	constexpr const auto& Visual   = constant::Visual;
+	constexpr const auto& Visual   = constant::visual;
 	auto& panelConfig              = registry.ctx().get< UIConfig >().sidePanel;
 	auto& cam                      = registry.ctx().get< Camera >();
 
 	auto& simRunnerData = registry.ctx().get< SimRunnerData >();
 	auto& preset        = registry.ctx().get< Preset >();
 
-	ImGui::LabelText( Labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
+	ImGui::LabelText( labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
 
-	ImGui::SliderFloat( Labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
+	ImGui::SliderFloat( labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
 	                    contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
-	ImGui::SliderInt( Labels.SpeedSlider.data(), &simRunnerData.speed, contents.minSpeed, contents.maxSpeed, "%d",
+	ImGui::SliderInt( labels.SpeedSlider.data(), &simRunnerData.speed, contents.minSpeed, contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );
 
 	auto& config = registry.ctx().get< UIConfig >();
 	const auto pauseButtonAltLabel =
-	    ( simRunnerData.targetReached ) ? Labels.PauseButtonFinished : Labels.PauseButtonPaused;
-	const auto pauseButtonLabel = ( simRunnerData.paused ) ? pauseButtonAltLabel : Labels.PauseButtonRunning;
+	    ( simRunnerData.targetReached ) ? labels.PauseButtonFinished : labels.PauseButtonPaused;
+	const auto pauseButtonLabel = ( simRunnerData.paused ) ? pauseButtonAltLabel : labels.PauseButtonRunning;
 
 	if ( ImGui::Button( pauseButtonLabel.data() ) )
 	{
@@ -90,26 +90,26 @@ auto drawContents( entt::registry& registry ) -> void
 	}
 
 	ImGui::SameLine();
-	if ( ImGui::Button( Labels.IncrementButton.data() ) )
+	if ( ImGui::Button( labels.IncrementButton.data() ) )
 	{
-		std::println( "{}", Labels.IncrementButton.data() );
+		std::println( "{}", labels.IncrementButton.data() );
 	}
 
 	ImGui::SameLine();
 
 	ImGui::BeginDisabled( simRunnerData.iteration == 0 );
-	if ( ImGui::Button( Labels.RestartButton.data() ) )
+	if ( ImGui::Button( labels.RestartButton.data() ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< event::ResetSim >();
 		simRunnerData.paused = true;
 
-		std::println( "{}", Labels.RestartButton.data() );
+		std::println( "{}", labels.RestartButton.data() );
 	}
 	ImGui::EndDisabled();
 
 	float& uiScale = ImGui::GetIO().FontGlobalScale;
-	if ( ImGui::SliderFloat( Labels.UIScaleSlider.data(), &uiScale, contents.minUIScale, contents.maxUIScale,
+	if ( ImGui::SliderFloat( labels.UIScaleSlider.data(), &uiScale, contents.minUIScale, contents.maxUIScale,
 	                         contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp ) )
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
@@ -118,14 +118,14 @@ auto drawContents( entt::registry& registry ) -> void
 
 	VisModeEnum& currentVisMode       = registry.ctx().get< VisualGrid >().visMode;
 	auto currentVisModeInt            = static_cast< int >( currentVisMode );
-	constexpr const auto& VisModesArr = app::constant::Visual.VisModes.Array;
+	constexpr const auto& visModesArr = app::constant::visual.visModes.array;
 
-	if ( ImGui::BeginCombo( Labels.VisModeCombo.data(), app::constant::getVisModeData( currentVisMode ).Name.data() ) )
+	if ( ImGui::BeginCombo( labels.VisModeCombo.data(), app::constant::getVisModeData( currentVisMode ).name.data() ) )
 	{
-		for ( int index = 0; const auto& mode : VisModesArr )
+		for ( int index = 0; const auto& mode : visModesArr )
 		{
 			bool isSelected = ( currentVisModeInt == index );
-			if ( ImGui::Selectable( mode.Name.data(), isSelected ) )
+			if ( ImGui::Selectable( mode.name.data(), isSelected ) )
 			{
 				currentVisModeInt = index;
 				currentVisMode    = static_cast< VisModeEnum >( currentVisModeInt );
@@ -138,10 +138,10 @@ auto drawContents( entt::registry& registry ) -> void
 	}
 
 	{
-		const auto visModeData = VisModesArr[ currentVisModeInt ];
+		const auto visModeData = visModesArr[ currentVisModeInt ];
 
-		const ImU32 leftColor  = toImGui( visModeData.LowEndColor );
-		const ImU32 rightColor = toImGui( visModeData.HighEndColor );
+		const ImU32 leftColor  = toImGui( visModeData.lowEndColor );
+		const ImU32 rightColor = toImGui( visModeData.highEndColor );
 
 		const float boxWidth = ImGui::GetContentRegionAvail().x * constants.ScrollablePanel.DefaultWidgetWidthFactor;
 		const ImVec2 boxSize( boxWidth, contents.GradientBoxHeight * uiScale );
@@ -152,8 +152,8 @@ auto drawContents( entt::registry& registry ) -> void
 		                                   leftColor, rightColor, rightColor, leftColor );
 		ImGui::Dummy( boxSize );
 
-		const auto* const leftLabel  = visModeData.LowEndName.data();
-		const auto* const rightLabel = visModeData.HighEndName.data();
+		const auto* const leftLabel  = visModeData.lowEndName.data();
+		const auto* const rightLabel = visModeData.highEndName.data();
 
 		ImGui::TextUnformatted( leftLabel );
 
@@ -183,12 +183,12 @@ auto drawContents( entt::registry& registry ) -> void
 auto drawPanel( entt::registry& registry ) -> void
 {
 	auto& panelConfig = registry.ctx().get< UIConfig >().sidePanel;
-	if ( ImGui::Begin( Labels.SidePanel.data(), nullptr, constants.MainWindowFlags ) )
+	if ( ImGui::Begin( labels.SidePanel.data(), nullptr, constants.MainWindowFlags ) )
 	{
 		panelConfig.width = ImGui::GetWindowSize().x;
 
 		constexpr const auto& ScrollPanel = constants.ScrollablePanel;
-		if ( ImGui::BeginChild( Labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags,
+		if ( ImGui::BeginChild( labels.ScrollablePanel.data(), ScrollPanel.Size, ScrollPanel.ChildFlags,
 		                        ScrollPanel.WindowFlags ) )
 		{
 			drawContents( registry );

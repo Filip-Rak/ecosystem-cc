@@ -18,29 +18,29 @@ CameraMovementSystem::CameraMovementSystem( entt::registry& registry ) : m_regis
 
 auto CameraMovementSystem::update() -> void
 {
-	constexpr const auto& Constants = constant::Visual;
-	const auto& time = m_registry.ctx().get< Time >();
-	auto& camera = m_registry.ctx().get< Camera >();
+	constexpr const auto& Constants = constant::visual;
+	const auto& time                = m_registry.ctx().get< Time >();
+	auto& camera                    = m_registry.ctx().get< Camera >();
 
 	float zoomKeyboardSpeed = Constants.ZoomKeyboardSpeed;
-	float zoomScrollSpeed = Constants.ZoomScrollSpeed;
-	float movementSpeed = Constants.MovementSpeed;
+	float zoomScrollSpeed   = Constants.ZoomScrollSpeed;
+	float movementSpeed     = Constants.MovementSpeed;
 
 	if ( camera.isSpedUp )
 	{
 		zoomKeyboardSpeed = Constants.FastZoomKeyboardSpeed;
-		zoomScrollSpeed = Constants.FastZoomScrollSpeed;
-		movementSpeed = Constants.FastMovementSpeed;
+		zoomScrollSpeed   = Constants.FastZoomScrollSpeed;
+		movementSpeed     = Constants.FastMovementSpeed;
 	}
 
 	const float keyboardZoom = camera.keyboardZoomInput * time.DeltaTime * zoomKeyboardSpeed;
-	const float mouseZoom = camera.mouseZoomInput * zoomScrollSpeed;
+	const float mouseZoom    = camera.mouseZoomInput * zoomScrollSpeed;
 
 	const float newZoom = camera.zoomLevel + keyboardZoom + mouseZoom;
-	camera.zoomLevel = std::clamp( newZoom, Constants.MinZoom, Constants.MaxZoom );
+	camera.zoomLevel    = std::clamp( newZoom, Constants.MinZoom, Constants.MaxZoom );
 
 	const glm::vec2 keyboardMove = camera.keyboardMovementInput * time.DeltaTime * movementSpeed / camera.zoomLevel;
-	const glm::vec2 mouseMove = camera.mouseMovementInput / camera.zoomLevel;
+	const glm::vec2 mouseMove    = camera.mouseMovementInput / camera.zoomLevel;
 	camera.position += keyboardMove + mouseMove;
 }
 }  // namespace cc::app

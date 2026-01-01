@@ -10,9 +10,9 @@ namespace cc::app
 {
 struct Preset
 {
-	struct Vegetation
+	struct Cell
 	{
-		struct Speed
+		struct GrowthSpeed
 		{
 			const float base;
 
@@ -23,7 +23,7 @@ struct Preset
 			const float humWidth;
 		} const speed;
 
-		struct Limit
+		struct GrowthLimit
 		{
 			const float base;
 
@@ -36,6 +36,13 @@ struct Preset
 			const float elevHalf;
 			const float elevSteepness;
 		} const limit;
+
+		struct Flesh
+		{
+			const float baseDecayRate;
+			const float decayTempAccel;
+		} const flesh;
+
 	} const vegetation;
 
 	struct Agent

@@ -4,12 +4,13 @@
 
 namespace cc::app
 {
-enum class VisModeEnum : uint8_t
+enum class VisModeEnum : std::uint8_t
 {
 	Vegetation,
-	Elevation,
-	Humidity,
+	Flesh,
+	Population,
 	Temperature,
-	Population
+	Humidity,
+	Elevation
 };
 }

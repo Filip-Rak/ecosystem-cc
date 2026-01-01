@@ -24,8 +24,7 @@ auto elevationPenalty( float maxElevation, float elevation, float half, float st
 
 }  // namespace
 
-Cell::Cell( float vegetation, float temperature, float elevation, float humidity,
-            const Preset::Vegetation& vegetationPreset )
+Cell::Cell( float vegetation, float temperature, float elevation, float humidity, const Preset::Cell& vegetationPreset )
     : vegetation( std::max( constant::cell.minVegetation, vegetation ) ),
       temperature( temperature ),
       elevation( elevation ),
@@ -35,7 +34,7 @@ Cell::Cell( float vegetation, float temperature, float elevation, float humidity
 	this->vegetation = growthParameters.effectiveLimit;
 }
 
-auto Cell::calculateGrowthParameters( const Preset::Vegetation& preset ) const -> GrowthParameters
+auto Cell::calculateGrowthParameters( const Preset::Cell& preset ) const -> GrowthParameters
 {
 	constexpr const auto cellConstants = constant::cell;
 	const auto speedPreset             = preset.speed;
@@ -44,8 +43,8 @@ auto Cell::calculateGrowthParameters( const Preset::Vegetation& preset ) const -
 	// Speed parameter
 	const float speedTempF     = bellCurve( temperature, speedPreset.tempOptimal, speedPreset.tempWidth );
 	const float speedHumF      = bellCurve( humidity, speedPreset.humOptimal, speedPreset.humWidth );
-	const float speedFactor    = speedTempF * speedHumF;
-	const float effectiveSpeed = speedFactor * speedPreset.base;
+	const float speedF         = speedTempF * speedHumF;
+	const float effectiveSpeed = speedF * speedPreset.base;
 
 	// Limit parameter
 	const float limitTempF = bellCurve( temperature, limitPreset.tempOptimal, limitPreset.tempWidth );
@@ -57,7 +56,14 @@ auto Cell::calculateGrowthParameters( const Preset::Vegetation& preset ) const -
 	const float effectiveLimit =
 	    std::clamp( limitFactor * limitPreset.base, cellConstants.minVegetation, cellConstants.maxVegetation );
 
+	// Flesh
+	const auto& flesh             = preset.flesh;
+	const auto baseDecayRate      = flesh.baseDecayRate;
+	const auto decayTempAccel     = flesh.decayTempAccel;
+	const auto effectiveDecayRate = baseDecayRate + ( decayTempAccel * temperature );
+
 	// Effective Parameters
-	return { .effectiveSpeed = effectiveSpeed, .effectiveLimit = effectiveLimit };
+	return {
+	    .effectiveSpeed = effectiveSpeed, .effectiveLimit = effectiveLimit, .effectiveDecayRate = effectiveDecayRate };
 }
 }  // namespace cc::app

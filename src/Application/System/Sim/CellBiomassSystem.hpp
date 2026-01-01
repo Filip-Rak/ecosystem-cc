@@ -6,10 +6,10 @@
 
 namespace cc::app
 {
-class VegetationSystem : public ISystem
+class CellBiomassSystem : public ISystem
 {
 public:
-	VegetationSystem( entt::registry& registry );
+	CellBiomassSystem( entt::registry& registry );
 	auto update() -> void override;
 
 private:

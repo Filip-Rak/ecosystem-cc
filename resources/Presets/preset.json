@@ -2,15 +2,15 @@
     "gridDirectoryPath": "resources/Grid100x100",
     "iterationTarget": 3E5,
     "rngSeed": 0,
-    "vegetation": {
-        "speed": {
+    "cell": {
+        "growthSpeed": {
             "base": 0.08,
             "tempOptimal": 0.6,
             "tempWidth": 0.25,
             "humOptimal": 0.65,
             "humWidth": 0.2
         },
-        "limit": {
+        "growthLimit": {
             "base": 1.0,
             "tempOptimal": 0.6,
             "tempWidth": 0.27,
@@ -18,6 +18,10 @@
             "humWidth": 0.3,
             "elevHalf": 0.7,
             "elevSteepness": 6.0
+        },
+        "flesh": {
+            "baseDecayRate": 0.08,
+            "decayTempAccel": 0.04
         }
     },
     "agent": {

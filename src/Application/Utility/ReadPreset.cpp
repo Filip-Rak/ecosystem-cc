@@ -78,24 +78,29 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		const auto iterationTarget = get< std::size_t >( json, "iterationTarget" );
 		const auto rngSeed         = get< std::uint16_t >( json, "rngSeed" );
 
-		// Parse vegetation - speed
-		Preset::Vegetation::Speed speed{
-		    .base        = get< float >( json, "vegetation.speed.base" ),
-		    .tempOptimal = get< float >( json, "vegetation.speed.tempOptimal" ),
-		    .tempWidth   = get< float >( json, "vegetation.speed.tempWidth" ),
-		    .humOptimal  = get< float >( json, "vegetation.speed.humOptimal" ),
-		    .humWidth    = get< float >( json, "vegetation.speed.humWidth" ),
+		// Parse cell - speed
+		Preset::Cell::GrowthSpeed speed{
+		    .base        = get< float >( json, "cell.growthSpeed.base" ),
+		    .tempOptimal = get< float >( json, "cell.growthSpeed.tempOptimal" ),
+		    .tempWidth   = get< float >( json, "cell.growthSpeed.tempWidth" ),
+		    .humOptimal  = get< float >( json, "cell.growthSpeed.humOptimal" ),
+		    .humWidth    = get< float >( json, "cell.growthSpeed.humWidth" ),
 		};
 
-		// Parse vegetation - limit
-		Preset::Vegetation::Limit limit{
-		    .base          = get< float >( json, "vegetation.limit.base" ),
-		    .tempOptimal   = get< float >( json, "vegetation.limit.tempOptimal" ),
-		    .tempWidth     = get< float >( json, "vegetation.limit.tempWidth" ),
-		    .humOptimal    = get< float >( json, "vegetation.limit.humOptimal" ),
-		    .humWidth      = get< float >( json, "vegetation.limit.humWidth" ),
-		    .elevHalf      = get< float >( json, "vegetation.limit.elevHalf" ),
-		    .elevSteepness = get< float >( json, "vegetation.limit.elevSteepness" ),
+		// Parse cell - limit
+		Preset::Cell::GrowthLimit limit{
+		    .base          = get< float >( json, "cell.growthLimit.base" ),
+		    .tempOptimal   = get< float >( json, "cell.growthLimit.tempOptimal" ),
+		    .tempWidth     = get< float >( json, "cell.growthLimit.tempWidth" ),
+		    .humOptimal    = get< float >( json, "cell.growthLimit.humOptimal" ),
+		    .humWidth      = get< float >( json, "cell.growthLimit.humWidth" ),
+		    .elevHalf      = get< float >( json, "cell.growthLimit.elevHalf" ),
+		    .elevSteepness = get< float >( json, "cell.growthLimit.elevSteepness" ),
+		};
+
+		Preset::Cell::Flesh Flesh{
+		    .baseDecayRate  = get< float >( json, "cell.flesh.baseDecayRate" ),
+		    .decayTempAccel = get< float >( json, "cell.flesh.decayTempAccel" ),
 		};
 
 		// Parse agent - environmentalSensitivity
@@ -138,7 +143,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Construct preset
 		return Preset{
-		    .vegetation = { .speed = speed, .limit = limit },
+		    .vegetation = { .speed = speed, .limit = limit, .flesh = Flesh },
 		    .agent = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
 		    .presetName        = path.filename().string(),
 		    .gridDirectoryPath = gridPath,

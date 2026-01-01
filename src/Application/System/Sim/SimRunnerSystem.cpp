@@ -17,8 +17,8 @@
 #include "Application/System/Sim/AgentOffspringSystem.hpp"
 #include "Application/System/Sim/AgentPassingSystem.hpp"
 #include "Application/System/Sim/CLILoggerSystem.hpp"
+#include "Application/System/Sim/CellBiomassSystem.hpp"
 #include "Application/System/Sim/SimLogSystem.hpp"
-#include "Application/System/Sim/VegetationSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -35,7 +35,7 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetSim >().connect< &SimRunnerSystem::onResetSim >( *this );
 
-	m_simSystems.emplace_back( std::make_unique< VegetationSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< CellBiomassSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentDecisionSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentMovementSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentFeedingSystem >( registry ) );

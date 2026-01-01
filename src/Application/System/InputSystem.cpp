@@ -57,10 +57,9 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 			const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
 
 			std::print( "Increment: {} \n->Cell ID: {}\n-> Vegetation: {}\n-> Temperature: {}\n-> Humidity: {}\n-> "
-			            "Elevation: {}\n-> "
-			            "Population: {}\n-> Highest Population {}\n",
+			            "Elevation: {}\n-> Flesh: {}\n-> Population: {}\n-> Highest Population {}\n",
 			            runnerData.iteration, cellIndex, cell.vegetation, cell.temperature, cell.humidity,
-			            cell.elevation, cellPopulation, highestPopulation );
+			            cell.elevation, cell.flesh, cellPopulation, highestPopulation );
 
 			std::println( "Population: " );
 			for ( const auto entity : spatialCell )

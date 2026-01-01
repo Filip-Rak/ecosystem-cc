@@ -57,7 +57,7 @@ auto AgentPassingSystem::update() -> void
 	for ( const auto [ entity, destroy, position ] : destroyView.each() )
 	{
 		grid.removeFromSpatialGrid( entity, position.cellIndex );
-		cells[ position.cellIndex ].carrion += 100.f;
+		cells[ position.cellIndex ].flesh += 1.f;
 
 		using enum component::Destroy::Reason;
 		switch ( destroy.reason )

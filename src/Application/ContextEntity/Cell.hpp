@@ -10,21 +10,21 @@ struct Cell
 	{
 		const float effectiveSpeed;
 		const float effectiveLimit;
+		const float effectiveDecayRate;
 	};
 
-	float carrion{ 0.f };
-	float vegetation;
+	float flesh{ 0.f };
+	float vegetation{ 0.f };
 
 	const float temperature;
 	const float elevation;
 	const float humidity;
+
 	const GrowthParameters growthParameters;
 
-	Cell( float vegetation, float temperature, float elevation, float humidity,
-	      const Preset::Vegetation& vegetationPreset );
+	Cell( float vegetation, float temperature, float elevation, float humidity, const Preset::Cell& vegetationPreset );
 
 private:
-	[[nodiscard]] auto calculateGrowthParameters( const Preset::Vegetation& vegetationPreset ) const
-	    -> GrowthParameters;
+	[[nodiscard]] auto calculateGrowthParameters( const Preset::Cell& vegetationPreset ) const -> GrowthParameters;
 };
 }  // namespace cc::app
