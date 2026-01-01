@@ -13,6 +13,7 @@ struct Genes
 	float temperaturePreference;
 	float humidityPreference;
 	float elevationPreference;
+	float foodPreference;
 };
 }  // namespace cc::app
 

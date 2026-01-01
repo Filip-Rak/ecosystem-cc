@@ -68,9 +68,10 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 				const auto genes  = registry.get< component::GeneSet >( entity ).agentGenes;
 
 				std::print( "\tEnergy: {}\n\tMaxEnergy: {}\n\tTemperature preference: {}\n\tHumidity Preference: {}\n\t"
-				            "Elevation Preference: {}\n\tRefractor: {}\n\tAge: {} / {}\n",
+				            "Elevation Preference: {}\n\tFoodPreference: {} \n\tRefractor: {}\n\tAge: {} / {}\n",
 				            vitals.energy, genes.maxEnergy, genes.temperaturePreference, genes.humidityPreference,
-				            genes.elevationPreference, vitals.remainingRefractoryPeriod, vitals.age, genes.lifespan );
+				            genes.elevationPreference, genes.foodPreference, vitals.remainingRefractoryPeriod,
+				            vitals.age, genes.lifespan );
 			}
 			std::print( "------------\n" );
 		}

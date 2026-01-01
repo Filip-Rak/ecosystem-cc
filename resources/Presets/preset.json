@@ -55,7 +55,8 @@
             "energy": 1.0,
             "temperaturePreference": 0.97,
             "humidityPreference": 0.41,
-            "elevationPreference": 0.0
+            "elevationPreference": 0.0,
+            "foodPreference": 0.0
         }
     }
 }
