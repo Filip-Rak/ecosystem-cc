@@ -139,7 +139,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .temperaturePreference = get< float >( json, "agent.initialGene.temperaturePreference" ),
 		    .humidityPreference    = get< float >( json, "agent.initialGene.humidityPreference" ),
 		    .elevationPreference   = get< float >( json, "agent.initialGene.elevationPreference" ),
-		    .foodPreference        = get< float >( json, "agent.initialGene.foodPreference" ),
+		    .foodPreference        = 0.f,  // FIXME: Disabled on purpose.
 		};
 
 		// Construct preset

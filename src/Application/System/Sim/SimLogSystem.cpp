@@ -28,6 +28,7 @@ auto SimLogSystem::update() -> void
 	auto agentCount           = 0uz;
 	float maxEnergySum        = 0.f;
 	float adaptationRatingSum = 0.f;
+	float foodPrefSum         = 0.f;
 
 	const auto& view =
 	    m_registry.view< const component::GeneSet, const component::Vitals, const component::Position >();
@@ -45,6 +46,7 @@ auto SimLogSystem::update() -> void
 
 		const float adaptation = 1 - ( ( tDiff + hDiff + eDiff ) / 3.f );
 		adaptationRatingSum += adaptation;
+		foodPrefSum += genes.foodPreference;
 	}
 
 	if ( agentCount > 0uz )
@@ -52,6 +54,7 @@ auto SimLogSystem::update() -> void
 		const auto fAgentCount   = static_cast< float >( agentCount );
 		simLog.averageEnergy     = maxEnergySum / fAgentCount;
 		simLog.averageAdaptation = adaptationRatingSum / fAgentCount;
+		simLog.averageFoodPref   = foodPrefSum / fAgentCount;
 	}
 }
 };  // namespace cc::app

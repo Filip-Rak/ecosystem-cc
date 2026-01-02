@@ -31,6 +31,10 @@ auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
 
 	// Uncapped mutations
 	newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
+
+	// const float newFP = newGenes.foodPreference + ( dist( gen ) * 0.5f ) + ( newGenes.foodPreference * 0.5f );
+	// newGenes.foodPreference = std::clamp( 0.f, newGenes.foodPreference, 1.f );
+
 	return newGenes;
 }
 

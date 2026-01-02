@@ -1,11 +1,13 @@
 #include "Application/System/Sim/AgentAdaptationSystem.hpp"
 
+#include <algorithm>
 #include <cassert>
 
 #include <entt/entt.hpp>
 
 #include "Application/Components/FailedToMate.hpp"
 #include "Application/Components/GeneSet.hpp"
+#include "Application/Components/JustEaten.hpp"
 #include "Application/Components/OffspringIntent.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
@@ -50,9 +52,19 @@ auto AgentAdaptationSystem::update() -> void
 			maxEnergy += energyRate;
 		else if ( m_registry.any_of< component::FailedToMate >( entity ) )
 			maxEnergy -= energyRate;
+
+		const auto* justEaten = m_registry.try_get< component::JustEaten >( entity );
+		if ( justEaten != nullptr )
+		{
+			const float sign               = ( justEaten->source == component::JustEaten::Source::Flesh ) ? 1.f : -1.f;
+			constexpr float adaptationRate = 0.1f;
+			float& foodPref                = futureGenes.foodPreference;
+
+			foodPref += justEaten->amount * sign * adaptationRate;
+			foodPref = std::clamp( foodPref, 0.f, 1.f );
+		}
 	}
 
-	const auto toDelete = m_registry.view< component::FailedToMate >();
-	m_registry.erase< component::FailedToMate >( toDelete.begin(), toDelete.end() );
+	m_registry.remove< component::FailedToMate, component::JustEaten >( view.begin(), view.end() );
 }
 };  // namespace cc::app

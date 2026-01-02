@@ -29,8 +29,8 @@ struct Cell
 	const GrowthParameters growthParameters;
 
 	Cell( float vegetation, float temperature, float elevation, float humidity, const Preset::Cell& vegetationPreset );
-	[[nodiscard]] auto getFoodGain( const Genes& genes ) const -> FoodGain;
-	[[nodiscard]] auto getCombinedFoodGain( const Genes& genes ) const -> float;
+	[[nodiscard]] auto getFoodGain( float foodPref ) const -> FoodGain;
+	[[nodiscard]] auto getCombinedFoodGain( float foodPref ) const -> float;
 
 private:
 	[[nodiscard]] auto calculateGrowthParameters( const Preset::Cell& vegetationPreset ) const -> GrowthParameters;

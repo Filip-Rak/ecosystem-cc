@@ -135,7 +135,7 @@ auto bestCell( std::vector< std::uint8_t >& moveIntentions, const Grid& grid, co
 		const auto crowdMax     = crowdCurrent + crowdFuture;
 		const float crowdScore  = static_cast< float >( crowdMax ) * crowdPenalty;
 
-		const auto food      = cell.getCombinedFoodGain( genes );
+		const auto food      = cell.getCombinedFoodGain( genes.foodPreference );
 		const float moveCost = calcMoveCost( vitals, grid, genes, preset, cellIndex, newIndexUnsigned, traversalCost );
 		const float sustainScore = food / getEnergyCost( vitals, genes, cell, preset, baseEnergyBurn );
 
@@ -177,7 +177,7 @@ auto averageSustainAround( const component::Vitals& vitals, const Genes& agentGe
 		const auto population = spatialGrid[ newIndex ].size();
 		const auto energyCost = getEnergyCost( vitals, agentGenes, cell, preset, baseCost );
 
-		const auto sustainAddition = ( cell.getCombinedFoodGain( agentGenes ) ) / energyCost;
+		const auto sustainAddition = ( cell.getCombinedFoodGain( agentGenes.foodPreference ) ) / energyCost;
 		sustain += ( population > 0 ) ? sustainAddition / static_cast< float >( population ) : sustainAddition;
 	}
 
@@ -236,7 +236,7 @@ auto getAction( entt::registry& registry, entt::entity entity,
 	}
 
 	const float energyCost      = getEnergyCost( vitals, genes, cell, preset, preset.agent.modifier.baseEnergyBurn );
-	const float combinedSustain = cell.getCombinedFoodGain( genes );
+	const float combinedSustain = cell.getCombinedFoodGain( genes.foodPreference );
 	const float sustainabilityFactor = combinedSustain / energyCost / static_cast< float >( population );
 	const bool unsustainable         = energyCost > preset.agent.modifier.maxIntake || sustainabilityFactor < 1.f;
 

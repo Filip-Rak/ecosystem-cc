@@ -7,10 +7,12 @@
 
 #include "Application/Components/EatIntent.hpp"
 #include "Application/Components/GeneSet.hpp"
+#include "Application/Components/JustEaten.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/SimLog.hpp"
 
 namespace cc::app
 {
@@ -24,26 +26,31 @@ namespace
     energy += eaten;
     source -= eaten;
 }*/
-auto eat( float& source, float& energy, const float maxEnergy, const float maxIntake, const float population )
+auto handleEat( float& source, float& energy, const float maxEnergy, const float maxIntake, const float population )
+    -> float
 {
 	const float hunger       = maxEnergy - energy;
 	const float perAgentFood = ( population > 0 ) ? source / population : source;
-	const float eaten        = std::min( { maxIntake, perAgentFood, hunger } );
+	const float eatenAmount  = std::min( { maxIntake, perAgentFood, hunger } );
 
-	source -= eaten;
-	energy += eaten;
+	source -= eatenAmount;
+	energy += eatenAmount;
+
+	return eatenAmount;
 }
 }  // namespace
 AgentFeedingSystem::AgentFeedingSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( m_registry.ctx().contains< Grid >() );
 	assert( m_registry.ctx().contains< Preset >() );
+	assert( m_registry.ctx().contains< SimLog >() );
 }
 
 auto AgentFeedingSystem::update() -> void
 {
 	const auto maxIntake    = m_registry.ctx().get< Preset >().agent.modifier.maxIntake;
 	auto& grid              = m_registry.ctx().get< Grid >();
+	auto& simLog            = m_registry.ctx().get< SimLog >();
 	const auto& spatialGrid = grid.getSpatialGrid();
 	auto& cells             = grid.cells();
 
@@ -55,10 +62,28 @@ auto AgentFeedingSystem::update() -> void
 		auto& energy          = vitals.energy;
 		const auto maxEnergy  = geneSet.agentGenes.maxEnergy;
 		const auto population = static_cast< float >( spatialGrid[ position.cellIndex ].size() );
-		const auto foodGain   = cell.getFoodGain( geneSet.agentGenes );
+		const auto foodGain   = cell.getFoodGain( geneSet.agentGenes.foodPreference );
 
-		auto& foodSource = ( foodGain.flesh > foodGain.vegetation ) ? cell.flesh : cell.vegetation;
-		eat( foodSource, energy, maxEnergy, maxIntake, population );
+		using namespace component;
+		using enum JustEaten::Source;
+
+		const auto source = ( foodGain.flesh > foodGain.vegetation ) ? Flesh : Vegetation;
+		float eatenAmount = 0.f;
+
+		if ( source == Flesh )
+		{
+			auto& sourceVal = cell.flesh;
+			eatenAmount     = handleEat( sourceVal, energy, maxEnergy, maxIntake, population );
+			simLog.fleshEaten += eatenAmount;
+		}
+		else
+		{
+			auto& sourceVal = cell.vegetation;
+			eatenAmount     = handleEat( sourceVal, energy, maxEnergy, maxIntake, population );
+			simLog.vegetationEaten += eatenAmount;
+		}
+
+		m_registry.emplace< component::JustEaten >( entity, source, eatenAmount );
 	}
 
 	m_registry.remove< component::EatIntent >( view.begin(), view.end() );
