@@ -11,6 +11,7 @@ struct SimLog
 	std::size_t currentPopulation{};
 	std::size_t starvations{};
 	std::size_t oldAgeDeaths{};
+	float averageRefractoryPeriod{};
 	float averageEnergy{};
 	float averageAdaptation{};
 	float averageFoodPref{};

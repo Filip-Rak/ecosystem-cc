@@ -126,6 +126,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		    .baseTraversalCost         = get< float >( json, "agent.modifier.baseTraversalCost" ),
 		    .climateAdaptationRate     = get< float >( json, "agent.modifier.climateAdaptationRate" ),
 		    .offspringRequiredFullness = get< float >( json, "agent.modifier.offspringRequiredFulness" ),
+		    .refractoryMutationRate    = get< int >( json, "agent.modifier.refractoryMutationRate" ),
 		    .maxPerception             = get< std::size_t >( json, "agent.modifier.maxPerception" ),
 		    .cellAgentLimit            = get< std::size_t >( json, "agent.modifier.cellAgentLimit" ),
 		};

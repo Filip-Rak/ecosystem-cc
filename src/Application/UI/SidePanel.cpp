@@ -57,6 +57,7 @@ auto drawSimLog( const SimLog& log ) -> void
 	ImGui::Text( "Average energy: %f", log.averageEnergy );
 	ImGui::Text( "Average adaptation: %f", log.averageAdaptation );
 	ImGui::Text( "Average food preference: %f", log.averageFoodPref );
+	ImGui::Text( "Average RP: %f", log.averageRefractoryPeriod );
 }
 
 auto drawContents( entt::registry& registry ) -> void

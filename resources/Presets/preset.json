@@ -45,6 +45,7 @@
             "baseTraversalCost": 0.3,
             "climateAdaptationRate": 0.001,
             "offspringRequiredFulness": 0.95,
+            "refractoryMutationRate": 0,
             "maxPerception": 3,
             "cellAgentLimit": 10
         },

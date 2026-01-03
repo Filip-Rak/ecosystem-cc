@@ -26,6 +26,7 @@ auto SimLogSystem::update() -> void
 	const auto& cells = grid.cells();
 
 	auto agentCount           = 0uz;
+	int refractoryPeriodSum   = 0;
 	float maxEnergySum        = 0.f;
 	float adaptationRatingSum = 0.f;
 	float foodPrefSum         = 0.f;
@@ -46,15 +47,17 @@ auto SimLogSystem::update() -> void
 
 		const float adaptation = 1 - ( ( tDiff + hDiff + eDiff ) / 3.f );
 		adaptationRatingSum += adaptation;
+		refractoryPeriodSum += genes.refractoryPeriod;
 		foodPrefSum += genes.foodPreference;
 	}
 
 	if ( agentCount > 0uz )
 	{
-		const auto fAgentCount   = static_cast< float >( agentCount );
-		simLog.averageEnergy     = maxEnergySum / fAgentCount;
-		simLog.averageAdaptation = adaptationRatingSum / fAgentCount;
-		simLog.averageFoodPref   = foodPrefSum / fAgentCount;
+		const auto fAgentCount         = static_cast< float >( agentCount );
+		simLog.averageRefractoryPeriod = static_cast< float >( refractoryPeriodSum ) / fAgentCount;
+		simLog.averageEnergy           = maxEnergySum / fAgentCount;
+		simLog.averageAdaptation       = adaptationRatingSum / fAgentCount;
+		simLog.averageFoodPref         = foodPrefSum / fAgentCount;
 	}
 }
 };  // namespace cc::app

@@ -1,21 +1,21 @@
 #pragma once
 
-#include <cstdint>
 #include <random>
 
 namespace cc::app
 {
+struct Preset;
 struct Genes;
 
 class Randomizer
 {
 public:
-	explicit Randomizer( std::uint32_t seed );
+	explicit Randomizer( const Preset& preset );
 	[[nodiscard]] auto mutateGenes( const Genes& baseGenes, float offset ) -> Genes;
 	auto reset() -> void;
 
 private:
-	const std::uint32_t m_seed;
+	const Preset& m_preset;
 	std::mt19937 m_generator;
 };
 }  // namespace cc::app

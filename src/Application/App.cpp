@@ -66,10 +66,10 @@ auto App::run() -> void
 
 auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >
 {
-	registry.ctx().emplace< SimLog >();
-	registry.ctx().emplace< Preset >( preset );
-	registry.ctx().emplace< Randomizer >( preset.rngSeed );
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
+	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
+	registry.ctx().emplace< Randomizer >( livePreset );
+	registry.ctx().emplace< SimLog >();
 
 	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( !gridArgs )

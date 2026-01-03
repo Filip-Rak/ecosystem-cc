@@ -73,6 +73,7 @@ struct Preset
 			const float baseTraversalCost;
 			const float climateAdaptationRate;
 			const float offspringRequiredFullness;
+			const int refractoryMutationRate;
 			const std::size_t maxPerception;
 			const std::size_t cellAgentLimit;
 		} const modifier;
