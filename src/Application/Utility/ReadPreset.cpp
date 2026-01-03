@@ -75,6 +75,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse misc
 		const auto gridPath        = get< std::string >( json, "gridDirectoryPath" );
+		const auto outPath         = get< std::string >( json, "outputDirectoryPath" );
 		const auto iterationTarget = get< std::size_t >( json, "iterationTarget" );
 		const auto rngSeed         = get< std::uint32_t >( json, "rngSeed" );
 
@@ -147,10 +148,11 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		return Preset{
 		    .vegetation = { .speed = speed, .limit = limit, .flesh = Flesh },
 		    .agent = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
-		    .presetName        = path.filename().string(),
-		    .gridDirectoryPath = gridPath,
-		    .iterationTarget   = iterationTarget,
-		    .rngSeed           = rngSeed,
+		    .presetName          = path.filename().string(),
+		    .gridDirectoryPath   = gridPath,
+		    .outputDirectoryPath = outPath,
+		    .iterationTarget     = iterationTarget,
+		    .rngSeed             = rngSeed,
 		};
 	}
 	catch ( const njson::parse_error& exception )

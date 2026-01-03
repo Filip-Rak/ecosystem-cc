@@ -1,8 +1,8 @@
 #include "Application/System/Sim/SimLogSystem.hpp"
 
 #include <cassert>
-
 #include <cstdlib>
+
 #include <entt/entt.hpp>
 
 #include "Application/Components/GeneSet.hpp"

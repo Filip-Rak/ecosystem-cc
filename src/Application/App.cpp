@@ -28,22 +28,22 @@ namespace cc::app
 {
 namespace
 {
-constexpr uint16_t WindowWidth   = 1280u;
-constexpr uint16_t WindowHeight  = 720u;
-constexpr std::string_view Title = "Ecosystem";
+constexpr uint16_t windowWidth   = 1280u;
+constexpr uint16_t windowHeight  = 720u;
+constexpr std::string_view title = "Ecosystem";
 }  // namespace
 
 App::App( const cli::Options& options )
     : m_cliOptions( options ),
-      m_engine( { .title        = Title.data(),
-                  .windowWidth  = WindowWidth,
-                  .windowHeight = WindowHeight,
+      m_engine( { .title        = title.data(),
+                  .windowWidth  = windowWidth,
+                  .windowHeight = windowHeight,
                   .enableGUI    = options.gui } )
 {}
 
 auto App::init() -> std::optional< InitError >
 {
-	auto readResult = readPreset( m_cliOptions.presetPath );
+	const auto readResult = readPreset( m_cliOptions.presetPath );
 	if ( !readResult )
 	{
 		return "-> Failed to read preset\n" + readResult.error();

@@ -17,13 +17,13 @@ namespace
 {
 constexpr const auto& Constants = constant::UI.StatusBar;
 constexpr const auto& Separator = Constants.Labels.Separator;
-constexpr const auto& Labels = Constants.Labels;
+constexpr const auto& Labels    = Constants.Labels;
 
 auto setProperties() -> void
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	const float UiScale = ImGui::GetIO().FontGlobalScale;
+	const float UiScale      = ImGui::GetIO().FontGlobalScale;
 	const float ScaledHeight = Constants.Height * UiScale;
 	const ImVec2 ScaledPadding{ Constants.Padding.x * UiScale, Constants.Padding.y * UiScale };
 
@@ -38,7 +38,7 @@ auto setProperties() -> void
 auto createWidgets( entt::registry& registry ) -> void
 {
 	const auto& runnerData = registry.ctx().get< SimRunnerData >();
-	const auto& preset = registry.ctx().get< Preset >();
+	const auto& preset     = registry.ctx().get< Preset >();
 
 	// clang-format off
 	const auto& StoppedAltStatusLabel = ( runnerData.targetReached ) ? Labels.StatusFinished : Labels.StatusPaused;
@@ -66,8 +66,8 @@ auto createWidgets( entt::registry& registry ) -> void
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), preset.rngSeed);
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
-	// TODO: Implement.
-    ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), "output.csv");
+	static const std::string outDir = preset.outputDirectoryPath.relative_path().string();
+    ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), outDir.c_str());
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
 	const auto& time = registry.ctx().get< Time >();
