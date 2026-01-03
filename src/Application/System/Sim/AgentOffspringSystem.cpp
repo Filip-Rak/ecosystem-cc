@@ -10,6 +10,7 @@
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/Randomizer.hpp"
 #include "Application/Utility/AgentHelpers.hpp"
 
 namespace cc::app
@@ -18,6 +19,7 @@ AgentOffspringSystem::AgentOffspringSystem( entt::registry& registry ) : m_regis
 {
 	assert( registry.ctx().contains< Grid >() );
 	assert( registry.ctx().contains< Preset >() );
+	assert( registry.ctx().contains< Randomizer >() );
 
 	const auto prealloc = 100uz;
 	m_agentsToCreate.reserve( prealloc );
@@ -25,7 +27,8 @@ AgentOffspringSystem::AgentOffspringSystem( entt::registry& registry ) : m_regis
 
 auto AgentOffspringSystem::update() -> void
 {
-	auto& grid = m_registry.ctx().get< Grid >();
+	auto& random = m_registry.ctx().get< Randomizer >();
+	auto& grid   = m_registry.ctx().get< Grid >();
 	m_agentsToCreate.clear();
 
 	const auto view = m_registry.view< const component::OffspringIntent, const component::GeneSet,
@@ -45,7 +48,7 @@ auto AgentOffspringSystem::update() -> void
 
 	for ( const auto& args : m_agentsToCreate )
 	{
-		const auto newGenes    = mutateGenes( args.parentFutureGenes, mutationOffset );
+		const auto newGenes    = random.mutateGenes( args.parentFutureGenes, mutationOffset );
 		const auto childEntity = createAgent( m_registry, newGenes, args.energy );
 		grid.addToSpatialGrid( childEntity, args.position );
 	}

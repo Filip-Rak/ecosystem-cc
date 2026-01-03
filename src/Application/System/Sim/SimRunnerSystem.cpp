@@ -7,6 +7,7 @@
 #include "Application/CLI/CLIOptions.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/Randomizer.hpp"
 #include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
@@ -60,7 +61,7 @@ auto SimRunnerSystem::update() -> void
 	}
 
 	m_timeSinceLastUpdate = 0.f;
-	data.iteration        = ++m_iteration;
+	data.iteration++;
 
 	for ( auto& system : m_simSystems )
 	{
@@ -104,15 +105,19 @@ auto SimRunnerSystem::onResetSim( const event::ResetSim& /*event*/ ) -> void
 	auto& simLog = m_registry.ctx().get< SimLog >();
 	simLog       = SimLog{};
 
+	auto& runnerData = m_registry.ctx().get< SimRunnerData >();
+	runnerData       = SimRunnerData{};
+
+	auto& random = m_registry.ctx().get< Randomizer >();
+	random.reset();
+
 	m_registry.clear();
 
 	const auto gridArgs = m_registry.ctx().get< Grid >().copyCreationArguments();
 	m_registry.ctx().erase< Grid >();
 	m_registry.ctx().emplace< Grid >( gridArgs );
 
-	auto& runnerData         = m_registry.ctx().get< SimRunnerData >();
-	runnerData.targetReached = false;
-	runnerData.iteration     = 0;
-	m_iteration              = 0;
+	const float timeBetweenUpdates = 1.f / static_cast< float >( runnerData.speed );
+	m_timeSinceLastUpdate          = timeBetweenUpdates;
 }
 }  // namespace cc::app

@@ -1,7 +1,7 @@
 {
     "gridDirectoryPath": "resources/Grid100x100",
-    "iterationTarget": 3E5,
-    "rngSeed": 0,
+    "iterationTarget": 1e5,
+    "rngSeed": 3000,
     "cell": {
         "growthSpeed": {
             "base": 0.08,

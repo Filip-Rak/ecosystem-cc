@@ -9,6 +9,7 @@
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/Randomizer.hpp"
 #include "Application/Utility/AgentHelpers.hpp"
 
 namespace cc::app
@@ -40,6 +41,8 @@ Grid::Grid( const Args& args )
 	}
 
 	// Create agents
+	assert( m_registry.ctx().contains< Randomizer >() );
+	auto& random            = m_registry.ctx().get< Randomizer >();
 	const auto initialGenes = m_registry.ctx().get< Preset >().agent.initialGenes;
 
 	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
@@ -54,7 +57,7 @@ Grid::Grid( const Args& args )
 		if ( index == cellToSpawn )
 		{
 			const float mutationOffset = preset.agent.modifier.initialMutation;
-			const auto randomizedGenes = mutateGenes( initialGenes, mutationOffset );
+			const auto randomizedGenes = random.mutateGenes( initialGenes, mutationOffset );
 			const auto& entity         = createAgent( m_registry, randomizedGenes, randomizedGenes.maxEnergy );
 			addToSpatialGrid( entity, index );
 		}

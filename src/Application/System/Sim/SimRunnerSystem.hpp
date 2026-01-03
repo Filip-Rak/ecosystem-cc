@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -37,9 +36,8 @@ private:
 	auto onResetSim( const event::ResetSim& event ) -> void;
 
 	const bool m_speedLimited;
+	float m_timeSinceLastUpdate = 0.f;
 	entt::registry& m_registry;
 	std::vector< std::unique_ptr< ISystem > > m_simSystems;
-	std::size_t m_iteration     = 0;
-	float m_timeSinceLastUpdate = 0.f;
 };
 }  // namespace cc::app

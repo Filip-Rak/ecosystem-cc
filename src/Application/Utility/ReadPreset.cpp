@@ -76,7 +76,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		// Parse misc
 		const auto gridPath        = get< std::string >( json, "gridDirectoryPath" );
 		const auto iterationTarget = get< std::size_t >( json, "iterationTarget" );
-		const auto rngSeed         = get< std::uint16_t >( json, "rngSeed" );
+		const auto rngSeed         = get< std::uint32_t >( json, "rngSeed" );
 
 		// Parse cell - speed
 		Preset::Cell::GrowthSpeed speed{

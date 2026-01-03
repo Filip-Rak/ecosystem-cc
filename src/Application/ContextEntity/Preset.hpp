@@ -83,6 +83,6 @@ struct Preset
 	const std::string presetName;
 	const std::filesystem::path gridDirectoryPath;
 	const std::size_t iterationTarget;
-	const std::uint16_t rngSeed;
+	const std::uint32_t rngSeed;
 };
 }  // namespace cc::app

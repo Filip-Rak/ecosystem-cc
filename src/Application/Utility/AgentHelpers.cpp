@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <random>
 
 #include <entt/entt.hpp>
 
@@ -13,31 +12,6 @@
 
 namespace cc::app
 {
-auto mutateGenes( const Genes& baseGenes, float mutationOffset ) -> Genes
-{
-	static std::random_device rd;
-	static std::mt19937 gen( rd() );
-
-	std::uniform_real_distribution< float > dist( -mutationOffset, mutationOffset );
-
-	Genes newGenes = baseGenes;
-
-	// Standard mutation for normalized genes (0.0 to 1.0)
-	auto mutateClamped = [ & ]( float& value ) -> void { value = std::clamp( value + dist( gen ), 0.0f, 1.0f ); };
-
-	mutateClamped( newGenes.temperaturePreference );
-	mutateClamped( newGenes.humidityPreference );
-	mutateClamped( newGenes.elevationPreference );
-
-	// Uncapped mutations
-	newGenes.maxEnergy = std::max( 0.0f, newGenes.maxEnergy + dist( gen ) );
-
-	// const float newFP = newGenes.foodPreference + ( dist( gen ) * 0.5f ) + ( newGenes.foodPreference * 0.5f );
-	// newGenes.foodPreference = std::clamp( 0.f, newGenes.foodPreference, 1.f );
-
-	return newGenes;
-}
-
 auto createAgent( entt::registry& registry, const Genes& genes, float energy ) -> entt::entity
 {
 	assert( registry.ctx().contains< SimLog >() );

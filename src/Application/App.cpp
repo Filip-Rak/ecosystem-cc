@@ -10,6 +10,7 @@
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/Randomizer.hpp"
 #include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
@@ -67,6 +68,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 {
 	registry.ctx().emplace< SimLog >();
 	registry.ctx().emplace< Preset >( preset );
+	registry.ctx().emplace< Randomizer >( preset.rngSeed );
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 
 	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
