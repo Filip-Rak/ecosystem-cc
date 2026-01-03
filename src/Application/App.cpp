@@ -20,6 +20,7 @@
 #include "Application/System/RenderSystem.hpp"
 #include "Application/System/Sim/SimRunnerSystem.hpp"
 #include "Application/System/UISystem.hpp"
+#include "Application/Utility/PrepareOutputDir.hpp"
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
 #include "Engine/Service/SFRenderService.hpp"
@@ -55,7 +56,16 @@ auto App::init() -> std::optional< InitError >
 		return "-> Failed to initialize entities\n" + *initError;
 	}
 
+	assert( registry.ctx().contains< Preset >() );
+	const auto preset = registry.ctx().get< Preset >();
+
+	if ( auto error = prepareOutputDir( preset.outputDirectoryPath, m_cliOptions.overwrite ); error )
+	{
+		return "-> Failed to prepare output directory\n" + *error;
+	}
+
 	initSystems();
+
 	return std::nullopt;
 }
 

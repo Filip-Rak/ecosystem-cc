@@ -22,6 +22,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/AgentHelpers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utility/PrepareOutputDir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadGrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadPreset.cpp
 )
