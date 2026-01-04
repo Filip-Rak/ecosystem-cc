@@ -11,7 +11,7 @@ constexpr int LogEvery10 = 10;
 struct Options
 {
 	bool gui{ false };
-	bool overwrite{ false };
+	bool clean{ false };
 	std::filesystem::path presetPath;
 	int terminalLogfrequency = LogEvery10;
 };

@@ -60,7 +60,7 @@ template < class T >
 }
 }  // namespace
 
-auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, ParsingError >
+auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, Error >
 {
 	std::ifstream file( path );
 	if ( !file.is_open() )
@@ -75,9 +75,10 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 
 		// Parse misc
 		const auto gridPath        = get< std::string >( json, "gridDirectoryPath" );
-		const auto outPath         = get< std::string >( json, "outputDirectoryPath" );
 		const auto iterationTarget = get< std::size_t >( json, "iterationTarget" );
 		const auto rngSeed         = get< std::uint32_t >( json, "rngSeed" );
+
+		Preset::Logging logging{ .outputDirectoryPath = get< std::string >( json, "logging.outputDirectoryPath" ) };
 
 		// Parse cell - speed
 		Preset::Cell::GrowthSpeed speed{
@@ -147,12 +148,12 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		// Construct preset
 		return Preset{
 		    .vegetation = { .speed = speed, .limit = limit, .flesh = Flesh },
-		    .agent = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
-		    .presetPath          = path,
-		    .gridDirectoryPath   = gridPath,
-		    .outputDirectoryPath = outPath,
-		    .iterationTarget     = iterationTarget,
-		    .rngSeed             = rngSeed,
+		    .agent   = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
+		    .logging = logging,
+		    .presetPath        = path,
+		    .gridDirectoryPath = gridPath,
+		    .iterationTarget   = iterationTarget,
+		    .rngSeed           = rngSeed,
 		};
 	}
 	catch ( const njson::parse_error& exception )

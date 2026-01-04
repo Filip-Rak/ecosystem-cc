@@ -13,6 +13,7 @@
 
 #include "Application/Constants/CellConstants.hpp"
 #include "Application/Constants/FilePathConstants.hpp"
+#include "Error.hpp"
 
 namespace cc::app
 {
@@ -25,15 +26,15 @@ struct Layer
 	std::vector< float > values;
 };
 
-using ReadingResult = std::expected< Layer, ReadError >;
+using ReadingResult = std::expected< Layer, Error >;
 
 constexpr std::size_t grayscaleChannel = 1;
 constexpr float grayscaleRange         = 1.f;
 
-[[nodiscard]] auto layerReadError( const std::filesystem::path& path, const ReadError& reason ) -> ReadError
+[[nodiscard]] auto layerReadError( const std::filesystem::path& path, const Error& reason ) -> Error
 {
-	const ReadError absolutePath = std::filesystem::absolute( path ).string();
-	const ReadError errorMessage = std::format( "-> Affected file: {}\n-> Issue: {}", absolutePath, reason );
+	const auto absolutePath = std::filesystem::absolute( path ).string();
+	const auto errorMessage = std::format( "-> Affected file: {}\n-> Issue: {}", absolutePath, reason );
 
 	return errorMessage;
 }
@@ -68,7 +69,7 @@ constexpr float grayscaleRange         = 1.f;
 }
 }  // namespace
 auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path )
-    -> std::expected< Grid::Args, ReadError >
+    -> std::expected< Grid::Args, Error >
 {
 	constexpr const auto& cellConst = constant::cell;
 	constexpr const auto& pathConst = constant::filePaths;

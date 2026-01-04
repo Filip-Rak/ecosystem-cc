@@ -9,6 +9,7 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/Logger.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/Randomizer.hpp"
 #include "Application/ContextEntity/SimLog.hpp"
@@ -20,7 +21,6 @@
 #include "Application/System/RenderSystem.hpp"
 #include "Application/System/Sim/SimRunnerSystem.hpp"
 #include "Application/System/UISystem.hpp"
-#include "Application/Utility/PrepareOutputDir.hpp"
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
 #include "Engine/Service/SFRenderService.hpp"
@@ -42,7 +42,7 @@ App::App( const cli::Options& options )
                   .enableGUI    = options.gui } )
 {}
 
-auto App::init() -> std::optional< InitError >
+auto App::init() -> std::optional< Error >
 {
 	const auto readResult = readPreset( m_cliOptions.presetPath );
 	if ( !readResult )
@@ -59,11 +59,6 @@ auto App::init() -> std::optional< InitError >
 	assert( registry.ctx().contains< Preset >() );
 	const auto preset = registry.ctx().get< Preset >();
 
-	if ( auto error = prepareOutputDir( preset, m_cliOptions.overwrite ); error )
-	{
-		return "-> Failed to prepare output directory\n" + *error;
-	}
-
 	initSystems();
 
 	return std::nullopt;
@@ -74,10 +69,11 @@ auto App::run() -> void
 	m_engine.run();
 }
 
-auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >
+auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >
 {
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
+	auto& logger           = registry.ctx().emplace< Logger >( registry );
 	registry.ctx().emplace< Randomizer >( livePreset );
 	registry.ctx().emplace< SimLog >();
 
@@ -85,6 +81,11 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	if ( !gridArgs )
 	{
 		return "-> Couldn't load the grid\n" + gridArgs.error();
+	}
+
+	if ( auto error = logger.init( m_cliOptions.clean ); error )
+	{
+		return "-> Failed to initialize Logger\n" + *error;
 	}
 
 	Grid grid( gridArgs.value() );

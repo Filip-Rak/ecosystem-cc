@@ -81,9 +81,13 @@ struct Preset
 		const Genes initialGenes;
 	} const agent;
 
+	struct Logging
+	{
+		const std::filesystem::path outputDirectoryPath;
+	} const logging;
+
 	const std::filesystem::path presetPath;
 	const std::filesystem::path gridDirectoryPath;
-	const std::filesystem::path outputDirectoryPath;
 	const std::size_t iterationTarget;
 	const std::uint32_t rngSeed;
 };

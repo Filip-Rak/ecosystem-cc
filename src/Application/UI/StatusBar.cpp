@@ -66,7 +66,7 @@ auto createWidgets( entt::registry& registry ) -> void
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), preset.rngSeed);
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
-	static const std::string outDir = preset.outputDirectoryPath.relative_path().string();
+	static const std::string outDir = preset.logging.outputDirectoryPath.relative_path().string();
     ImGui::SameLine(); ImGui::Text( Labels.OUTFile.data(), outDir.c_str());
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	

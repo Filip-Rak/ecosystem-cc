@@ -1,9 +1,9 @@
 #pragma once
 
 #include <optional>
-#include <string>
 
 #include "Application/CLI/CLIOptions.hpp"
+#include "Application/Utility/Error.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/Utility/Traits.hpp"
 
@@ -15,18 +15,16 @@ struct Options;
 namespace cc::app
 {
 struct Preset;
-using InitError = std::string;
-
 class App : NonMoveable, NonCopyable
 {
 public:
 	App( const cli::Options& options );
-	[[nodiscard]] auto init() -> std::optional< InitError >;
+	[[nodiscard]] auto init() -> std::optional< Error >;
 
 	auto run() -> void;
 
 private:
-	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< InitError >;
+	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >;
 	auto initSystems() -> void;
 
 	const cli::Options m_cliOptions;

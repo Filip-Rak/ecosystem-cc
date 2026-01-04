@@ -3,6 +3,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CLI/ParseCli.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Cell.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Grid.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Randomizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/CameraMovementSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/InputSystem.cpp
@@ -22,7 +23,6 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/StatusBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/AgentHelpers.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Utility/PrepareOutputDir.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadGrid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Utility/ReadPreset.cpp
 )

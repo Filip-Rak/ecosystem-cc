@@ -2,15 +2,14 @@
 
 #include <expected>
 #include <filesystem>
-#include <string>
 
 #include <entt/fwd.hpp>
 
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/Utility/Error.hpp"
 
 namespace cc::app
 {
-using ReadError = std::string;
 [[nodiscard]] auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path )
-    -> std::expected< Grid::Args, ReadError >;
+    -> std::expected< Grid::Args, Error >;
 }  // namespace cc::app
