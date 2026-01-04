@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "Application/CLI/CLIOptions.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/Utility/Error.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/Utility/Traits.hpp"
@@ -14,6 +15,11 @@ struct Options;
 
 namespace cc::app
 {
+namespace event
+{
+struct ReachedTargetIteration;
+}
+
 struct Preset;
 class App : NonMoveable, NonCopyable
 {
@@ -26,6 +32,8 @@ public:
 private:
 	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >;
 	auto initSystems() -> void;
+
+	auto onTargetReached( const event::ReachedTargetIteration& event ) -> void;
 
 	const cli::Options m_cliOptions;
 	Engine m_engine;

@@ -17,6 +17,7 @@
 #include "Application/ContextEntity/TickDataCollection.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/System/CameraMovementSystem.hpp"
 #include "Application/System/InputSystem.hpp"
 #include "Application/System/RenderSystem.hpp"
@@ -24,6 +25,7 @@
 #include "Application/System/UISystem.hpp"
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
+#include "Engine/Events/SystemEvents.hpp"
 #include "Engine/Service/SFRenderService.hpp"
 
 namespace cc::app
@@ -41,7 +43,11 @@ App::App( const cli::Options& options )
                   .windowWidth  = windowWidth,
                   .windowHeight = windowHeight,
                   .enableGUI    = options.gui } )
-{}
+{
+	auto& registry   = m_engine.registry();
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::ReachedTargetIteration >().connect< &App::onTargetReached >( *this );
+}
 
 auto App::init() -> std::optional< Error >
 {
@@ -124,5 +130,13 @@ auto App::initSystems() -> void
 	{
 		m_engine.addSystem< SimRunnerSystem >( registry, m_cliOptions );
 	}
+}
+
+auto App::onTargetReached( const event::ReachedTargetIteration& /*event*/ ) -> void
+{
+	auto& registry   = m_engine.registry();
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+
+	dispatcher.enqueue< cc::event::Exit >( cc::event::ExitCode{ 0 } );
 }
 }  // namespace cc::app

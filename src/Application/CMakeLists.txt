@@ -18,6 +18,7 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/CLILoggerSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/GuiLogSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/SimRunnerSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/System/Sim/TickLogSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/System/UISystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuBar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UI/SidePanel.cpp

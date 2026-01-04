@@ -5,21 +5,31 @@
 
 #include <entt/entity/fwd.hpp>
 
+#include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/Utility/Error.hpp"
 
 namespace cc::app
 {
-struct AgentTickLog;
+namespace event
+{
+struct ResetSim;
+struct ReachedTargetIteration;
+}  // namespace event
+
+struct TickLog;
 class Logger
 {
 public:
 	Logger( entt::registry& registry );
 	~Logger();
 
-	auto init( bool clean ) -> std::optional< Error >;
-	auto logTickData( const AgentTickLog& tickData ) -> void;
+	[[nodiscard]] auto init( bool clean ) -> std::optional< Error >;
+	auto logTickData( const TickLog& tickData ) -> void;
 
 private:
+	auto onResetSim( const event::ResetSim& event ) -> void;
+	auto onReachedTargetIteration( const event::ReachedTargetIteration& event ) -> void;
+
 	struct OutputData
 	{
 		std::ofstream file;
@@ -28,5 +38,6 @@ private:
 
 	entt::registry& m_registry;
 	OutputData m_tickData;
+	bool m_targetReached = false;
 };
 }  // namespace cc::app

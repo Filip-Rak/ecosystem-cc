@@ -5,22 +5,29 @@
 
 #include <entt/entt.hpp>
 #include <optional>
+#include <print>
+#include <string>
 
 #include "Application/Constants/FilePathConstants.hpp"
-#include "Application/ContextEntity/AgentTickLog.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/TickLog.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 
 namespace cc::app
 {
 namespace
 {
 namespace filesystem = std::filesystem;
+
+const filesystem::path tickDataFile = "tickData.csv";
+const filesystem::path markerFile   = "incomplete-results.warning";
+
 auto copyResourceFile( const filesystem::path& resource, const filesystem::path& outputPath ) -> void
 {
 	filesystem::copy_file( resource, outputPath / resource.filename(), filesystem::copy_options::overwrite_existing );
 }
 
-auto handleDirectory( const filesystem::path& outputPath, const bool clean ) -> std::optional< Error >
+[[nodiscard]] auto handleDirectory( const filesystem::path& outputPath, const bool clean ) -> std::optional< Error >
 {
 	if ( filesystem::exists( outputPath ) )
 	{
@@ -44,7 +51,8 @@ auto handleDirectory( const filesystem::path& outputPath, const bool clean ) -> 
 
 	return std::nullopt;
 }
-auto prepareOutputDir( const Preset& preset, const bool clean ) -> std::optional< Error >
+
+[[nodiscard]] auto prepareOutputDir( const Preset& preset, const bool clean ) -> std::optional< Error >
 {
 	const auto& log        = preset.logging;
 	const auto& outputPath = log.outputDirectoryPath;
@@ -56,7 +64,7 @@ auto prepareOutputDir( const Preset& preset, const bool clean ) -> std::optional
 			return *error;
 		}
 
-		const auto marker = outputPath / "incomplete-results.warning";
+		const auto marker = outputPath / markerFile;
 		filesystem::create_directories( outputPath );
 
 		std::ofstream file( marker );
@@ -77,12 +85,38 @@ auto prepareOutputDir( const Preset& preset, const bool clean ) -> std::optional
 
 	return std::nullopt;
 }
+
+auto removeMarker( const filesystem::path& outputPath ) -> void
+{
+	try
+	{
+		filesystem::remove( outputPath / markerFile );
+	}
+	catch ( const filesystem::filesystem_error& error )
+	{
+		std::print( "Failed to remove the marker file - output is valid. Reason: {}", error.what() );
+	}
+}
+
+auto dumpData( std::ofstream& file, std::string& data )
+{
+	file << data;
+	data.clear();
+	file.flush();
+}
+
 }  // namespace
 
-Logger::Logger( entt::registry& registry ) : m_registry( registry ) {}
+Logger::Logger( entt::registry& registry ) : m_registry( registry )
+{
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::ResetSim >().connect< &Logger::onResetSim >( *this );
+	dispatcher.sink< event::ReachedTargetIteration >().connect< &Logger::onReachedTargetIteration >( *this );
+}
 
 Logger::~Logger()
 {
+	dumpData( m_tickData.file, m_tickData.pendingData );
 	m_tickData.file.close();
 }
 
@@ -96,7 +130,7 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 
 	const auto& outputPath = preset.logging.outputDirectoryPath;
 
-	m_tickData.file.open( outputPath / "tickData.txt" );
+	m_tickData.file.open( outputPath / tickDataFile );
 	if ( !m_tickData.file.good() )
 	{
 		return "-> Couldn't create output file\n";
@@ -104,20 +138,44 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 	constexpr auto megabyte = 1048576uz;
 	m_tickData.pendingData.reserve( megabyte );
 
+	std::format_to( std::back_inserter( m_tickData.pendingData ),
+	                "iteration,liveAgents,births,starvations,ageDeaths,meanEnergy,meanTempAdaptation,meanHumAdaptation,"
+	                "meanElevAdaptation\n" );
+
 	return std::nullopt;
 }
 
-auto Logger::logTickData( const AgentTickLog& t ) -> void
+auto Logger::logTickData( const TickLog& t ) -> void
 {
-	auto& buffer = m_tickData.pendingData;
-	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
-	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.moveCount, t.meanMoveCost, t.meanEnergy,
-	                t.meanTempAdaptation, t.meanHumAdaptation, t.meanElevAdaptation );
+	if ( m_targetReached ) return;
 
+	auto& buffer = m_tickData.pendingData;
+	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
+	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.meanEnergy, t.meanTempAdaptation,
+	                t.meanHumAdaptation, t.meanElevAdaptation );
+	m_tickData.file.flush();
 	constexpr auto flushRate = 0.9f;
 	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
 	{
-		m_tickData.file << m_tickData.pendingData;
+		dumpData( m_tickData.file, m_tickData.pendingData );
 	}
+}
+
+auto Logger::onResetSim( const event::ResetSim& /*event*/ ) -> void
+{
+	if ( m_targetReached ) return;
+
+	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
+	m_tickData.file.open( outputPath / tickDataFile );
+	m_tickData.pendingData.clear();
+}
+
+auto Logger::onReachedTargetIteration( const event::ReachedTargetIteration& /*event*/ ) -> void
+{
+	m_targetReached = true;
+	dumpData( m_tickData.file, m_tickData.pendingData );
+
+	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
+	removeMarker( outputPath );
 }
 }  // namespace cc::app

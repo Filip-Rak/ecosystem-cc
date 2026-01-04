@@ -20,6 +20,7 @@
 #include "Application/System/Sim/CLILoggerSystem.hpp"
 #include "Application/System/Sim/CellBiomassSystem.hpp"
 #include "Application/System/Sim/GuiLogSystem.hpp"
+#include "Application/System/Sim/TickLogSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -43,10 +44,16 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.emplace_back( std::make_unique< AgentPassingSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentAdaptationSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentOffspringSystem >( registry ) );
-	m_simSystems.emplace_back( std::make_unique< GuiLogSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< TickLogSystem >( registry ) );
 
-	if ( !cliOptions.gui )
+	if ( cliOptions.gui )
+	{
+		m_simSystems.emplace_back( std::make_unique< GuiLogSystem >( registry ) );
+	}
+	else
+	{
 		m_simSystems.emplace_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
+	}
 }
 
 auto SimRunnerSystem::update() -> void
@@ -79,13 +86,18 @@ auto SimRunnerSystem::update() -> void
 			data.paused        = true;
 
 			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
-			dispatcher.enqueue< event::ReachedTargetIteration >();
+			dispatcher.trigger< event::ReachedTargetIteration >();
 		}
 	}
 }
 
 auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool
 {
+	if ( data.targetReached && m_speedLimited )
+	{
+		return false;
+	}
+
 	const float timeBetweenUpdates = 1.f / static_cast< float >( data.speed );
 	if ( data.paused )
 	{
