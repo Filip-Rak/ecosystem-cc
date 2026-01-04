@@ -1,7 +1,7 @@
 {
     "gridDirectoryPath": "resources/Grid100x100",
     "iterationTarget": 1e5,
-    "rngSeed": 3000,
+    "rngSeed": 30000,
     "logging": {
         "outputDirectoryPath": "output/"
     },

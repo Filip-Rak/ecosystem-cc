@@ -12,7 +12,7 @@
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 
 namespace cc::app
 {
@@ -43,14 +43,14 @@ AgentFeedingSystem::AgentFeedingSystem( entt::registry& registry ) : m_registry(
 {
 	assert( m_registry.ctx().contains< Grid >() );
 	assert( m_registry.ctx().contains< Preset >() );
-	assert( m_registry.ctx().contains< SimLog >() );
+	assert( m_registry.ctx().contains< TickDataCollection >() );
 }
 
 auto AgentFeedingSystem::update() -> void
 {
 	const auto maxIntake    = m_registry.ctx().get< Preset >().agent.modifier.maxIntake;
 	auto& grid              = m_registry.ctx().get< Grid >();
-	auto& simLog            = m_registry.ctx().get< SimLog >();
+	auto& tickData          = m_registry.ctx().get< TickDataCollection >();
 	const auto& spatialGrid = grid.getSpatialGrid();
 	auto& cells             = grid.cells();
 
@@ -74,13 +74,13 @@ auto AgentFeedingSystem::update() -> void
 		{
 			auto& sourceVal = cell.flesh;
 			eatenAmount     = handleEat( sourceVal, energy, maxEnergy, maxIntake, population );
-			simLog.fleshEaten += eatenAmount;
+			tickData.fleshEaten += eatenAmount;
 		}
 		else
 		{
 			auto& sourceVal = cell.vegetation;
 			eatenAmount     = handleEat( sourceVal, energy, maxEnergy, maxIntake, population );
-			simLog.vegetationEaten += eatenAmount;
+			tickData.vegetationEaten += eatenAmount;
 		}
 
 		m_registry.emplace< component::JustEaten >( entity, source, eatenAmount );

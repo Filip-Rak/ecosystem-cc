@@ -1,6 +1,5 @@
 #include "Application/Utility/AgentHelpers.hpp"
 
-#include <algorithm>
 #include <cassert>
 
 #include <entt/entt.hpp>
@@ -8,18 +7,16 @@
 #include "Application/Components/GeneSet.hpp"
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 
 namespace cc::app
 {
 auto createAgent( entt::registry& registry, const Genes& genes, float energy ) -> entt::entity
 {
-	assert( registry.ctx().contains< SimLog >() );
-	auto& simLog = registry.ctx().get< SimLog >();
+	assert( registry.ctx().contains< TickDataCollection >() );
+	auto& tickData = registry.ctx().get< TickDataCollection >();
 
-	simLog.currentPopulation++;
-	simLog.totalBirths++;
-	simLog.highestPopulation = std::max( simLog.highestPopulation, simLog.currentPopulation );
+	tickData.births++;
 
 	const auto entity = registry.create();
 	registry.emplace< component::GeneSet >( entity, genes, genes );

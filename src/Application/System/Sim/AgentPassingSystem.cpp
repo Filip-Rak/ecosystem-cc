@@ -10,7 +10,7 @@
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 
 namespace cc::app
 {
@@ -18,7 +18,7 @@ AgentPassingSystem::AgentPassingSystem( entt::registry& registry ) : m_registry(
 {
 	assert( m_registry.ctx().contains< Grid >() );
 	assert( m_registry.ctx().contains< Preset >() );
-	assert( m_registry.ctx().contains< SimLog >() );
+	assert( m_registry.ctx().contains< TickDataCollection >() );
 }
 
 auto AgentPassingSystem::update() -> void
@@ -49,9 +49,9 @@ auto AgentPassingSystem::update() -> void
 		}
 	}
 
-	auto& simLog = m_registry.ctx().get< SimLog >();
-	auto& grid   = m_registry.ctx().get< Grid >();
-	auto& cells  = grid.cells();
+	auto& tickData = m_registry.ctx().get< TickDataCollection >();
+	auto& grid     = m_registry.ctx().get< Grid >();
+	auto& cells    = grid.cells();
 
 	const auto destroyView = m_registry.view< const component::Destroy, const component::Position >();
 	for ( const auto [ entity, destroy, position ] : destroyView.each() )
@@ -62,12 +62,10 @@ auto AgentPassingSystem::update() -> void
 		using enum component::Destroy::Reason;
 		switch ( destroy.reason )
 		{
-		case Starvation: simLog.starvations++; break;
-		case Age: simLog.oldAgeDeaths++; break;
+		case Starvation: tickData.starvations++; break;
+		case Age: tickData.oldAgeDeaths++; break;
 		default: assert( false );
 		}
-
-		simLog.currentPopulation--;
 	}
 
 	m_registry.destroy( destroyView.begin(), destroyView.end() );

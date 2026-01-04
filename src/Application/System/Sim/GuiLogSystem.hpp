@@ -6,13 +6,20 @@
 
 namespace cc::app
 {
-class SimLogSystem : public ISystem
+namespace event
+{
+struct ResetSim;
+}
+
+class GuiLogSystem : public ISystem
 {
 public:
-	SimLogSystem( entt::registry& registry );
+	GuiLogSystem( entt::registry& registry );
 	auto update() -> void override;
 
 private:
+	auto onResetSim( const event::ResetSim& event ) -> void;
+
 	entt::registry& m_registry;
 };
 }  // namespace cc::app

@@ -8,8 +8,8 @@
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/Randomizer.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
 #include "Application/System/Sim/AgentAdaptationSystem.hpp"
 #include "Application/System/Sim/AgentDecisionSystem.hpp"
@@ -19,7 +19,7 @@
 #include "Application/System/Sim/AgentPassingSystem.hpp"
 #include "Application/System/Sim/CLILoggerSystem.hpp"
 #include "Application/System/Sim/CellBiomassSystem.hpp"
-#include "Application/System/Sim/SimLogSystem.hpp"
+#include "Application/System/Sim/GuiLogSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
 
 namespace cc::app
@@ -29,7 +29,7 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
-	assert( registry.ctx().contains< SimLog >() );
+	assert( registry.ctx().contains< TickDataCollection >() );
 	assert( registry.ctx().contains< Preset >() );
 	assert( registry.ctx().contains< Time >() );
 
@@ -43,7 +43,7 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.emplace_back( std::make_unique< AgentPassingSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentAdaptationSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentOffspringSystem >( registry ) );
-	m_simSystems.emplace_back( std::make_unique< SimLogSystem >( registry ) );
+	m_simSystems.emplace_back( std::make_unique< GuiLogSystem >( registry ) );
 
 	if ( !cliOptions.gui )
 		m_simSystems.emplace_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
@@ -62,6 +62,9 @@ auto SimRunnerSystem::update() -> void
 
 	m_timeSinceLastUpdate = 0.f;
 	data.iteration++;
+
+	auto& tickData = m_registry.ctx().get< TickDataCollection >();
+	tickData       = TickDataCollection{};
 
 	for ( auto& system : m_simSystems )
 	{
@@ -102,9 +105,6 @@ auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time 
 
 auto SimRunnerSystem::onResetSim( const event::ResetSim& /*event*/ ) -> void
 {
-	auto& simLog = m_registry.ctx().get< SimLog >();
-	simLog       = SimLog{};
-
 	auto& runnerData = m_registry.ctx().get< SimRunnerData >();
 	runnerData       = SimRunnerData{};
 

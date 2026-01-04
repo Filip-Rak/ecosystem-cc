@@ -9,11 +9,12 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/GuiLog.hpp"
 #include "Application/ContextEntity/Logger.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/Randomizer.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/System/CameraMovementSystem.hpp"
@@ -75,7 +76,8 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
 	auto& logger           = registry.ctx().emplace< Logger >( registry );
 	registry.ctx().emplace< Randomizer >( livePreset );
-	registry.ctx().emplace< SimLog >();
+	registry.ctx().emplace< TickDataCollection >();
+	registry.ctx().emplace< GuiLog >();
 
 	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( !gridArgs )

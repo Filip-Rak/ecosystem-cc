@@ -5,8 +5,8 @@
 
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Preset.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
@@ -25,7 +25,7 @@ UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 	assert( registry.ctx().contains< VisualGrid >() );
 	assert( registry.ctx().contains< GUIService >() );
 	assert( registry.ctx().contains< UIConfig >() );
-	assert( registry.ctx().contains< SimLog >() );
+	assert( registry.ctx().contains< TickDataCollection >() );
 	assert( registry.ctx().contains< Camera >() );
 	assert( registry.ctx().contains< Preset >() );
 	assert( registry.ctx().contains< Time >() );

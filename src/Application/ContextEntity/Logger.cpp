@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "Application/Constants/FilePathConstants.hpp"
+#include "Application/ContextEntity/AgentTickLog.hpp"
 #include "Application/ContextEntity/Preset.hpp"
 
 namespace cc::app
@@ -80,6 +81,11 @@ auto prepareOutputDir( const Preset& preset, const bool clean ) -> std::optional
 
 Logger::Logger( entt::registry& registry ) : m_registry( registry ) {}
 
+Logger::~Logger()
+{
+	m_tickData.file.close();
+}
+
 auto Logger::init( const bool clean ) -> std::optional< Error >
 {
 	const auto& preset = m_registry.ctx().get< Preset >();
@@ -88,6 +94,30 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 		return "-> Unable to save output data\n" + *error;
 	}
 
+	const auto& outputPath = preset.logging.outputDirectoryPath;
+
+	m_tickData.file.open( outputPath / "tickData.txt" );
+	if ( !m_tickData.file.good() )
+	{
+		return "-> Couldn't create output file\n";
+	}
+	constexpr auto megabyte = 1048576uz;
+	m_tickData.pendingData.reserve( megabyte );
+
 	return std::nullopt;
+}
+
+auto Logger::logTickData( const AgentTickLog& t ) -> void
+{
+	auto& buffer = m_tickData.pendingData;
+	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
+	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.moveCount, t.meanMoveCost, t.meanEnergy,
+	                t.meanTempAdaptation, t.meanHumAdaptation, t.meanElevAdaptation );
+
+	constexpr auto flushRate = 0.9f;
+	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
+	{
+		m_tickData.file << m_tickData.pendingData;
+	}
 }
 }  // namespace cc::app

@@ -1,5 +1,6 @@
-#include "Application/System/Sim/SimLogSystem.hpp"
+#include "Application/System/Sim/GuiLogSystem.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 
@@ -9,21 +10,33 @@
 #include "Application/Components/Position.hpp"
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
+#include "Application/ContextEntity/GuiLog.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 
 namespace cc::app
 {
-SimLogSystem::SimLogSystem( entt::registry& registry ) : m_registry( registry )
+GuiLogSystem::GuiLogSystem( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< SimLog >() );
+	assert( registry.ctx().contains< TickDataCollection >() );
+	assert( registry.ctx().contains< GuiLog >() );
 	assert( registry.ctx().contains< Grid >() );
+
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::ResetSim >().connect< &GuiLogSystem::onResetSim >( *this );
 }
 
-auto SimLogSystem::update() -> void
+auto GuiLogSystem::update() -> void
 {
-	auto& simLog      = m_registry.ctx().get< SimLog >();
 	const auto& grid  = m_registry.ctx().get< Grid >();
 	const auto& cells = grid.cells();
+	auto& guiLog      = m_registry.ctx().get< GuiLog >();
+	auto& tickData    = m_registry.ctx().get< TickDataCollection >();
+
+	guiLog.totalBirths += tickData.births;
+	guiLog.totalStarvations += tickData.starvations;
+	guiLog.oldAgeDeaths += tickData.oldAgeDeaths;
+	guiLog.totalVegetationEaten += tickData.vegetationEaten;
 
 	auto agentCount           = 0uz;
 	int refractoryPeriodSum   = 0;
@@ -54,10 +67,19 @@ auto SimLogSystem::update() -> void
 	if ( agentCount > 0uz )
 	{
 		const auto fAgentCount         = static_cast< float >( agentCount );
-		simLog.averageRefractoryPeriod = static_cast< float >( refractoryPeriodSum ) / fAgentCount;
-		simLog.averageEnergy           = maxEnergySum / fAgentCount;
-		simLog.averageAdaptation       = adaptationRatingSum / fAgentCount;
-		simLog.averageFoodPref         = foodPrefSum / fAgentCount;
+		guiLog.averageRefractoryPeriod = static_cast< float >( refractoryPeriodSum ) / fAgentCount;
+		guiLog.averageEnergyGene       = maxEnergySum / fAgentCount;
+		guiLog.averageAdaptation       = adaptationRatingSum / fAgentCount;
+		guiLog.averageFoodPref         = foodPrefSum / fAgentCount;
 	}
+
+	guiLog.currentPopulation = agentCount;
+	guiLog.highestPopulation = std::max( guiLog.currentPopulation, guiLog.highestPopulation );
+}
+
+auto GuiLogSystem::onResetSim( const event::ResetSim& /*event*/ ) -> void
+{
+	auto& guiLog = m_registry.ctx().get< GuiLog >();
+	guiLog       = GuiLog{};
 }
 };  // namespace cc::app

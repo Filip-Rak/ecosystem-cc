@@ -8,8 +8,8 @@
 #include "Application/Constants/UIConstants.hpp"
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
+#include "Application/ContextEntity/GuiLog.hpp"
 #include "Application/ContextEntity/Preset.hpp"
-#include "Application/ContextEntity/SimLog.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
 #include "Application/ContextEntity/UIConfig.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
@@ -44,17 +44,16 @@ auto setProperties( entt::registry& registry )
 	ImGui::SetNextWindowSize( ImVec2{ panelWidth, PanelHeight }, ImGuiCond_Always );
 }
 
-auto drawSimLog( const SimLog& log ) -> void
+auto drawGuiLog( const GuiLog& log ) -> void
 {
 	ImGui::NewLine();
 	ImGui::Text( "Total Births: %zu", log.totalBirths );
 	ImGui::Text( "Highest population: %zu", log.highestPopulation );
 	ImGui::Text( "Current Population: %zu", log.currentPopulation );
-	ImGui::Text( "Starvations: %zu", log.starvations );
+	ImGui::Text( "Starvations: %zu", log.totalStarvations );
 	ImGui::Text( "Old Age Deaths: %zu", log.oldAgeDeaths );
-	ImGui::Text( "Eaten vegetation: %f", log.vegetationEaten );
-	ImGui::Text( "Eaten flesh: %f", log.fleshEaten );
-	ImGui::Text( "Average energy: %f", log.averageEnergy );
+	ImGui::Text( "Eaten vegetation: %f", log.totalVegetationEaten );
+	ImGui::Text( "Average max energy: %f", log.averageEnergyGene );
 	ImGui::Text( "Average adaptation: %f", log.averageAdaptation );
 	ImGui::Text( "Average food preference: %f", log.averageFoodPref );
 	ImGui::Text( "Average RP: %f", log.averageRefractoryPeriod );
@@ -179,8 +178,8 @@ auto drawContents( entt::registry& registry ) -> void
 	}
 
 	{
-		const auto& simLog = registry.ctx().get< SimLog >();
-		drawSimLog( simLog );
+		const auto& guiLog = registry.ctx().get< GuiLog >();
+		drawGuiLog( guiLog );
 	}
 }
 
