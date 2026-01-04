@@ -34,14 +34,14 @@ auto copyResourceFile( const filesystem::path& resource, const filesystem::path&
 	if ( filesystem::exists( outputPath ) )
 	{
 		if ( !filesystem::is_directory( outputPath ) )
+		{
 			return "-> " + outputPath.relative_path().string() + " is not a directory";
+		}
 
 		if ( clean )
 		{
 			for ( const auto& entry : filesystem::directory_iterator( outputPath ) )
-			{
 				filesystem::remove_all( entry.path() );
-			}
 		}
 		else if ( !filesystem::is_empty( outputPath ) )
 		{
@@ -138,7 +138,7 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 	if ( preset.logging.logPerTickState )
 	{
 		m_outputData.emplace_back( std::make_unique< OutputData >() );
-		m_tickIndex = m_outputData.size() - 1uz;
+		m_tickData = m_outputData.back().get();
 
 		auto& tickData     = m_outputData.back();
 		tickData->filename = tickDataFile;
@@ -162,19 +162,18 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 
 auto Logger::logTickData( const TickLog& t ) -> void
 {
-	if ( m_targetReached || !m_tickIndex ) return;
+	if ( m_targetReached || m_tickData == nullptr ) return;
 
-	auto& tickData = m_outputData[ *m_tickIndex ];
-	auto& buffer   = tickData->pendingData;
+	auto& buffer = m_tickData->pendingData;
 	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
 	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.meanEnergy, t.meanTempAdaptation,
 	                t.meanHumAdaptation, t.meanElevAdaptation );
 
-	tickData->file.flush();
+	m_tickData->file.flush();
 	constexpr auto flushRate = 0.9f;
 	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
 	{
-		dumpData( tickData->file, tickData->pendingData );
+		dumpData( m_tickData->file, m_tickData->pendingData );
 	}
 }
 

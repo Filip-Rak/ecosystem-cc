@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -43,7 +42,7 @@ private:
 	};
 
 	std::vector< std::unique_ptr< OutputData > > m_outputData;
-	std::optional< std::size_t > m_tickIndex;
+	OutputData* m_tickData = nullptr;
 
 	entt::registry& m_registry;
 	bool m_targetReached = false;
