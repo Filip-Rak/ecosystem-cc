@@ -59,8 +59,8 @@ auto createWidgets( entt::registry& registry ) -> void
 
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 
-	
-    ImGui::SameLine(); ImGui::Text( Labels.Preset.data(), preset.presetName.c_str());
+	static const std::string presetName = preset.presetPath.string();
+    ImGui::SameLine(); ImGui::Text( Labels.Preset.data(), presetName.c_str());
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
     ImGui::SameLine(); ImGui::Text( Labels.Seed.data(), preset.rngSeed);

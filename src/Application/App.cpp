@@ -59,7 +59,7 @@ auto App::init() -> std::optional< InitError >
 	assert( registry.ctx().contains< Preset >() );
 	const auto preset = registry.ctx().get< Preset >();
 
-	if ( auto error = prepareOutputDir( preset.outputDirectoryPath, m_cliOptions.overwrite ); error )
+	if ( auto error = prepareOutputDir( preset, m_cliOptions.overwrite ); error )
 	{
 		return "-> Failed to prepare output directory\n" + *error;
 	}

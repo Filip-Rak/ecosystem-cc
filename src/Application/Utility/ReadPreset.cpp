@@ -148,7 +148,7 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, P
 		return Preset{
 		    .vegetation = { .speed = speed, .limit = limit, .flesh = Flesh },
 		    .agent = { .environmentalSensitivity = sensitivity, .modifier = modifier, .initialGenes = initialGenes },
-		    .presetName          = path.filename().string(),
+		    .presetPath          = path,
 		    .gridDirectoryPath   = gridPath,
 		    .outputDirectoryPath = outPath,
 		    .iterationTarget     = iterationTarget,

@@ -12,6 +12,7 @@
 #include <stb_image.h>
 
 #include "Application/Constants/CellConstants.hpp"
+#include "Application/Constants/FilePathConstants.hpp"
 
 namespace cc::app
 {
@@ -25,10 +26,6 @@ struct Layer
 };
 
 using ReadingResult = std::expected< Layer, ReadError >;
-
-const std::filesystem::path temperaturePath = "temperature.png";
-const std::filesystem::path elevationPath   = "elevation.png";
-const std::filesystem::path humidityPath    = "humidity.png";
 
 constexpr std::size_t grayscaleChannel = 1;
 constexpr float grayscaleRange         = 1.f;
@@ -73,14 +70,15 @@ constexpr float grayscaleRange         = 1.f;
 auto readGridFromDirectory( entt::registry& registry, const std::filesystem::path& path )
     -> std::expected< Grid::Args, ReadError >
 {
-	constexpr const auto& constant = constant::cell;
+	constexpr const auto& cellConst = constant::cell;
+	constexpr const auto& pathConst = constant::filePaths;
 
 	// clang-format off
 	const auto temperatureLayer =
 	    readGridLayer( 
-			path / temperaturePath, 
-			constant.temperatureRange, 
-			constant.minTemperature
+			path / pathConst.temperaturePath, 
+			cellConst.temperatureRange, 
+			cellConst.minTemperature
 		);
 	if ( !temperatureLayer )
 	{
@@ -91,9 +89,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 
 	const auto elevationLayer =
 	    readGridLayer( 
-			path / elevationPath, 
-			constant.elevationRange, 
-			constant.minElevation,
+			path / pathConst.elevationPath, 
+			cellConst.elevationRange, 
+			cellConst.minElevation,
 			validDimensions
 		);
 	if ( !elevationLayer )
@@ -103,9 +101,9 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 
 	const auto humidityLayer =
 	    readGridLayer( 
-			path / humidityPath, 
-			constant.humidityRange, 
-			constant.minHumidity,
+			path / pathConst.humidityPath, 
+			cellConst.humidityRange, 
+			cellConst.minHumidity,
 			validDimensions
 		);
 	if ( !humidityLayer )

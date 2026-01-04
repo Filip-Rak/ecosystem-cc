@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <string>
 
 #include "Application/Components/GeneSet.hpp"
 
@@ -82,7 +81,7 @@ struct Preset
 		const Genes initialGenes;
 	} const agent;
 
-	const std::string presetName;
+	const std::filesystem::path presetPath;
 	const std::filesystem::path gridDirectoryPath;
 	const std::filesystem::path outputDirectoryPath;
 	const std::size_t iterationTarget;
