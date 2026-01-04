@@ -17,7 +17,7 @@ namespace cc::app
 {
 TickLogSystem::TickLogSystem( entt::registry& registry ) : m_registry( registry )
 {
-	assert( registry.ctx().contains< Logger >() );
+	assert( registry.ctx().contains< std::unique_ptr< Logger > >() );
 	assert( registry.ctx().contains< TickDataCollection >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
 }
@@ -26,7 +26,7 @@ auto TickLogSystem::update() -> void
 {
 	TickLog tickLog;
 
-	auto& logger           = m_registry.ctx().get< Logger >();
+	auto& logger           = m_registry.ctx().get< std::unique_ptr< Logger > >();
 	const auto& tickData   = m_registry.ctx().get< TickDataCollection >();
 	const auto& runnerData = m_registry.ctx().get< SimRunnerData >();
 
@@ -82,6 +82,6 @@ auto TickLogSystem::update() -> void
 		tickLog.meanElevAdaptation = elevAdaptSum / fAgentCount;
 	}
 
-	logger.logTickData( tickLog );
+	logger->logTickData( tickLog );
 }
 }  // namespace cc::app

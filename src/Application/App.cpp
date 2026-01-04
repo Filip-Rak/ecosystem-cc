@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <memory>
 #include <string_view>
 
 #include <entt/fwd.hpp>
@@ -80,7 +81,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 {
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
-	auto& logger           = registry.ctx().emplace< Logger >( registry );
+	auto& logger = registry.ctx().emplace< std::unique_ptr< Logger > >( std::make_unique< Logger >( registry ) );
 	registry.ctx().emplace< Randomizer >( livePreset );
 	registry.ctx().emplace< TickDataCollection >();
 	registry.ctx().emplace< GuiLog >();
@@ -91,7 +92,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		return "-> Couldn't load the grid\n" + gridArgs.error();
 	}
 
-	if ( auto error = logger.init( m_cliOptions.clean ); error )
+	if ( auto error = logger->init( m_cliOptions.clean ); error )
 	{
 		return "-> Failed to initialize Logger\n" + *error;
 	}

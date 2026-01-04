@@ -3,7 +3,8 @@
     "iterationTarget": 1e4,
     "rngSeed": 30000,
     "logging": {
-        "outputDirectoryPath": "output/"
+        "outputDirectoryPath": "output/",
+        "logPerTickState": true
     },
     "cell": {
         "growthSpeed": {

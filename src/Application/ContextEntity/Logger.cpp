@@ -4,9 +4,11 @@
 #include <fstream>
 
 #include <entt/entt.hpp>
+#include <memory>
 #include <optional>
 #include <print>
 #include <string>
+#include <vector>
 
 #include "Application/Constants/FilePathConstants.hpp"
 #include "Application/ContextEntity/Preset.hpp"
@@ -102,7 +104,6 @@ auto dumpData( std::ofstream& file, std::string& data )
 {
 	file << data;
 	data.clear();
-	file.flush();
 }
 
 }  // namespace
@@ -116,8 +117,12 @@ Logger::Logger( entt::registry& registry ) : m_registry( registry )
 
 Logger::~Logger()
 {
-	dumpData( m_tickData.file, m_tickData.pendingData );
-	m_tickData.file.close();
+	for ( auto& out : m_outputData )
+	{
+		dumpData( out->file, out->pendingData );
+		out->file.close();
+		out->file.flush();
+	}
 }
 
 auto Logger::init( const bool clean ) -> std::optional< Error >
@@ -130,34 +135,46 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 
 	const auto& outputPath = preset.logging.outputDirectoryPath;
 
-	m_tickData.file.open( outputPath / tickDataFile );
-	if ( !m_tickData.file.good() )
+	if ( preset.logging.logPerTickState )
 	{
-		return "-> Couldn't create output file\n";
-	}
-	constexpr auto megabyte = 1048576uz;
-	m_tickData.pendingData.reserve( megabyte );
+		m_outputData.emplace_back( std::make_unique< OutputData >() );
+		m_tickIndex = m_outputData.size() - 1uz;
 
-	std::format_to( std::back_inserter( m_tickData.pendingData ),
-	                "iteration,liveAgents,births,starvations,ageDeaths,meanEnergy,meanTempAdaptation,meanHumAdaptation,"
-	                "meanElevAdaptation\n" );
+		auto& tickData     = m_outputData.back();
+		tickData->filename = tickDataFile;
+
+		tickData->file.open( outputPath / tickDataFile );
+		if ( !tickData->file.good() )
+		{
+			return "-> Couldn't create output file\n";
+		}
+		constexpr auto megabyte = 1048576uz;
+		tickData->pendingData.reserve( megabyte );
+
+		std::format_to(
+		    std::back_inserter( tickData->pendingData ),
+		    "iteration,liveAgents,births,starvations,ageDeaths,meanEnergy,meanTempAdaptation,meanHumAdaptation,"
+		    "meanElevAdaptation\n" );
+	}
 
 	return std::nullopt;
 }
 
 auto Logger::logTickData( const TickLog& t ) -> void
 {
-	if ( m_targetReached ) return;
+	if ( m_targetReached || !m_tickIndex ) return;
 
-	auto& buffer = m_tickData.pendingData;
+	auto& tickData = m_outputData[ *m_tickIndex ];
+	auto& buffer   = tickData->pendingData;
 	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
 	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.meanEnergy, t.meanTempAdaptation,
 	                t.meanHumAdaptation, t.meanElevAdaptation );
-	m_tickData.file.flush();
+
+	tickData->file.flush();
 	constexpr auto flushRate = 0.9f;
 	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
 	{
-		dumpData( m_tickData.file, m_tickData.pendingData );
+		dumpData( tickData->file, tickData->pendingData );
 	}
 }
 
@@ -166,14 +183,22 @@ auto Logger::onResetSim( const event::ResetSim& /*event*/ ) -> void
 	if ( m_targetReached ) return;
 
 	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
-	m_tickData.file.open( outputPath / tickDataFile );
-	m_tickData.pendingData.clear();
+	for ( auto& out : m_outputData )
+	{
+		out->file.open( outputPath / out->filename );
+		out->pendingData.clear();
+	}
 }
 
 auto Logger::onReachedTargetIteration( const event::ReachedTargetIteration& /*event*/ ) -> void
 {
 	m_targetReached = true;
-	dumpData( m_tickData.file, m_tickData.pendingData );
+
+	for ( auto& out : m_outputData )
+	{
+		dumpData( out->file, out->pendingData );
+		out->file.flush();
+	}
 
 	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
 	removeMarker( outputPath );

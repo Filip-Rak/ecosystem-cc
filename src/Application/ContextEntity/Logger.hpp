@@ -1,7 +1,12 @@
 #pragma once
 
+#include <cstddef>
+#include <filesystem>
 #include <fstream>
+#include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include <entt/entity/fwd.hpp>
 
@@ -34,10 +39,13 @@ private:
 	{
 		std::ofstream file;
 		std::string pendingData;
+		std::filesystem::path filename;
 	};
 
+	std::vector< std::unique_ptr< OutputData > > m_outputData;
+	std::optional< std::size_t > m_tickIndex;
+
 	entt::registry& m_registry;
-	OutputData m_tickData;
 	bool m_targetReached = false;
 };
 }  // namespace cc::app

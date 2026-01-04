@@ -78,7 +78,8 @@ auto readPreset( const std::filesystem::path& path ) -> std::expected< Preset, E
 		const auto iterationTarget = get< std::size_t >( json, "iterationTarget" );
 		const auto rngSeed         = get< std::uint32_t >( json, "rngSeed" );
 
-		Preset::Logging logging{ .outputDirectoryPath = get< std::string >( json, "logging.outputDirectoryPath" ) };
+		Preset::Logging logging{ .outputDirectoryPath = get< std::string >( json, "logging.outputDirectoryPath" ),
+		                         .logPerTickState     = get< bool >( json, "logging.logPerTickState" ) };
 
 		// Parse cell - speed
 		Preset::Cell::GrowthSpeed speed{

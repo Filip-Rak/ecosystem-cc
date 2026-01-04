@@ -6,6 +6,7 @@
 #include "Application/Components/GeneSet.hpp"
 
 // FIXME: This is a bad practice slowing compile times. Should be all in separate files and separate entities
+// FIXME: oh god I hate this so much but I am out of time to fix it
 namespace cc::app
 {
 struct Preset
@@ -84,6 +85,7 @@ struct Preset
 	struct Logging
 	{
 		const std::filesystem::path outputDirectoryPath;
+		const bool logPerTickState;
 	} const logging;
 
 	const std::filesystem::path presetPath;
