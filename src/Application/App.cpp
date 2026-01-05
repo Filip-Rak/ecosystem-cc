@@ -149,6 +149,6 @@ auto App::onTargetReached( const event::ReachedTargetIteration& /*event*/ ) -> v
 
 auto App::onExtinction( const event::Extinction& /*event*/ ) -> void
 {
-	closeGracefully();
+	if ( !m_cliOptions.gui ) closeGracefully();
 }
 }  // namespace cc::app

@@ -26,7 +26,7 @@
 namespace cc::app
 {
 SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
-    : m_speedLimited( cliOptions.gui ), m_registry( registry )
+    : m_inGui( cliOptions.gui ), m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
@@ -67,7 +67,7 @@ auto SimRunnerSystem::update() -> void
 	auto& data         = m_registry.ctx().get< SimRunnerData >();
 	auto& time         = m_registry.ctx().get< Time >();
 
-	if ( m_finished || ( m_speedLimited && !shouldUpdate( data, time ) ) )
+	if ( m_blockExecution || ( m_inGui && !shouldUpdate( data, time ) ) )
 	{
 		return;
 	}
@@ -107,13 +107,13 @@ auto SimRunnerSystem::triggerEvents() -> void
 	if ( grid.getPopulation() == 0uz )
 	{
 		dispatcher.enqueue< event::Extinction >( runnerData.iteration );
-		m_finished = true;
+		if ( !m_inGui ) m_blockExecution = true;
 	}
 }
 
 auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool
 {
-	if ( data.targetReached && m_speedLimited )
+	if ( data.targetReached && m_inGui )
 	{
 		return false;
 	}
