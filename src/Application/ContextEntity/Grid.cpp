@@ -79,6 +79,7 @@ auto Grid::addToSpatialGrid( entt::entity entity, std::size_t cellIndex ) -> voi
 	position.spatialIndex = bucket.size();
 	position.cellIndex    = cellIndex;
 	bucket.push_back( entity );
+	m_population++;
 }
 
 auto Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellIndex ) -> void
@@ -100,6 +101,7 @@ auto Grid::removeFromSpatialGrid( entt::entity targetEntity, std::size_t cellInd
 	}
 
 	targetIndex = std::numeric_limits< std::size_t >::max();
+	m_population--;
 }
 
 auto Grid::indexToPosition( std::size_t index ) const -> Position
@@ -135,6 +137,11 @@ auto Grid::getCellCount() const -> std::size_t
 auto Grid::getSignedCellCount() const -> std::ptrdiff_t
 {
 	return m_signedCellCount;
+}
+
+auto Grid::getPopulation() const -> std::size_t
+{
+	return m_population;
 }
 
 auto Grid::getSpatialGrid() const -> const SpatialGrid&

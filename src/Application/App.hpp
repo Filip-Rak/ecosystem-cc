@@ -18,7 +18,8 @@ namespace cc::app
 namespace event
 {
 struct ReachedTargetIteration;
-}
+struct Extinction;
+}  // namespace event
 
 struct Preset;
 class App : NonMoveable, NonCopyable
@@ -33,7 +34,10 @@ private:
 	[[nodiscard]] auto initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >;
 	auto initSystems() -> void;
 
+	auto closeGracefully() -> void;
+
 	auto onTargetReached( const event::ReachedTargetIteration& event ) -> void;
+	auto onExtinction( const event::Extinction& event ) -> void;
 
 	const cli::Options m_cliOptions;
 	Engine m_engine;

@@ -32,10 +32,12 @@ public:
 	auto update() -> void override;
 
 private:
+	auto triggerEvents() -> void;
 	auto shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool;
 	auto onResetSim( const event::ResetSim& event ) -> void;
 
 	const bool m_speedLimited;
+	bool m_finished             = false;
 	float m_timeSinceLastUpdate = 0.f;
 	entt::registry& m_registry;
 	std::vector< std::unique_ptr< ISystem > > m_simSystems;

@@ -113,6 +113,7 @@ Logger::Logger( entt::registry& registry ) : m_registry( registry )
 {
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 	dispatcher.sink< event::ResetSim >().connect< &Logger::onResetSim >( *this );
+	dispatcher.sink< event::Extinction >().connect< &Logger::onExtinction >( *this );
 	dispatcher.sink< event::ReachedTargetIteration >().connect< &Logger::onReachedTargetIteration >( *this );
 }
 
@@ -121,8 +122,8 @@ Logger::~Logger()
 	for ( auto& out : m_outputData )
 	{
 		dumpData( out->file, out->pendingData );
-		out->file.close();
 		out->file.flush();
+		out->file.close();
 	}
 }
 
@@ -162,7 +163,7 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 
 auto Logger::logTickData( const TickLog& tick ) -> void
 {
-	if ( m_targetReached || m_tickData == nullptr ) return;
+	if ( m_collectingDone || m_tickData == nullptr ) return;
 
 	auto& buffer = m_tickData->pendingData;
 	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", tick.iteration,
@@ -177,9 +178,21 @@ auto Logger::logTickData( const TickLog& tick ) -> void
 	}
 }
 
+auto Logger::dumpDataAndClose() -> void
+{
+	m_collectingDone = true;
+
+	for ( auto& out : m_outputData )
+	{
+		dumpData( out->file, out->pendingData );
+		out->file.flush();
+		out->file.close();
+	}
+}
+
 auto Logger::onResetSim( const event::ResetSim& /*event*/ ) -> void
 {
-	if ( m_targetReached ) return;
+	if ( m_collectingDone ) return;
 
 	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
 	for ( auto& out : m_outputData )
@@ -191,15 +204,14 @@ auto Logger::onResetSim( const event::ResetSim& /*event*/ ) -> void
 
 auto Logger::onReachedTargetIteration( const event::ReachedTargetIteration& /*event*/ ) -> void
 {
-	m_targetReached = true;
-
-	for ( auto& out : m_outputData )
-	{
-		dumpData( out->file, out->pendingData );
-		out->file.flush();
-	}
+	dumpDataAndClose();
 
 	const auto& outputPath = m_registry.ctx().get< Preset >().logging.outputDirectoryPath;
 	removeMarker( outputPath );
+}
+
+auto Logger::onExtinction( const event::Extinction& /*event*/ ) -> void
+{
+	dumpDataAndClose();
 }
 }  // namespace cc::app

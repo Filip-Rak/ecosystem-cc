@@ -18,6 +18,7 @@ namespace event
 {
 struct ResetSim;
 struct ReachedTargetIteration;
+struct Extinction;
 }  // namespace event
 
 struct TickLog;
@@ -31,8 +32,11 @@ public:
 	auto logTickData( const TickLog& tickData ) -> void;
 
 private:
+	auto dumpDataAndClose() -> void;
+
 	auto onResetSim( const event::ResetSim& event ) -> void;
 	auto onReachedTargetIteration( const event::ReachedTargetIteration& event ) -> void;
+	auto onExtinction( const event::Extinction& event ) -> void;
 
 	struct OutputData
 	{
@@ -45,6 +49,6 @@ private:
 	OutputData* m_tickData = nullptr;
 
 	entt::registry& m_registry;
-	bool m_targetReached = false;
+	bool m_collectingDone = false;
 };
 }  // namespace cc::app

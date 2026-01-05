@@ -7,14 +7,27 @@
 
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/SimRunnerData.hpp"
+#include "Application/Events/SimRunnerEvents.hpp"
 
 namespace cc::app
 {
+namespace
+{
+auto onExtinction( const event::Extinction& event ) -> void
+{
+	std::println( "Stopped. Agents went extinct in iteration: {}", event.iteration );
+}
+}  // namespace
+
 CLILoggerSystem::CLILoggerSystem( entt::registry& registry, int logfrequency )
     : m_registry( registry ), m_logfrequency( logfrequency )
 {
+	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
 	assert( registry.ctx().contains< Preset >() );
+
+	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::Extinction >().connect< &onExtinction >();
 }
 
 auto CLILoggerSystem::update() -> void

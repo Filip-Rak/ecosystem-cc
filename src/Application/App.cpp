@@ -47,6 +47,7 @@ App::App( const cli::Options& options )
 {
 	auto& registry   = m_engine.registry();
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
+	dispatcher.sink< event::Extinction >().connect< &App::onExtinction >( *this );
 	dispatcher.sink< event::ReachedTargetIteration >().connect< &App::onTargetReached >( *this );
 }
 
@@ -133,11 +134,21 @@ auto App::initSystems() -> void
 	}
 }
 
-auto App::onTargetReached( const event::ReachedTargetIteration& /*event*/ ) -> void
+auto App::closeGracefully() -> void
 {
 	auto& registry   = m_engine.registry();
 	auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 
 	dispatcher.enqueue< cc::event::Exit >( cc::event::ExitCode{ 0 } );
+}
+
+auto App::onTargetReached( const event::ReachedTargetIteration& /*event*/ ) -> void
+{
+	closeGracefully();
+}
+
+auto App::onExtinction( const event::Extinction& /*event*/ ) -> void
+{
+	closeGracefully();
 }
 }  // namespace cc::app

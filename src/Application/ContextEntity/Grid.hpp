@@ -46,6 +46,7 @@ public:
 	[[nodiscard]] auto getHeight() const -> std::uint16_t;
 	[[nodiscard]] auto getCellCount() const -> std::size_t;
 	[[nodiscard]] auto getSignedCellCount() const -> std::ptrdiff_t;
+	[[nodiscard]] auto getPopulation() const -> std::size_t;
 
 	[[nodiscard]] auto getSpatialGrid() const -> const SpatialGrid&;
 	[[nodiscard]] auto copyCreationArguments() const -> Args;
@@ -63,5 +64,6 @@ private:
 
 	std::vector< Cell > m_cells;
 	SpatialGrid m_spatialGrid;
+	std::size_t m_population{ 0uz };
 };
 }  // namespace cc::app

@@ -67,10 +67,12 @@ auto SimRunnerSystem::update() -> void
 	auto& data         = m_registry.ctx().get< SimRunnerData >();
 	auto& time         = m_registry.ctx().get< Time >();
 
-	if ( m_speedLimited && !shouldUpdate( data, time ) )
+	if ( m_finished || ( m_speedLimited && !shouldUpdate( data, time ) ) )
 	{
 		return;
 	}
+
+	triggerEvents();
 
 	m_timeSinceLastUpdate = 0.f;
 	data.iteration++;
@@ -93,6 +95,19 @@ auto SimRunnerSystem::update() -> void
 			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
 			dispatcher.trigger< event::ReachedTargetIteration >();
 		}
+	}
+}
+
+auto SimRunnerSystem::triggerEvents() -> void
+{
+	auto& dispatcher       = m_registry.ctx().get< entt::dispatcher >();
+	const auto& grid       = m_registry.ctx().get< Grid >();
+	const auto& runnerData = m_registry.ctx().get< SimRunnerData >();
+
+	if ( grid.getPopulation() == 0uz )
+	{
+		dispatcher.enqueue< event::Extinction >( runnerData.iteration );
+		m_finished = true;
 	}
 }
 
