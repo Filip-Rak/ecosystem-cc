@@ -44,7 +44,12 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.emplace_back( std::make_unique< AgentPassingSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentAdaptationSystem >( registry ) );
 	m_simSystems.emplace_back( std::make_unique< AgentOffspringSystem >( registry ) );
-	m_simSystems.emplace_back( std::make_unique< TickLogSystem >( registry ) );
+
+	const auto& logging = registry.ctx().get< Preset >().logging;
+	if ( logging.logPerTickState )
+	{
+		m_simSystems.emplace_back( std::make_unique< TickLogSystem >( registry ) );
+	}
 
 	if ( cliOptions.gui )
 	{

@@ -3,12 +3,13 @@
 #include <filesystem>
 #include <fstream>
 
-#include <entt/entt.hpp>
 #include <memory>
 #include <optional>
 #include <print>
 #include <string>
 #include <vector>
+
+#include <entt/entt.hpp>
 
 #include "Application/Constants/FilePathConstants.hpp"
 #include "Application/ContextEntity/Preset.hpp"
@@ -134,7 +135,6 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 	}
 
 	const auto& outputPath = preset.logging.outputDirectoryPath;
-
 	if ( preset.logging.logPerTickState )
 	{
 		m_outputData.emplace_back( std::make_unique< OutputData >() );
@@ -160,14 +160,14 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 	return std::nullopt;
 }
 
-auto Logger::logTickData( const TickLog& t ) -> void
+auto Logger::logTickData( const TickLog& tick ) -> void
 {
 	if ( m_targetReached || m_tickData == nullptr ) return;
 
 	auto& buffer = m_tickData->pendingData;
-	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", t.iteration,
-	                t.liveAgents, t.births, t.starvations, t.ageDeaths, t.meanEnergy, t.meanTempAdaptation,
-	                t.meanHumAdaptation, t.meanElevAdaptation );
+	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", tick.iteration,
+	                tick.liveAgents, tick.births, tick.starvations, tick.ageDeaths, tick.meanEnergy,
+	                tick.meanTempAdaptation, tick.meanHumAdaptation, tick.meanElevAdaptation );
 
 	m_tickData->file.flush();
 	constexpr auto flushRate = 0.9f;
