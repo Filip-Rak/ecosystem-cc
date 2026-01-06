@@ -152,23 +152,33 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 		constexpr auto megabyte = 1048576uz;
 		tickData->pendingData.reserve( megabyte );
 
-		std::format_to(
-		    std::back_inserter( tickData->pendingData ),
-		    "iteration,liveAgents,births,starvations,ageDeaths,meanEnergy,meanTempAdaptation,meanHumAdaptation,"
-		    "meanElevAdaptation\n" );
+		std::format_to( std::back_inserter( tickData->pendingData ),
+		                "iteration,liveAgents,births,starvations,ageDeaths,moves,occupiedCells,"
+		                "vegetationEaten,vegetationTotal,meanVegetation,meanCrowd,"
+		                "meanEnergy,energyVar,energyP50,energyP90,"
+		                "meanEnergyGene,energyGeneVar,energyGeneP50,energyGeneP90,"
+		                "meanTempAdaptation,meanHumAdaptation,meanElevAdaptation\n" );
 	}
 
 	return std::nullopt;
 }
 
-auto Logger::logTickData( const TickLog& tick ) -> void
+auto Logger::writeTickData( const TickLog& tick ) -> void
 {
 	if ( m_collectingDone || m_tickData == nullptr ) return;
 
 	auto& buffer = m_tickData->pendingData;
-	std::format_to( std::back_inserter( buffer ), "{},{},{},{},{},{:.3f},{:.3f},{:.3f},{:.3f}\n", tick.iteration,
-	                tick.liveAgents, tick.births, tick.starvations, tick.ageDeaths, tick.meanEnergy,
-	                tick.meanTempAdaptation, tick.meanHumAdaptation, tick.meanElevAdaptation );
+	std::format_to( std::back_inserter( buffer ),
+	                "{},{},{},{},{},{},{},"
+	                "{:.3f},{:.3f},{:.3f},{:.3f},"
+	                "{:.3f},{:.3f},{:.3f},{:.3f},"
+	                "{:.3f},{:.3f},{:.3f},{:.3f},"
+	                "{:.3f},{:.3f},{:.3f}\n",
+	                tick.iteration, tick.liveAgents, tick.births, tick.starvations, tick.ageDeaths, tick.moves,
+	                tick.occupiedCells, tick.vegetationEaten, tick.vegetationTotal, tick.meanVegetation, tick.meanCrowd,
+	                tick.meanEnergy, tick.energyVar, tick.energyP50, tick.energyP90, tick.meanEnergyGene,
+	                tick.energyGeneVar, tick.energyGeneP50, tick.energyGeneP90, tick.meanTempAdaptation,
+	                tick.meanHumAdaptation, tick.meanElevAdaptation );
 
 	m_tickData->file.flush();
 	constexpr auto flushRate = 0.9f;

@@ -144,7 +144,7 @@ auto App::closeGracefully() -> void
 
 auto App::onTargetReached( const event::ReachedTargetIteration& /*event*/ ) -> void
 {
-	closeGracefully();
+	if ( !m_cliOptions.gui ) closeGracefully();
 }
 
 auto App::onExtinction( const event::Extinction& /*event*/ ) -> void

@@ -29,7 +29,7 @@ public:
 	~Logger();
 
 	[[nodiscard]] auto init( bool clean ) -> std::optional< Error >;
-	auto logTickData( const TickLog& tickData ) -> void;
+	auto writeTickData( const TickLog& tickData ) -> void;
 
 private:
 	auto dumpDataAndClose() -> void;

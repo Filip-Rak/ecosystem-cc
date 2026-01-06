@@ -94,6 +94,7 @@ auto SimRunnerSystem::update() -> void
 
 			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
 			dispatcher.trigger< event::ReachedTargetIteration >();
+			if ( !m_inGui ) m_blockExecution = true;
 		}
 	}
 }

@@ -1,11 +1,17 @@
 #pragma once
 
-#include "Engine/Interface/ISystem.hpp"
+#include <vector>
 
 #include <entt/entity/fwd.hpp>
 
+#include "Application/ContextEntity/TickLog.hpp"
+#include "Engine/Interface/ISystem.hpp"
+
 namespace cc::app
 {
+struct Grid;
+struct TickLog;
+
 class TickLogSystem : public ISystem
 {
 public:
@@ -13,6 +19,10 @@ public:
 	auto update() -> void override;
 
 private:
+	auto logFromAgents( const Grid& grid, TickLog& tickLog ) -> void;
+
 	entt::registry& m_registry;
+	std::vector< float > m_agentEnergy;
+	std::vector< float > m_agentEnergyGene;
 };
 }  // namespace cc::app

@@ -8,20 +8,23 @@
 #include "Application/Components/Vitals.hpp"
 #include "Application/ContextEntity/Grid.hpp"
 #include "Application/ContextEntity/Preset.hpp"
+#include "Application/ContextEntity/TickDataCollection.hpp"
 
 namespace cc::app
 {
 AgentMovementSystem::AgentMovementSystem( entt::registry& registry ) : m_registry( registry )
 {
 	assert( registry.ctx().contains< Grid >() );
+	assert( registry.ctx().contains< TickDataCollection >() );
 }
 
 auto AgentMovementSystem::update() -> void
 {
-	auto& grid                = m_registry.ctx().get< Grid >();
-	const auto& spatialGrid   = grid.getSpatialGrid();
+	auto& dataCollection      = m_registry.ctx().get< TickDataCollection >();
 	const auto& preset        = m_registry.ctx().get< Preset >();
+	auto& grid                = m_registry.ctx().get< Grid >();
 	const auto cellAgentLimit = preset.agent.modifier.cellAgentLimit;
+	const auto& spatialGrid   = grid.getSpatialGrid();
 
 	const auto view = m_registry.view< const component::MoveIntent, const component::Position, component::Vitals >();
 	for ( const auto& [ entity, moveIntent, position, vitals ] : view.each() )
@@ -30,6 +33,7 @@ auto AgentMovementSystem::update() -> void
 
 		grid.moveEntity( entity, position.cellIndex, moveIntent.cellIndex );
 		vitals.energy -= moveIntent.movemementCost;
+		dataCollection.moves++;
 	}
 
 	m_registry.remove< component::MoveIntent >( view.begin(), view.end() );
