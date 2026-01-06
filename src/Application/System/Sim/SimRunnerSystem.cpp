@@ -122,7 +122,7 @@ auto SimRunnerSystem::shouldUpdate() -> bool
 	auto& data = m_registry.ctx().get< SimRunnerData >();
 	auto& time = m_registry.ctx().get< Time >();
 
-	if ( data.targetReached && m_inGui )
+	if ( data.targetReached && !m_inGui )
 	{
 		return false;
 	}

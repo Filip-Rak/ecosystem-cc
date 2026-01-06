@@ -45,21 +45,18 @@ Grid::Grid( const Args& args )
 	auto& random            = m_registry.ctx().get< Randomizer >();
 	const auto initialGenes = m_registry.ctx().get< Preset >().agent.initialGenes;
 
-	for ( auto index{ 0uz }; index < m_spatialGrid.size(); index++ )
+	for ( auto cellIndex{ 0uz }; cellIndex < m_spatialGrid.size(); cellIndex++ )
 	{
-		auto& spatialCell                   = m_spatialGrid[ index ];
+		auto& spatialCell                   = m_spatialGrid[ cellIndex ];
 		constexpr auto preallocatedEntities = 4uz;
 		spatialCell.reserve( preallocatedEntities );
 
-		// constexpr std::size_t agentCount    = 1;
-		// const std::size_t agentCountDivisor = m_cellCount / agentCount;
-		constexpr auto cellToSpawn = 3302uz;
-		if ( index == cellToSpawn )
+		for ( auto agent{ 0uz }; agent < static_cast< std::size_t >( args.populationValues[ cellIndex ] ); agent++ )
 		{
 			const float mutationOffset = preset.agent.modifier.initialMutation;
 			const auto randomizedGenes = random.mutateGenes( initialGenes, mutationOffset );
 			const auto& entity         = createAgent( m_registry, randomizedGenes, randomizedGenes.maxEnergy );
-			addToSpatialGrid( entity, index );
+			addToSpatialGrid( entity, cellIndex );
 		}
 	}
 }

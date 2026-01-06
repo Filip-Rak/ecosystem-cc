@@ -73,13 +73,14 @@ auto copyResourceFile( const filesystem::path& resource, const filesystem::path&
 		std::ofstream file( marker );
 		if ( !file ) return "-> Failed to create marker file in output directory";
 
-		copyResourceFile( preset.presetPath, log.outputDirectoryPath );
-
 		const auto& constants = constant::filePaths;
 		const auto& grid      = preset.gridDirectoryPath;
+
+		copyResourceFile( preset.presetPath, log.outputDirectoryPath );
 		copyResourceFile( grid / constants.temperaturePath, log.outputDirectoryPath );
 		copyResourceFile( grid / constants.elevationPath, log.outputDirectoryPath );
 		copyResourceFile( grid / constants.humidityPath, log.outputDirectoryPath );
+		copyResourceFile( grid / constants.populationPath, log.outputDirectoryPath );
 	}
 	catch ( const filesystem::filesystem_error& error )
 	{

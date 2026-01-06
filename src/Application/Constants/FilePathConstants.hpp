@@ -9,5 +9,6 @@ struct FilePaths
 	const std::filesystem::path temperaturePath = "temperature.png";
 	const std::filesystem::path elevationPath   = "elevation.png";
 	const std::filesystem::path humidityPath    = "humidity.png";
+	const std::filesystem::path populationPath  = "population.png";
 } const filePaths;
 }  // namespace cc::app::constant

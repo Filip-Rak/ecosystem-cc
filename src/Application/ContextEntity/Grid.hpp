@@ -29,6 +29,7 @@ public:
 		const std::vector< float > temperatureValues;
 		const std::vector< float > humidityValues;
 		const std::vector< float > elevationValues;
+		const std::vector< float > populationValues;
 	};
 
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;

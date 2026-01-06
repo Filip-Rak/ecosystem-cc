@@ -83,7 +83,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !temperatureLayer )
 	{
-		return std::unexpected(temperatureLayer.error());
+		return std::unexpected( temperatureLayer.error() );
 	}
 
 	const glm::ivec2 validDimensions = { temperatureLayer->width, temperatureLayer->height };
@@ -97,7 +97,7 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !elevationLayer )
 	{
-		return std::unexpected(elevationLayer.error());
+		return std::unexpected( elevationLayer.error() );
 	}
 
 	const auto humidityLayer =
@@ -109,7 +109,21 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 		);
 	if ( !humidityLayer )
 	{
-		return std::unexpected(humidityLayer.error());
+		return std::unexpected( humidityLayer.error() );
+	}
+
+	constexpr auto popRange = 1.f;
+	constexpr auto popMin = 0.f;
+	const auto populationLayer =
+	    readGridLayer( 
+			path / pathConst.populationPath, 
+			popRange, 
+			popMin,
+			validDimensions
+		);
+	if ( !populationLayer )
+	{
+		return std::unexpected( populationLayer.error() );
 	}
 	// clang-format on
 
@@ -118,7 +132,8 @@ auto readGridFromDirectory( entt::registry& registry, const std::filesystem::pat
 	                 .height            = static_cast< uint16_t >( validDimensions.y ),
 	                 .temperatureValues = temperatureLayer->values,
 	                 .humidityValues    = humidityLayer->values,
-	                 .elevationValues   = elevationLayer->values };
+	                 .elevationValues   = elevationLayer->values,
+	                 .populationValues  = populationLayer->values };
 	return args;
 }
 }  // namespace cc::app
