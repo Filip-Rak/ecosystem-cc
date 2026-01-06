@@ -157,7 +157,7 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 		                "vegetationEaten,vegetationTotal,meanVegetation,meanCrowd,"
 		                "meanEnergy,energyVar,energyP50,energyP90,"
 		                "meanEnergyGene,energyGeneVar,energyGeneP50,energyGeneP90,"
-		                "meanTempAdaptation,meanHumAdaptation,meanElevAdaptation\n" );
+		                "meanTempAdaptation,meanHumAdaptation,meanElevAdaptation" );
 	}
 
 	return std::nullopt;
@@ -169,11 +169,11 @@ auto Logger::writeTickData( const TickLog& tick ) -> void
 
 	auto& buffer = m_tickData->pendingData;
 	std::format_to( std::back_inserter( buffer ),
-	                "{},{},{},{},{},{},{},"
+	                "\n{},{},{},{},{},{},{},"
 	                "{:.3f},{:.3f},{:.3f},{:.3f},"
 	                "{:.3f},{:.3f},{:.3f},{:.3f},"
 	                "{:.3f},{:.3f},{:.3f},{:.3f},"
-	                "{:.3f},{:.3f},{:.3f}\n",
+	                "{:.3f},{:.3f},{:.3f}",
 	                tick.iteration, tick.liveAgents, tick.births, tick.starvations, tick.ageDeaths, tick.moves,
 	                tick.occupiedCells, tick.vegetationEaten, tick.vegetationTotal, tick.meanVegetation, tick.meanCrowd,
 	                tick.meanEnergy, tick.energyVar, tick.energyP50, tick.energyP90, tick.meanEnergyGene,

@@ -32,8 +32,11 @@ public:
 	auto update() -> void override;
 
 private:
-	auto triggerEvents() -> void;
-	auto shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool;
+	auto resetTickData() -> void;
+	auto updateSubSystems() -> void;
+	auto invokeEvents() -> void;
+
+	auto shouldUpdate() -> bool;
 	auto onResetSim( const event::ResetSim& event ) -> void;
 
 	const bool m_inGui;

@@ -63,27 +63,41 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 
 auto SimRunnerSystem::update() -> void
 {
-	const auto& preset = m_registry.ctx().get< Preset >();
-	auto& data         = m_registry.ctx().get< SimRunnerData >();
-	auto& time         = m_registry.ctx().get< Time >();
-
-	if ( m_blockExecution || ( m_inGui && !shouldUpdate( data, time ) ) )
+	if ( m_blockExecution || ( m_inGui && !shouldUpdate() ) )
 	{
 		return;
 	}
 
-	triggerEvents();
+	auto& data = m_registry.ctx().get< SimRunnerData >();
 
 	m_timeSinceLastUpdate = 0.f;
 	data.iteration++;
 
+	resetTickData();
+	updateSubSystems();
+	invokeEvents();
+}
+
+auto SimRunnerSystem::resetTickData() -> void
+{
 	auto& tickData = m_registry.ctx().get< TickDataCollection >();
 	tickData       = TickDataCollection{};
+}
 
+auto SimRunnerSystem::updateSubSystems() -> void
+{
 	for ( auto& system : m_simSystems )
 	{
 		system->update();
 	}
+}
+
+auto SimRunnerSystem::invokeEvents() -> void
+{
+	auto& dispatcher   = m_registry.ctx().get< entt::dispatcher >();
+	auto& data         = m_registry.ctx().get< SimRunnerData >();
+	const auto& grid   = m_registry.ctx().get< Grid >();
+	const auto& preset = m_registry.ctx().get< Preset >();
 
 	if ( data.iteration >= preset.iterationTarget )
 	{
@@ -92,28 +106,22 @@ auto SimRunnerSystem::update() -> void
 			data.targetReached = true;
 			data.paused        = true;
 
-			auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
 			dispatcher.trigger< event::ReachedTargetIteration >();
 			if ( !m_inGui ) m_blockExecution = true;
 		}
 	}
-}
-
-auto SimRunnerSystem::triggerEvents() -> void
-{
-	auto& dispatcher       = m_registry.ctx().get< entt::dispatcher >();
-	const auto& grid       = m_registry.ctx().get< Grid >();
-	const auto& runnerData = m_registry.ctx().get< SimRunnerData >();
-
-	if ( grid.getPopulation() == 0uz )
+	else if ( grid.getPopulation() == 0uz )
 	{
-		dispatcher.enqueue< event::Extinction >( runnerData.iteration );
+		dispatcher.enqueue< event::Extinction >( data.iteration );
 		if ( !m_inGui ) m_blockExecution = true;
 	}
 }
 
-auto SimRunnerSystem::shouldUpdate( const SimRunnerData& data, const Time& time ) -> bool
+auto SimRunnerSystem::shouldUpdate() -> bool
 {
+	auto& data = m_registry.ctx().get< SimRunnerData >();
+	auto& time = m_registry.ctx().get< Time >();
+
 	if ( data.targetReached && m_inGui )
 	{
 		return false;
