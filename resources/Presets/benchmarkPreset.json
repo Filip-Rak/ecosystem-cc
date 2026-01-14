@@ -1,10 +1,10 @@
 {
-    "gridDirectoryPath": "resources/Grid100x100",
-    "iterationTarget": 1001,
-    "rngSeed": 30000,
+    "gridDirectoryPath": "resources/grids/Benchmark100x100-100",
+    "iterationTarget": 1201,
+    "rngSeed": 0,
     "logging": {
-        "outputDirectoryPath": "output/",
-        "logPerTickState": true,
+        "outputDirectoryPath": "output/benchmark",
+        "logPerTickState": false,
         "logPerformance": true
     },
     "cell": {
@@ -46,8 +46,8 @@
             "initialMutation": 0.0,
             "furtherMutations": 0.1,
             "maxIntake": 0.2,
-            "baseEnergyBurn": 0.05,
-            "baseTraversalCost": 0.3,
+            "baseEnergyBurn": 0.00,
+            "baseTraversalCost": 0.0,
             "climateAdaptationRate": 0.001,
             "offspringRequiredFulness": 0.95,
             "refractoryMutationRate": 0,
@@ -56,8 +56,8 @@
         },
         "initialGene": {
             "perception": 2,
-            "refractoryPeriod": 35,
-            "lifeSpan": 100,
+            "refractoryPeriod": 1e4,
+            "lifeSpan": 1e4,
             "energy": 1.0,
             "temperaturePreference": 0.97,
             "humidityPreference": 0.41,

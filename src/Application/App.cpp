@@ -107,7 +107,7 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 		registry.ctx().emplace< GuiLog >();
 	}
 
-	if ( preset.logging.logPerTickState )
+	if ( preset.logging.logPerTickState || preset.logging.logPerformance )
 	{
 		auto& logger = registry.ctx().emplace< std::unique_ptr< Logger > >( std::make_unique< Logger >( registry ) );
 		if ( auto error = logger->init( m_cliOptions.clean ); error )

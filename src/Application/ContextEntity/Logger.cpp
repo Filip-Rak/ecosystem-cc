@@ -164,7 +164,7 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 		                "meanTempAdaptation,meanHumAdaptation,meanElevAdaptation" );
 	}
 
-	if ( preset.logging.logPerTickState )
+	if ( preset.logging.logPerformance )
 	{
 		m_outputData.emplace_back( std::make_unique< OutputData >() );
 		m_performanceData = m_outputData.back().get();
