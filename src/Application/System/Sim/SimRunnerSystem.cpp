@@ -20,13 +20,15 @@
 #include "Application/System/Sim/CLILoggerSystem.hpp"
 #include "Application/System/Sim/CellBiomassSystem.hpp"
 #include "Application/System/Sim/GuiLogSystem.hpp"
+#include "Application/System/Sim/PerformanceLogSystem.hpp"
 #include "Application/System/Sim/TickLogSystem.hpp"
 #include "Engine/ContextEntity/Time.hpp"
+#include "Engine/Utility/TimeUtils.hpp"
 
 namespace cc::app
 {
 SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
-    : m_inGui( cliOptions.gui ), m_registry( registry )
+    : m_limitSpeed( cliOptions.gui && !cliOptions.testPerformance ), m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
@@ -46,24 +48,18 @@ SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Optio
 	m_simSystems.emplace_back( std::make_unique< AgentOffspringSystem >( registry ) );
 
 	const auto& logging = registry.ctx().get< Preset >().logging;
-	if ( logging.logPerTickState )
-	{
-		m_simSystems.emplace_back( std::make_unique< TickLogSystem >( registry ) );
-	}
+	if ( logging.logPerTickState ) m_simSystems.emplace_back( std::make_unique< TickLogSystem >( registry ) );
+	if ( logging.logPerformance ) m_simSystems.emplace_back( std::make_unique< PerformanceLogSystem >( registry ) );
 
 	if ( cliOptions.gui )
-	{
 		m_simSystems.emplace_back( std::make_unique< GuiLogSystem >( registry ) );
-	}
 	else
-	{
 		m_simSystems.emplace_back( std::make_unique< CLILoggerSystem >( registry, cliOptions.terminalLogfrequency ) );
-	}
 }
 
 auto SimRunnerSystem::update() -> void
 {
-	if ( m_blockExecution || ( m_inGui && !shouldUpdate() ) )
+	if ( m_blockExecution || ( m_limitSpeed && !shouldUpdate() ) )
 	{
 		return;
 	}
@@ -86,10 +82,16 @@ auto SimRunnerSystem::resetTickData() -> void
 
 auto SimRunnerSystem::updateSubSystems() -> void
 {
+	const auto timeStamp = getTimeStamp();
+
 	for ( auto& system : m_simSystems )
 	{
 		system->update();
 	}
+
+	const auto updateDuration = getTimeStampDiff( timeStamp );
+	auto& data                = m_registry.ctx().get< SimRunnerData >();
+	data.tickTime             = updateDuration;
 }
 
 auto SimRunnerSystem::invokeEvents() -> void
@@ -107,13 +109,13 @@ auto SimRunnerSystem::invokeEvents() -> void
 			data.paused        = true;
 
 			dispatcher.trigger< event::ReachedTargetIteration >();
-			if ( !m_inGui ) m_blockExecution = true;
+			if ( !m_limitSpeed ) m_blockExecution = true;
 		}
 	}
 	else if ( grid.getPopulation() == 0uz )
 	{
 		dispatcher.enqueue< event::Extinction >( data.iteration );
-		if ( !m_inGui ) m_blockExecution = true;
+		if ( !m_limitSpeed ) m_blockExecution = true;
 	}
 }
 
@@ -122,7 +124,7 @@ auto SimRunnerSystem::shouldUpdate() -> bool
 	auto& data = m_registry.ctx().get< SimRunnerData >();
 	auto& time = m_registry.ctx().get< Time >();
 
-	if ( data.targetReached && !m_inGui )
+	if ( data.targetReached && !m_limitSpeed )
 	{
 		return false;
 	}

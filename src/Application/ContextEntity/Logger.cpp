@@ -15,7 +15,9 @@
 #include "Application/ContextEntity/Preset.hpp"
 #include "Application/ContextEntity/TickLog.hpp"
 #include "Application/Events/SimRunnerEvents.hpp"
+#include "Application/Utility/PerformanceLog.hpp"
 
+// FIXME: Should have less copy paste with templates but I am out of time.
 namespace cc::app
 {
 namespace
@@ -23,6 +25,7 @@ namespace
 namespace filesystem = std::filesystem;
 
 const filesystem::path tickDataFile = "tickData.csv";
+const filesystem::path perfDataFile = "performanceData.csv";
 const filesystem::path markerFile   = "incomplete-results.warning";
 
 auto copyResourceFile( const filesystem::path& resource, const filesystem::path& outputPath ) -> void
@@ -161,6 +164,25 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 		                "meanTempAdaptation,meanHumAdaptation,meanElevAdaptation" );
 	}
 
+	if ( preset.logging.logPerTickState )
+	{
+		m_outputData.emplace_back( std::make_unique< OutputData >() );
+		m_performanceData = m_outputData.back().get();
+
+		auto& perfData     = m_outputData.back();
+		perfData->filename = perfDataFile;
+
+		perfData->file.open( outputPath / perfDataFile );
+		if ( !perfData->file.good() )
+		{
+			return "-> Couldn't create output file\n";
+		}
+		constexpr auto megabyte = 1048576uz;
+		perfData->pendingData.reserve( megabyte );
+
+		std::format_to( std::back_inserter( perfData->pendingData ), "iteration,liveAgents,frameTime,tickTime" );
+	}
+
 	return std::nullopt;
 }
 
@@ -186,6 +208,22 @@ auto Logger::writeTickData( const TickLog& tick ) -> void
 	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
 	{
 		dumpData( m_tickData->file, m_tickData->pendingData );
+	}
+}
+
+auto Logger::writeTickPerformance( const PerformanceLog& perf ) -> void
+{
+	if ( m_collectingDone || m_performanceData == nullptr ) return;
+
+	auto& buffer = m_performanceData->pendingData;
+	std::format_to( std::back_inserter( buffer ), "\n{},{},{},{}", perf.iteration, perf.agentCount, perf.frameTime,
+	                perf.tickTime );
+
+	m_performanceData->file.flush();
+	constexpr auto flushRate = 0.9f;
+	if ( static_cast< float >( buffer.size() ) >= static_cast< float >( buffer.capacity() ) * flushRate )
+	{
+		dumpData( m_performanceData->file, m_performanceData->pendingData );
 	}
 }
 

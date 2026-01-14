@@ -15,8 +15,10 @@ auto parse( int argc, char** argv ) -> Options
 	CLI::App app{ "Ecosystem" };
 	app.add_option( "--preset", options.presetPath, "Simulation preset to run" );
 	app.add_option( "--tlog", options.terminalLogfrequency, "Log progress to terminal every [tlog] iteration" );
-	app.add_flag( "--gui", options.gui, "Run with GUI" );
 	app.add_flag( "--clean", options.clean, "Purge all the files in the given output directory" );
+	app.add_flag( "--gui", options.gui, "Run with GUI" );
+	app.add_flag( "--test-performance", options.testPerformance,
+	              "For GUI Only. Autostart without speed limit. Notice: UI will not fully work" );
 
 	try
 	{

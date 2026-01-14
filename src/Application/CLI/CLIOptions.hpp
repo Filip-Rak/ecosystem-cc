@@ -12,6 +12,7 @@ struct Options
 {
 	bool gui{ false };
 	bool clean{ false };
+	bool testPerformance{ false };
 	std::filesystem::path presetPath;
 	int terminalLogfrequency = LogEvery10;
 };

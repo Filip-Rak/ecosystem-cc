@@ -1,10 +1,11 @@
 {
     "gridDirectoryPath": "resources/Grid100x100",
-    "iterationTarget": 1e5,
+    "iterationTarget": 1001,
     "rngSeed": 30000,
     "logging": {
         "outputDirectoryPath": "output/",
-        "logPerTickState": true
+        "logPerTickState": true,
+        "logPerformance": true
     },
     "cell": {
         "growthSpeed": {

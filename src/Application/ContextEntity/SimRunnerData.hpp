@@ -16,5 +16,6 @@ struct SimRunnerData
 	int speed          = constant::defaultSpeed;
 	bool paused        = true;
 	bool targetReached = false;
+	float tickTime{};
 };
 }  // namespace cc::app

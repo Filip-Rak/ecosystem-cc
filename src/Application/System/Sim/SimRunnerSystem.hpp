@@ -39,7 +39,7 @@ private:
 	auto shouldUpdate() -> bool;
 	auto onResetSim( const event::ResetSim& event ) -> void;
 
-	const bool m_inGui;
+	const bool m_limitSpeed;
 	bool m_blockExecution       = false;
 	float m_timeSinceLastUpdate = 0.f;
 	entt::registry& m_registry;

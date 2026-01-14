@@ -22,6 +22,8 @@ struct Extinction;
 }  // namespace event
 
 struct TickLog;
+struct PerformanceLog;
+
 class Logger
 {
 public:
@@ -29,7 +31,8 @@ public:
 	~Logger();
 
 	[[nodiscard]] auto init( bool clean ) -> std::optional< Error >;
-	auto writeTickData( const TickLog& tickData ) -> void;
+	auto writeTickData( const TickLog& tick ) -> void;
+	auto writeTickPerformance( const PerformanceLog& perf ) -> void;
 
 private:
 	auto dumpDataAndClose() -> void;
@@ -46,7 +49,8 @@ private:
 	};
 
 	std::vector< std::unique_ptr< OutputData > > m_outputData;
-	OutputData* m_tickData = nullptr;
+	OutputData* m_tickData        = nullptr;
+	OutputData* m_performanceData = nullptr;
 
 	entt::registry& m_registry;
 	bool m_collectingDone = false;

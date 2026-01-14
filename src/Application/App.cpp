@@ -80,7 +80,8 @@ auto App::run() -> void
 
 auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >
 {
-	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
+	const bool paused = m_cliOptions.gui && !m_cliOptions.testPerformance;
+	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = paused } );
 	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
 
 	registry.ctx().emplace< Randomizer >( livePreset );

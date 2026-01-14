@@ -9,7 +9,7 @@
 namespace
 {
 using clock                 = std::chrono::steady_clock;
-constexpr float closeToZero = 1.f / 60.f;
+constexpr float closeToZero = 0.000404f;
 }  // namespace
 
 namespace cc
