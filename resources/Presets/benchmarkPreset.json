@@ -1,9 +1,9 @@
 {
-    "gridDirectoryPath": "resources/grids/Benchmark100x100-100",
+    "gridDirectoryPath": "resources/grids/Benchmark100x100-750",
     "iterationTarget": 1201,
     "rngSeed": 0,
     "logging": {
-        "outputDirectoryPath": "output/benchmark",
+        "outputDirectoryPath": "output/benchmark750",
         "logPerTickState": false,
         "logPerformance": true
     },
