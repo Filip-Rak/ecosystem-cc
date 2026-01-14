@@ -84,10 +84,10 @@ struct Preset
 
 	struct Logging
 	{
-		const std::filesystem::path outputDirectoryPath;
+		std::filesystem::path outputDirectoryPath;
 		const bool logPerTickState;
 		const bool logPerformance;
-	} const logging;
+	} logging;
 
 	const std::filesystem::path presetPath;
 	const std::filesystem::path gridDirectoryPath;

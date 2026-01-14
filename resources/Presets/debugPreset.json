@@ -1,6 +1,6 @@
 {
     "gridDirectoryPath": "resources/grids/Debug100x100",
-    "iterationTarget": 1e4,
+    "iterationTarget": 30,
     "rngSeed": 30000,
     "logging": {
         "outputDirectoryPath": "output/debug",

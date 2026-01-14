@@ -1,9 +1,9 @@
 {
-    "gridDirectoryPath": "resources/grids/Benchmark100x100-750",
-    "iterationTarget": 1201,
+    "gridDirectoryPath": "resources/grids/Benchmark100x100",
+    "iterationTarget": 100,
     "rngSeed": 0,
     "logging": {
-        "outputDirectoryPath": "output/benchmark750",
+        "outputDirectoryPath": "output/benchmark",
         "logPerTickState": false,
         "logPerformance": true
     },
@@ -56,8 +56,8 @@
         },
         "initialGene": {
             "perception": 2,
-            "refractoryPeriod": 1e4,
-            "lifeSpan": 1e4,
+            "refractoryPeriod": 1e6,
+            "lifeSpan": 1e6,
             "energy": 1.0,
             "temperaturePreference": 0.97,
             "humidityPreference": 0.41,

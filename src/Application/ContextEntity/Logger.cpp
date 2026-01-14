@@ -178,7 +178,8 @@ auto Logger::init( const bool clean ) -> std::optional< Error >
 			return "-> Couldn't create output file\n";
 		}
 		constexpr auto megabyte = 1048576uz;
-		perfData->pendingData.reserve( megabyte );
+		constexpr auto MB100    = 100uz * megabyte;
+		perfData->pendingData.reserve( MB100 );
 
 		std::format_to( std::back_inserter( perfData->pendingData ), "iteration,liveAgents,frameTime,tickTime" );
 	}

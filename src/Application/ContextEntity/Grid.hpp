@@ -22,14 +22,14 @@ public:
 	struct Args
 	{
 		entt::registry& registry;
-		const std::uint16_t width;
-		const std::uint16_t height;
+		std::uint16_t width;
+		std::uint16_t height;
 
 		// Intended copies
-		const std::vector< float > temperatureValues;
-		const std::vector< float > humidityValues;
-		const std::vector< float > elevationValues;
-		const std::vector< float > populationValues;
+		std::vector< float > temperatureValues;
+		std::vector< float > humidityValues;
+		std::vector< float > elevationValues;
+		std::vector< float > populationValues;
 	};
 
 	using SpatialGrid = std::vector< std::vector< entt::entity > >;

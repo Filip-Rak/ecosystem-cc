@@ -17,8 +17,11 @@ auto parse( int argc, char** argv ) -> Options
 	app.add_option( "--tlog", options.terminalLogfrequency, "Log progress to terminal every [tlog] iteration" );
 	app.add_flag( "--clean", options.clean, "Purge all the files in the given output directory" );
 	app.add_flag( "--gui", options.gui, "Run with GUI" );
+
 	app.add_flag( "--test-performance", options.testPerformance,
 	              "For GUI Only. Autostart without speed limit. Notice: UI will not fully work" );
+	app.add_option( "--output", options.outputPath, "Output path. Overwrites preset." );
+	app.add_option( "--agents", options.agents, "Agent count. Overwrites preset." );
 
 	try
 	{

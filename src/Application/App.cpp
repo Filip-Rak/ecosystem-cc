@@ -80,17 +80,45 @@ auto App::run() -> void
 
 auto App::initEntities( entt::registry& registry, const Preset& preset ) const -> std::optional< Error >
 {
+	// FIXME: A mess of random stuff. Clean it up later.
 	const bool paused = m_cliOptions.gui && !m_cliOptions.testPerformance;
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = paused } );
-	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
+	auto& livePreset = registry.ctx().emplace< Preset >( preset );
+
+	if ( m_cliOptions.outputPath )
+	{
+		livePreset.logging.outputDirectoryPath = m_cliOptions.outputPath.value();
+	}
 
 	registry.ctx().emplace< Randomizer >( livePreset );
 	registry.ctx().emplace< TickDataCollection >();
 
-	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
+	auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( !gridArgs )
 	{
 		return "-> Couldn't load the grid\n" + gridArgs.error();
+	}
+
+	if ( m_cliOptions.agents )
+	{
+		// FIXME: This is the effect of trying to wrap this up quickly for the thesis. And it's awful.
+		auto& popVals = gridArgs->populationValues;
+		popVals.assign( popVals.size(), 0.f );
+
+		if ( !popVals.empty() )
+		{
+			const std::size_t totalAgents = *m_cliOptions.agents;
+			const std::size_t cellCount   = popVals.size();
+
+			const std::size_t base      = totalAgents / cellCount;
+			const std::size_t remainder = totalAgents % cellCount;
+
+			for ( std::size_t i = 0; i < cellCount; ++i )
+			{
+				std::size_t count = base + ( i < remainder ? 1 : 0 );
+				popVals[ i ]      = static_cast< float >( count );
+			}
+		}
 	}
 
 	Grid grid( gridArgs.value() );
