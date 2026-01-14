@@ -82,20 +82,14 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 {
 	registry.ctx().emplace< SimRunnerData >( SimRunnerData{ .paused = m_cliOptions.gui } );
 	const auto& livePreset = registry.ctx().emplace< Preset >( preset );
-	auto& logger = registry.ctx().emplace< std::unique_ptr< Logger > >( std::make_unique< Logger >( registry ) );
+
 	registry.ctx().emplace< Randomizer >( livePreset );
 	registry.ctx().emplace< TickDataCollection >();
-	registry.ctx().emplace< GuiLog >();
 
 	const auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
 	if ( !gridArgs )
 	{
 		return "-> Couldn't load the grid\n" + gridArgs.error();
-	}
-
-	if ( auto error = logger->init( m_cliOptions.clean ); error )
-	{
-		return "-> Failed to initialize Logger\n" + *error;
 	}
 
 	Grid grid( gridArgs.value() );
@@ -104,11 +98,21 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	if ( m_cliOptions.gui )
 	{
 		auto& camera = registry.ctx().emplace< Camera >();
-		constexpr const glm::vec2 CameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
-		camera.position = glm::vec2{ CameraPosition };
+		constexpr const glm::vec2 cameraPosition{ constant::UI.SidePanel.InitialWidth / 2.f, 0.f };
+		camera.position = glm::vec2{ cameraPosition };
 
 		registry.ctx().emplace< VisualGrid >( gridArgs->width, gridArgs->height );
 		registry.ctx().emplace< UIConfig >();
+		registry.ctx().emplace< GuiLog >();
+	}
+
+	if ( preset.logging.logPerTickState )
+	{
+		auto& logger = registry.ctx().emplace< std::unique_ptr< Logger > >( std::make_unique< Logger >( registry ) );
+		if ( auto error = logger->init( m_cliOptions.clean ); error )
+		{
+			return "-> Failed to initialize Logger\n" + *error;
+		}
 	}
 
 	return std::nullopt;

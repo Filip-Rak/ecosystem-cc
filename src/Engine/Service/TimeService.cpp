@@ -24,10 +24,10 @@ auto TimeService::beginFrame() -> void
 
 auto TimeService::processDeltaTime() -> void
 {
-	const auto currentFrameTime = clock::now();
-	const auto dtTimePoint = currentFrameTime - lastFrameTime;
+	const auto currentFrameTime                      = clock::now();
+	const auto dtTimePoint                           = currentFrameTime - lastFrameTime;
 	const std::chrono::duration< float > dtInSeconds = dtTimePoint;
-	lastFrameTime = currentFrameTime;
+	lastFrameTime                                    = currentFrameTime;
 
 	m_deltaTime = dtInSeconds.count();
 }
@@ -47,13 +47,13 @@ auto TimeService::processFPS() -> void
 		m_fps.lastFPS = static_cast< float >( m_fps.accumulatedFrames ) / m_fps.accumulatedTime;
 
 		m_fps.accumulatedFrames = 0;
-		m_fps.accumulatedTime = 0.f;
+		m_fps.accumulatedTime   = 0.f;
 	}
 }
 
 auto TimeService::publishTime( entt::registry& registry ) -> void
 {
-	Time time{ .FPS = m_fps.lastFPS, .RunTime = m_runTime, .DeltaTime = m_deltaTime };
+	Time time{ .fps = m_fps.lastFPS, .runTime = m_runTime, .deltaTime = m_deltaTime };
 	registry.ctx().erase< Time >();
 	registry.ctx().emplace< Time >( time );
 }

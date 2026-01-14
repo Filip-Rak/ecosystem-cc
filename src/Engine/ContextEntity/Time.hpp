@@ -4,8 +4,8 @@ namespace cc
 {
 struct Time
 {
-	const float FPS;
-	const float RunTime;
-	const float DeltaTime;
+	const float fps;
+	const float runTime;
+	const float deltaTime;
 };
 }  // namespace cc

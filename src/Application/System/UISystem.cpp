@@ -20,12 +20,12 @@ namespace cc::app
 {
 UISystem::UISystem( entt::registry& registry ) : m_registry( registry )
 {
+	assert( registry.ctx().contains< TickDataCollection >() );
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
 	assert( registry.ctx().contains< VisualGrid >() );
 	assert( registry.ctx().contains< GUIService >() );
 	assert( registry.ctx().contains< UIConfig >() );
-	assert( registry.ctx().contains< TickDataCollection >() );
 	assert( registry.ctx().contains< Camera >() );
 	assert( registry.ctx().contains< Preset >() );
 	assert( registry.ctx().contains< Time >() );

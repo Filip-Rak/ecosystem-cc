@@ -34,13 +34,13 @@ constexpr uint8_t KeyboardOffset = 1;
 
 auto updateInputMap( InputMap& inputMap, keyboard::Key ccKey, bool pressed ) -> void
 {
-	const auto ccKeyIndex = static_cast< std::size_t >( ccKey );
+	const auto ccKeyIndex           = static_cast< std::size_t >( ccKey );
 	inputMap.keySates[ ccKeyIndex ] = pressed;
 }
 
 auto updateInputMap( InputMap& inputMap, mouse::Button ccButton, bool pressed ) -> void
 {
-	const auto buttonIndex = static_cast< std::size_t >( ccButton );
+	const auto buttonIndex              = static_cast< std::size_t >( ccButton );
 	inputMap.buttonSates[ buttonIndex ] = pressed;
 }
 auto updateInputMap( InputMap& inputMap, bool inFocus ) -> void
@@ -73,7 +73,7 @@ SFWindowService::~SFWindowService()
 auto SFWindowService::beginFrame() -> void
 {
 	auto& dispatcher = m_registry.ctx().get< entt::dispatcher >();
-	auto& inputMap = m_registry.ctx().get< InputMap >();
+	auto& inputMap   = m_registry.ctx().get< InputMap >();
 
 	handleWindowEvents( dispatcher, inputMap );
 
@@ -83,7 +83,7 @@ auto SFWindowService::beginFrame() -> void
 
 auto SFWindowService::endFrame() -> void
 {
-	auto& inputMap = m_registry.ctx().get< InputMap >();
+	auto& inputMap            = m_registry.ctx().get< InputMap >();
 	inputMap.mouseScrollDelta = 0.f;
 }
 
@@ -161,7 +161,7 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 	}
 	else if ( const auto* windowResized = event.getIf< sf::Event::Resized >() )
 	{
-		const auto width = static_cast< uint16_t >( windowResized->size.x );
+		const auto width  = static_cast< uint16_t >( windowResized->size.x );
 		const auto height = static_cast< uint16_t >( windowResized->size.y );
 		dispatcher.enqueue< event::WindowResized >( width, height );
 	}
@@ -169,7 +169,7 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 	{
 		if ( !m_inFocus ) return;
 
-		constexpr bool pressed = true;
+		constexpr bool pressed    = true;
 		const keyboard::Key ccKey = toCcKey( keyPressed->code );
 
 		dispatcher.enqueue< event::KeyChanged >( ccKey, pressed );
@@ -179,7 +179,7 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 	{
 		if ( !m_inFocus ) return;
 
-		constexpr bool Pressed = false;
+		constexpr bool Pressed    = false;
 		const keyboard::Key ccKey = toCcKey( keyReleased->code );
 
 		dispatcher.enqueue< event::KeyChanged >( ccKey, Pressed );
@@ -191,10 +191,11 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 
 		constexpr bool Pressed = true;
 		const auto glmPosition = toGlm( mousePressed->position );
-		const auto ccButton = toCcButton( mousePressed->button );
+		const auto ccButton    = toCcButton( mousePressed->button );
 
-		dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
 		updateInputMap( inputMap, ccButton, Pressed );
+		dispatcher.trigger(
+		    event::MouseButtonChanged{ .button = ccButton, .position = glmPosition, .pressed = Pressed } );
 	}
 	else if ( const auto* mouseReleased = event.getIf< sf::Event::MouseButtonReleased >() )
 	{
@@ -202,17 +203,19 @@ auto SFWindowService::adaptEvent( const sf::Event& event, entt::dispatcher& disp
 
 		constexpr bool Pressed = false;
 		const auto glmPosition = toGlm( mouseReleased->position );
-		const auto ccButton = toCcButton( mouseReleased->button );
+		const auto ccButton    = toCcButton( mouseReleased->button );
 
-		dispatcher.enqueue< event::MouseButtonChanged >( ccButton, glmPosition, Pressed );
 		updateInputMap( inputMap, ccButton, Pressed );
+		dispatcher.trigger(
+		    event::MouseButtonChanged{ .button = ccButton, .position = glmPosition, .pressed = Pressed } );
 	}
 	else if ( const auto* mouseScrolled = event.getIf< sf::Event::MouseWheelScrolled >() )
 	{
 		if ( !m_inFocus ) return;
 
 		inputMap.mouseScrollDelta = mouseScrolled->delta;
-		dispatcher.enqueue< event::MouseWheelMoved >( toGlm( mouseScrolled->position ), mouseScrolled->delta );
+		dispatcher.trigger( event::MouseWheelMoved{ .position    = toGlm( mouseScrolled->position ),
+		                                            .scrollDelta = mouseScrolled->delta } );
 	}
 }
 

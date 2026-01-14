@@ -12,6 +12,7 @@ class Randomizer
 public:
 	explicit Randomizer( const Preset& preset );
 	[[nodiscard]] auto mutateGenes( const Genes& baseGenes, float offset ) -> Genes;
+
 	auto reset() -> void;
 
 private:

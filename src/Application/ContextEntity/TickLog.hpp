@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+// TODO: Move to utility
 namespace cc::app
 {
 struct TickLog

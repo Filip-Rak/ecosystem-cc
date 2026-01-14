@@ -48,7 +48,7 @@ auto Cell::getFoodGain( const float foodPref ) const -> FoodGain
 	const float vegetationGain = getGain( vegetation, 1 - foodPref );
 	const float fleshGain      = getGain( flesh, foodPref );
 
-	// FIXME: Flesh forced to zero.
+	// DISABLED: Flesh forced to zero.
 	return { .vegetation = vegetationGain, .flesh = 0.f };
 }
 

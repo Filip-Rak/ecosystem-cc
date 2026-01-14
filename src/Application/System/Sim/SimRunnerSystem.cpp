@@ -69,9 +69,9 @@ auto SimRunnerSystem::update() -> void
 	}
 
 	auto& data = m_registry.ctx().get< SimRunnerData >();
+	data.iteration++;
 
 	m_timeSinceLastUpdate = 0.f;
-	data.iteration++;
 
 	resetTickData();
 	updateSubSystems();
@@ -137,7 +137,7 @@ auto SimRunnerSystem::shouldUpdate() -> bool
 	const bool timeToUpdate = m_timeSinceLastUpdate > timeBetweenUpdates;
 	if ( !timeToUpdate )
 	{
-		m_timeSinceLastUpdate += time.DeltaTime;
+		m_timeSinceLastUpdate += time.deltaTime;
 		return false;
 	}
 

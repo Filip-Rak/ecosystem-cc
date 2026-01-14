@@ -28,8 +28,8 @@ auto updateDebug( entt::registry& registry, const InputService& input, const Tim
 {
 	if ( input.isPressed( keyboard::Key::Space ) )
 	{
-		std::print( "Run time: {}\nFPS: {}\nDeltaTime: {}\nMousePosition: {{ {}, {} }}\n", time.RunTime, time.FPS,
-		            time.DeltaTime, input.getCurrentMousePos().x, input.getCurrentMousePos().y );
+		std::print( "Run time: {}\nFPS: {}\nDeltaTime: {}\nMousePosition: {{ {}, {} }}\n", time.runTime, time.fps,
+		            time.deltaTime, input.getCurrentMousePos().x, input.getCurrentMousePos().y );
 	}
 
 	if ( input.isPressed( keyboard::Key::Escape ) )

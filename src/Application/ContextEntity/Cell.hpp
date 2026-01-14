@@ -4,6 +4,8 @@
 
 namespace cc::app
 {
+
+// TODO : Not in ctx, move to utility.
 struct Cell
 {
 	struct FoodGain

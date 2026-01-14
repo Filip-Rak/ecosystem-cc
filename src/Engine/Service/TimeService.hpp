@@ -8,8 +8,8 @@
 
 namespace
 {
-using clock = std::chrono::steady_clock;
-constexpr float CloseToZero = 0.001f;
+using clock                 = std::chrono::steady_clock;
+constexpr float closeToZero = 1.f / 60.f;
 }  // namespace
 
 namespace cc
@@ -24,8 +24,8 @@ private:
 	struct FPS
 	{
 		static constexpr float timeBetweenUpdates = 1.f;
-		float accumulatedTime = 0.f;
-		int accumulatedFrames = 0;
+		float accumulatedTime                     = 0.f;
+		int accumulatedFrames                     = 0;
 
 		float lastFPS = 0.f;
 	};
@@ -37,8 +37,8 @@ private:
 
 	entt::registry& m_registry;
 	clock::time_point lastFrameTime = clock::now();
-	float m_deltaTime = CloseToZero;
-	float m_runTime = CloseToZero;
+	float m_deltaTime               = closeToZero;
+	float m_runTime                 = closeToZero;
 
 	FPS m_fps;
 };

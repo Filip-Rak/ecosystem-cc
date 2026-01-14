@@ -71,10 +71,10 @@ auto createWidgets( entt::registry& registry ) -> void
     ImGui::SameLine(); ImGui::Text( Separator.data() );
 	
 	const auto& time = registry.ctx().get< Time >();
-    ImGui::SameLine(); ImGui::Text( Labels.RunTime.data(), time.RunTime );
+    ImGui::SameLine(); ImGui::Text( Labels.RunTime.data(), time.runTime );
 	ImGui::SameLine(); ImGui::Text( Separator.data() );
 
-    ImGui::SameLine(); ImGui::Text( Labels.FPS.data(), time.FPS );
+    ImGui::SameLine(); ImGui::Text( Labels.FPS.data(), time.fps );
 	// clang-format on
 }
 
