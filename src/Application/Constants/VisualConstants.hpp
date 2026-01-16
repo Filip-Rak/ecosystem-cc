@@ -58,20 +58,27 @@ struct Visual
 		                         .lowEndColor  = Color{ .red = 60, .green = 180, .blue = 74 },
 		                         .highEndColor = Color{ .red = 139, .green = 69, .blue = 19 } };
 
-		const std::array< VisMode, 6 > array = { vegetation, flesh, population, temperature, humidity, elevation };
+		const VisMode avgMaxEnergy{ .name         = "Energy Gene",
+		                            .lowEndName   = "Low",
+		                            .highEndName  = "High",
+		                            .lowEndColor  = Color{ .red = 68, .green = 1, .blue = 84 },
+		                            .highEndColor = Color{ .red = 253, .green = 231, .blue = 37 } };
+
+		const std::array< VisMode, 7 > array = { vegetation, flesh,     population,  temperature,
+		                                         humidity,   elevation, avgMaxEnergy };
 	} const visModes;
 
-	const float MovementSpeed     = 100.f;
-	const float FastMovementSpeed = 250.f;
+	const float movementSpeed     = 100.f;
+	const float fastMovementSpeed = 250.f;
 
-	const float MinZoom = 0.1f;
-	const float MaxZoom = 3.f;
+	const float minZoom = 0.1f;
+	const float maxZoom = 3.f;
 
-	const float ZoomKeyboardSpeed     = 0.1f;
-	const float FastZoomKeyboardSpeed = 0.25f;
+	const float zoomKeyboardSpeed     = 0.1f;
+	const float fastZoomKeyboardSpeed = 0.25f;
 
-	const float ZoomScrollSpeed     = 0.05f;
-	const float FastZoomScrollSpeed = 0.10f;
+	const float zoomScrollSpeed     = 0.05f;
+	const float fastZoomScrollSpeed = 0.10f;
 
 } inline constexpr visual;
 

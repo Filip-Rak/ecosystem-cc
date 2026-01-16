@@ -71,7 +71,7 @@ auto drawContents( entt::registry& registry ) -> void
 
 	ImGui::LabelText( labels.IterationLabel.data(), "%zu of %zu", simRunnerData.iteration, preset.iterationTarget );
 
-	ImGui::SliderFloat( labels.ZoomSlider.data(), &cam.zoomLevel, Visual.MinZoom, Visual.MaxZoom,
+	ImGui::SliderFloat( labels.ZoomSlider.data(), &cam.zoomLevel, Visual.minZoom, Visual.maxZoom,
 	                    contents.sliderPrecision.data(), ImGuiSliderFlags_AlwaysClamp );
 	ImGui::SliderInt( labels.SpeedSlider.data(), &simRunnerData.speed, contents.minSpeed, contents.maxSpeed, "%d",
 	                  ImGuiSliderFlags_AlwaysClamp );

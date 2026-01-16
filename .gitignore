@@ -13,3 +13,7 @@ build/
 
 # Results
 output/
+
+# Krita
+*~
+*.kra

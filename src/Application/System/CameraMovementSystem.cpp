@@ -22,22 +22,22 @@ auto CameraMovementSystem::update() -> void
 	const auto& time                = m_registry.ctx().get< Time >();
 	auto& camera                    = m_registry.ctx().get< Camera >();
 
-	float zoomKeyboardSpeed = Constants.ZoomKeyboardSpeed;
-	float zoomScrollSpeed   = Constants.ZoomScrollSpeed;
-	float movementSpeed     = Constants.MovementSpeed;
+	float zoomKeyboardSpeed = Constants.zoomKeyboardSpeed;
+	float zoomScrollSpeed   = Constants.zoomScrollSpeed;
+	float movementSpeed     = Constants.movementSpeed;
 
 	if ( camera.isSpedUp )
 	{
-		zoomKeyboardSpeed = Constants.FastZoomKeyboardSpeed;
-		zoomScrollSpeed   = Constants.FastZoomScrollSpeed;
-		movementSpeed     = Constants.FastMovementSpeed;
+		zoomKeyboardSpeed = Constants.fastZoomKeyboardSpeed;
+		zoomScrollSpeed   = Constants.fastZoomScrollSpeed;
+		movementSpeed     = Constants.fastMovementSpeed;
 	}
 
 	const float keyboardZoom = camera.keyboardZoomInput * time.deltaTime * zoomKeyboardSpeed;
 	const float mouseZoom    = camera.mouseZoomInput * zoomScrollSpeed;
 
 	const float newZoom = camera.zoomLevel + keyboardZoom + mouseZoom;
-	camera.zoomLevel    = std::clamp( newZoom, Constants.MinZoom, Constants.MaxZoom );
+	camera.zoomLevel    = std::clamp( newZoom, Constants.minZoom, Constants.maxZoom );
 
 	const glm::vec2 keyboardMove = camera.keyboardMovementInput * time.deltaTime * movementSpeed / camera.zoomLevel;
 	const glm::vec2 mouseMove    = camera.mouseMovementInput / camera.zoomLevel;

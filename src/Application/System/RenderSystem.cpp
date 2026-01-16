@@ -2,16 +2,19 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <ranges>
 #include <vector>
 
 #include <entt/entt.hpp>
 #include <glm/vec2.hpp>
 
+#include "Application/Components/GeneSet.hpp"
 #include "Application/Constants/CellConstants.hpp"
 #include "Application/Constants/VisualConstants.hpp"
 #include "Application/ContextEntity/Camera.hpp"
 #include "Application/ContextEntity/Grid.hpp"
+#include "Application/ContextEntity/VisMode.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/Interface/IRenderService.hpp"
 #include "Engine/Utility/Color.hpp"
@@ -57,7 +60,7 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 	// TODO: Consider performance.
 	const auto highestPopulation = std::ranges::max( spatialGrid | std::views::transform( std::ranges::size ) );
 
-	constexpr const auto& Constants = constant::visual.visModes.population;
+	constexpr const auto& constants = constant::visual.visModes.population;
 	for ( std::size_t index = 0; index < spatialGrid.size(); index++ )
 	{
 		const std::size_t cellPopulation = spatialGrid[ index ].size();
@@ -65,7 +68,57 @@ auto colorizePopulationCells( std::vector< Color >& colors,
 
 		const float popFactor =
 		    std::min( static_cast< float >( cellPopulation ) / static_cast< float >( highestPopulation ), 1.f );
-		color = lerpColor( Constants.lowEndColor, Constants.highEndColor, popFactor );
+		color = lerpColor( constants.lowEndColor, constants.highEndColor, popFactor );
+	}
+}
+
+// FIXME: This is a terrible way of doing it. A lot of bad things added recently I had added only because I am
+// running out of time for the thesis. Half the things in app logic could have been done better with couple of extra
+// months. Yes, a couple of months - this is app is genuinely big and it would have been twice as big had I not started
+// severely cutting corners.
+auto colorizeMaxEnergy( entt::registry& registry, std::vector< Color >& colors,
+                        const std::vector< std::vector< entt::entity > >& spatialGrid ) -> void
+{
+	const auto view = registry.view< component::GeneSet >();
+
+	float maxEnergyGene = 0.f;
+	float minEnergyGene = 0.f;
+	for ( const auto& [ entity, geneSet ] : view.each() )
+	{
+		const float energyGene = geneSet.agentGenes.maxEnergy;
+		maxEnergyGene          = std::max( maxEnergyGene, energyGene );
+		minEnergyGene          = std::min( minEnergyGene, energyGene );
+	}
+
+	const float range = maxEnergyGene - minEnergyGene;
+
+	for ( auto index{ 0uz }; index < spatialGrid.size(); index++ )
+	{
+		const auto& spatialCell = spatialGrid[ index ];
+
+		float energySum = 0.f;
+		int count       = 0;
+		for ( auto entity : spatialCell )
+		{
+			const auto& agentGenes = registry.get< component::GeneSet >( entity ).agentGenes;
+			energySum += agentGenes.maxEnergy;
+			count++;
+		}
+
+		float average = energySum / static_cast< float >( count );
+		float scale   = 0.f;
+		if ( count > 0 && range > 0.f )
+		{
+			const float average = energySum / static_cast< float >( count );
+
+			scale = ( average - minEnergyGene ) / range;
+			scale = std::clamp( scale, 0.f, 1.f );
+		}
+
+		constexpr const auto& constants = constant::visual.visModes.avgMaxEnergy;
+
+		auto& color = colors[ index ];
+		color       = lerpColor( constants.lowEndColor, constants.highEndColor, scale );
 	}
 }
 }  // namespace
@@ -128,6 +181,11 @@ auto RenderSystem::updateGridHandle( const Grid& logicalGrid, VisualGrid& visual
 	case Elevation:
 	{
 		colorizeCells< &Cell::elevation >( gridColors, logicalGrid, cell.elevationRange, visMode.elevation );
+		break;
+	}
+	case AvgMaxEnergy:
+	{
+		colorizeMaxEnergy( m_registry, gridColors, logicalGrid.getSpatialGrid() );
 		break;
 	}
 	default: assert( false );

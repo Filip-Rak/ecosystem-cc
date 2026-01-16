@@ -11,6 +11,7 @@ enum class VisModeEnum : std::uint8_t
 	Population,
 	Temperature,
 	Humidity,
-	Elevation
+	Elevation,
+	AvgMaxEnergy
 };
 }
