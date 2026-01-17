@@ -16,5 +16,7 @@ struct GuiLog
 	float averageAdaptation{};
 	float averageFoodPref{};
 	float totalVegetationEaten{};
+	float energyGeneMin{};
+	float energyGeneMax{};
 };
 }  // namespace cc::app

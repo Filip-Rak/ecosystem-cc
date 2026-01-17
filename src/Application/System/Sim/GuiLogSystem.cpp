@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
+#include <limits>
 
 #include <entt/entt.hpp>
 
@@ -44,6 +45,9 @@ auto GuiLogSystem::update() -> void
 	float adaptationRatingSum = 0.f;
 	float foodPrefSum         = 0.f;
 
+	float energyGeneMax = 0.f;
+	float energyGeneMin = std::numeric_limits< float >::max();
+
 	const auto& view =
 	    m_registry.view< const component::GeneSet, const component::Vitals, const component::Position >();
 	for ( const auto& [ entity, geneSet, vitals, position ] : view.each() )
@@ -62,6 +66,9 @@ auto GuiLogSystem::update() -> void
 		adaptationRatingSum += adaptation;
 		refractoryPeriodSum += genes.refractoryPeriod;
 		foodPrefSum += genes.foodPreference;
+
+		energyGeneMax = std::max( energyGeneMax, genes.maxEnergy );
+		energyGeneMin = std::min( energyGeneMin, genes.maxEnergy );
 	}
 
 	if ( agentCount > 0uz )
@@ -75,6 +82,8 @@ auto GuiLogSystem::update() -> void
 
 	guiLog.currentPopulation = agentCount;
 	guiLog.highestPopulation = std::max( guiLog.currentPopulation, guiLog.highestPopulation );
+	guiLog.energyGeneMax     = energyGeneMax;
+	guiLog.energyGeneMin     = energyGeneMin;
 }
 
 auto GuiLogSystem::onResetSim( const event::ResetSim& /*event*/ ) -> void

@@ -3,9 +3,9 @@
     "iterationTarget": 1e5,
     "rngSeed": 20000,
     "logging": {
-        "outputDirectoryPath": "output/debug",
+        "outputDirectoryPath": "output/continents",
         "logPerTickState": true,
-        "logPerformance": false
+        "logPerformance": true
     },
     "cell": {
         "growthSpeed": {

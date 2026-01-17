@@ -1,9 +1,9 @@
 {
-    "gridDirectoryPath": "resources/grids/Debug100x100",
+    "gridDirectoryPath": "resources/grids/River100x100",
     "iterationTarget": 1e5,
     "rngSeed": 30000,
     "logging": {
-        "outputDirectoryPath": "output/debug",
+        "outputDirectoryPath": "output/river",
         "logPerTickState": true,
         "logPerformance": true
     },
@@ -37,7 +37,7 @@
             "elevationPower": 1.0,
             "youthPayFactor": 0.5,
             "acclimationIncrement": 0.5,
-            "maxDrainCap": 0.99,
+            "maxDrainCap": 1.0,
             "crowdPenalty": 0.5,
             "offspringSustainmentNeed": 0.8,
             "energyAdaptationRate": 0.01
@@ -59,8 +59,8 @@
             "refractoryPeriod": 35,
             "lifeSpan": 100,
             "energy": 1.0,
-            "temperaturePreference": 0.97,
-            "humidityPreference": 0.41,
+            "temperaturePreference": 0.5,
+            "humidityPreference": 0.5,
             "elevationPreference": 0.0
         }
     }

@@ -57,6 +57,8 @@ auto drawGuiLog( const GuiLog& log ) -> void
 	ImGui::Text( "Average adaptation: %f", log.averageAdaptation );
 	ImGui::Text( "Average food preference: %f", log.averageFoodPref );
 	ImGui::Text( "Average RP: %f", log.averageRefractoryPeriod );
+	ImGui::Text( "Min energy gene: %f", log.energyGeneMin );
+	ImGui::Text( "Max energy gene: %f", log.energyGeneMax );
 }
 
 auto drawContents( entt::registry& registry ) -> void
