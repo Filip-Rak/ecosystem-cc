@@ -17,13 +17,15 @@
 #include "Application/ContextEntity/VisMode.hpp"
 #include "Application/ContextEntity/VisualGrid.hpp"
 #include "Engine/Interface/IRenderService.hpp"
+#include "Engine/Service/SFRenderService.hpp"
 #include "Engine/Utility/Color.hpp"
+#include "entt/entity/fwd.hpp"
 
 namespace cc::app
 {
 namespace
 {
-auto initGridHandle( entt::registry& registry, IRenderService& renderer ) -> GridHandle
+auto createGridHandle( entt::registry& registry, IRenderService& renderer ) -> GridHandle
 {
 	assert( registry.ctx().contains< Grid >() );
 	const auto& visualGrid = registry.ctx().get< VisualGrid >();
@@ -121,12 +123,20 @@ auto colorizeMaxEnergy( entt::registry& registry, std::vector< Color >& colors,
 		color       = lerpColor( constants.lowEndColor, constants.highEndColor, scale );
 	}
 }
+
+auto queryRender( entt::registry& registry ) -> SFRenderService&
+{
+	assert( registry.ctx().contains< SFRenderService >() );
+	auto& renderer = registry.ctx().get< SFRenderService >();
+
+	return renderer;
+}
 }  // namespace
-RenderSystem::RenderSystem( entt::registry& registry, IRenderService& renderer )
+RenderSystem::RenderSystem( entt::registry& registry )
     : m_registry( registry ),
-      m_renderer( renderer ),
-      m_gridHandle( initGridHandle( registry, renderer ) ),
-      m_cameraHandle( renderer.createCamera() )
+      m_renderer( queryRender( registry ) ),
+      m_gridHandle( createGridHandle( registry, m_renderer ) ),
+      m_cameraHandle( m_renderer.createCamera() )
 {
 	assert( registry.ctx().contains< Camera >() );
 	assert( registry.ctx().contains< VisualGrid >() );

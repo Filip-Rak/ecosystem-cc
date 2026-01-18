@@ -19,16 +19,17 @@ struct VisualGrid;
 class RenderSystem : public ISystem
 {
 public:
-	RenderSystem( entt::registry& registry, IRenderService& renderer );
+	RenderSystem( entt::registry& registry );
 	auto update() -> void override;
 
 private:
 	auto updateGridHandle( const Grid& grid, VisualGrid& visualGrid ) -> void;
 	auto updateCameraHandle( const Camera& camera ) -> void;
 
+	// Initialization order matters.
 	entt::registry& m_registry;
 	IRenderService& m_renderer;
-	GridHandle m_gridHandle;
-	CameraHandle m_cameraHandle;
+	const GridHandle m_gridHandle;
+	const CameraHandle m_cameraHandle;
 };
 }  // namespace cc::app

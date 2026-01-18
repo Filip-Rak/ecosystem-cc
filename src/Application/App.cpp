@@ -27,7 +27,6 @@
 #include "Application/Utility/ReadGrid.hpp"
 #include "Application/Utility/ReadPreset.hpp"
 #include "Engine/Events/SystemEvents.hpp"
-#include "Engine/Service/SFRenderService.hpp"
 
 namespace cc::app
 {
@@ -152,14 +151,11 @@ auto App::initSystems() -> void
 	auto& registry = m_engine.registry();
 	if ( m_cliOptions.gui )
 	{
-		assert( registry.ctx().contains< SFRenderService >() );
-		auto& renderer = registry.ctx().get< SFRenderService >();
-
 		m_engine.addSystem< InputSystem >( registry );
 		m_engine.addSystem< CameraMovementSystem >( registry );
 		m_engine.addSystem< SimRunnerSystem >( registry, m_cliOptions );
 		m_engine.addSystem< UISystem >( registry );
-		m_engine.addSystem< RenderSystem >( registry, renderer );
+		m_engine.addSystem< RenderSystem >( registry );
 	}
 	else
 	{
