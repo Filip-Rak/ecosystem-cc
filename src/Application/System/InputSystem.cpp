@@ -99,10 +99,10 @@ auto InputSystem::update() -> void
 	using namespace mouse;
 
 	camera.keyboardMovementInput = { 0.f, 0.f };
-	if ( input.isDown( Key::W ) ) camera.keyboardMovementInput.y -= 1;
-	if ( input.isDown( Key::S ) ) camera.keyboardMovementInput.y += 1;
-	if ( input.isDown( Key::A ) ) camera.keyboardMovementInput.x -= 1;
-	if ( input.isDown( Key::D ) ) camera.keyboardMovementInput.x += 1;
+	if ( input.isDown( Key::W ) ) camera.keyboardMovementInput.y -= 1.f;
+	if ( input.isDown( Key::S ) ) camera.keyboardMovementInput.y += 1.f;
+	if ( input.isDown( Key::A ) ) camera.keyboardMovementInput.x -= 1.f;
+	if ( input.isDown( Key::D ) ) camera.keyboardMovementInput.x += 1.f;
 
 	camera.keyboardZoomInput = 0.f;
 	if ( input.isDown( Key::Up ) ) camera.keyboardZoomInput -= 1.f;
