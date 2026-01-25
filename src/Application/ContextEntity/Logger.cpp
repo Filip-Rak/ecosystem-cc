@@ -67,7 +67,7 @@ auto copyResourceFile( const filesystem::path& resource, const filesystem::path&
 	{
 		if ( const auto error = handleDirectory( outputPath, clean ); error )
 		{
-			return *error;
+			return error;
 		}
 
 		const auto marker = outputPath / markerFile;

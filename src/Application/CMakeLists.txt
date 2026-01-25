@@ -1,6 +1,6 @@
 set(APP_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/App.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/CLI/ParseCli.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CLI/ParseCLI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Cell.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Grid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ContextEntity/Logger.cpp

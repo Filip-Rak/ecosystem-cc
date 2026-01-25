@@ -1,5 +1,5 @@
 {
-    "gridDirectoryPath": "resources/grids/River100x100",
+    "gridDirectoryPath": "resources/Grids/River100x100",
     "iterationTarget": 1e5,
     "rngSeed": 30000,
     "logging": {
