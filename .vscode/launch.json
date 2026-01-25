@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug",
+            "program": "${workspaceRoot}/build/clang-debug/src/ecosystem.exe",
+            "args": [
+                "--preset",
+                "resources/Presets/debugPreset.json",
+                "--tlog",
+                "1000",
+                "--gui",
+                "--clean",
+                // "--test-performance",
+                // "--agents",
+                // "10000",
+                // "--output",
+                // "output/optionTest"
+            ],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal"
+        }
+    ]
+}

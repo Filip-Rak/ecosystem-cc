@@ -107,9 +107,6 @@ auto drawContents( entt::registry& registry ) -> void
 	{
 		auto& dispatcher = registry.ctx().get< entt::dispatcher >();
 		dispatcher.enqueue< event::ResetSim >();
-		simRunnerData.paused = true;
-
-		std::println( "{}", labels.RestartButton.data() );
 	}
 	ImGui::EndDisabled();
 
