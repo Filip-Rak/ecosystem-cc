@@ -1,5 +1,5 @@
 {
-    "gridDirectoryPath": "resources/grids/Continents100x100",
+    "gridDirectoryPath": "resources/Grids/Continents100x100",
     "iterationTarget": 1e5,
     "rngSeed": 20000,
     "logging": {

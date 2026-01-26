@@ -5,7 +5,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceRoot}/build/clang-debug/src/ecosystem.exe",
+            "program": "${workspaceRoot}/build/clang-debug/src/ecosystem",
             "args": [
                 "--preset",
                 "resources/Presets/debugPreset.json",
@@ -20,7 +20,13 @@
                 // "output/optionTest"
             ],
             "cwd": "${workspaceRoot}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "windows": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem.exe",
+            },
+            "linux": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem",
+            }
         }
     ]
 }

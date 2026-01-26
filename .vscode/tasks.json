@@ -6,13 +6,13 @@
         {
             "label": "Run Release Performance Test",
             "type": "shell",
-            "command": "${workspaceRoot}/build/clang-release/src/ecosystem.exe",
+            "command": "${workspaceRoot}/build/clang-release/src/ecosystem",
             "args": [
                 "--preset",
                 "resources/Presets/benchmarkPreset.json",
                 "--tlog",
                 "1000000",
-                // "--gui",
+                "--gui",
                 "--clean",
                 "--test-performance",
                 "--agents",
@@ -23,12 +23,18 @@
             "options": {
                 "cwd": "${workspaceRoot}"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "windows": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem.exe",
+            },
+            "linux": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem",
+            }
         },
         {
             "label": "Run Release",
             "type": "shell",
-            "command": "${workspaceRoot}/build/clang-release/src/ecosystem.exe",
+            "command": "${workspaceRoot}/build/clang-release/src/ecosystem",
             "args": [
                 "--preset",
                 "resources/Presets/continentsPreset.json",
@@ -40,7 +46,13 @@
             "options": {
                 "cwd": "${workspaceRoot}"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "windows": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem.exe",
+            },
+            "linux": {
+                "program": "${workspaceRoot}/build/clang-debug/src/ecosystem",
+            }
         }
     ]
 }
