@@ -28,7 +28,9 @@
 namespace cc::app
 {
 SimRunnerSystem::SimRunnerSystem( entt::registry& registry, const cc::cli::Options& cliOptions )
-    : m_limitSpeed( cliOptions.gui && !cliOptions.testPerformance ), m_registry( registry )
+    : m_limitSpeed( cliOptions.gui && !cliOptions.testPerformance ),
+      m_triggerExtinction( !cliOptions.testPerformance ),
+      m_registry( registry )
 {
 	assert( registry.ctx().contains< entt::dispatcher >() );
 	assert( registry.ctx().contains< SimRunnerData >() );
@@ -112,7 +114,7 @@ auto SimRunnerSystem::invokeEvents() -> void
 			if ( !m_limitSpeed ) m_blockExecution = true;
 		}
 	}
-	else if ( grid.getPopulation() == 0uz )
+	else if ( grid.getPopulation() == 0uz && m_triggerExtinction )
 	{
 		dispatcher.enqueue< event::Extinction >( data.iteration );
 		if ( !m_limitSpeed ) m_blockExecution = true;

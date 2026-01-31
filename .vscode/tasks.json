@@ -37,11 +37,16 @@
             "command": "${workspaceRoot}/build/clang-release/src/ecosystem",
             "args": [
                 "--preset",
-                "resources/Presets/continentsPreset.json",
+                "resources/Presets/benchmarkPreset.json",
                 "--tlog",
                 "1000",
-                "--gui",
+                // "--gui",
                 "--clean",
+                "--test-performance",
+                "--agents",
+                "0",
+                "--output",
+                "output/gridTestAgents",
             ],
             "options": {
                 "cwd": "${workspaceRoot}"
