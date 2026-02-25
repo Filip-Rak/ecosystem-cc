@@ -1,4 +1,3 @@
-// Copied from SFML/Window/Keyboard.hpp
 #pragma once
 
 #include <array>
