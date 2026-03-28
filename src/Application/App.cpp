@@ -88,11 +88,15 @@ auto App::initEntities( entt::registry& registry, const Preset& preset ) const -
 	{
 		livePreset.logging.outputDirectoryPath = m_cliOptions.outputPath.value();
 	}
+	if ( m_cliOptions.gridPath )
+	{
+		livePreset.gridDirectoryPath = *m_cliOptions.gridPath;
+	}
 
 	registry.ctx().emplace< Randomizer >( livePreset );
 	registry.ctx().emplace< TickDataCollection >();
 
-	auto gridArgs = readGridFromDirectory( registry, preset.gridDirectoryPath );
+	auto gridArgs = readGridFromDirectory( registry, livePreset.gridDirectoryPath );
 	if ( !gridArgs )
 	{
 		return "-> Couldn't load the grid\n" + gridArgs.error();

@@ -16,6 +16,7 @@ struct Options
 	bool clean{ false };
 	bool testPerformance{ false };
 	std::filesystem::path presetPath;
+	std::optional< std::filesystem::path > gridPath;
 	std::optional< std::filesystem::path > outputPath;
 	std::optional< std::size_t > agents;
 	int terminalLogfrequency = LogEvery10;

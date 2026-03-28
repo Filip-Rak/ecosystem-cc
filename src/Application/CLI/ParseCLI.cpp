@@ -22,6 +22,7 @@ auto parse( int argc, char** argv ) -> Options
 	              "For GUI Only. Autostart without speed limit. Notice: UI will not fully work" );
 	app.add_option( "--output", options.outputPath, "Output path. Overwrites preset." );
 	app.add_option( "--agents", options.agents, "Agent count. Overwrites preset." );
+	app.add_option( "--grid", options.gridPath, "Grid directory path. Overwrites preset." );
 
 	try
 	{

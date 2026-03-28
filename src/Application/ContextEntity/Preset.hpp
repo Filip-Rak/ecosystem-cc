@@ -89,8 +89,8 @@ struct Preset
 		const bool logPerformance;
 	} logging;
 
+	std::filesystem::path gridDirectoryPath;
 	const std::filesystem::path presetPath;
-	const std::filesystem::path gridDirectoryPath;
 	const std::size_t iterationTarget;
 	const std::uint32_t rngSeed;
 };
