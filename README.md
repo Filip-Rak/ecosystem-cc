@@ -19,7 +19,7 @@ alternatively:
   - run `cmake --build build` - compile the project.
 
 # Usage
-- run executable file e.g. `ecosystem.exe` on Windows. Location depended on selected CMake generator: `build\src` for Ninja, `build\src\Debug` for MSBuild.
+- run executable file e.g. `ecosystem.exe` on Windows. Location dependent on selected CMake generator: `build\src` for Ninja, `build\src\Debug` for MSBuild.
 - run executable with the following options:
   ```
   OPTIONS:
