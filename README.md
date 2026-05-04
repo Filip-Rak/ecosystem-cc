@@ -5,11 +5,11 @@
 
 # Installation
 - run `git clone https://github.com/Filip-Rak/ecosystem-cc.git` - download the source code.
-- run `cd ecosystem-cc/`
+- run `cd ecosystem-cc/`.
 
 either:
 - from the root directory:
-  - run `cmake -B build` - Configure CMake. Tun this from the root project dir.
+  - run `cmake -B build` - Configure CMake. run this from the root project dir.
   - run `cmake --build build` - Compile project.
 
 alternatively:
@@ -23,9 +23,16 @@ alternatively:
 - run executable with the following options:
   ```
   OPTIONS:
-  -h,     --help              Print this help message and exit
-          --preset TEXT       Simulation preset to run
-          --gui               Run with GUI
+    -h,     --help              Print this help message and exit 
+            --preset TEXT       Simulation preset to run 
+            --tlog INT          Log progress to terminal every [tlog] iteration 
+            --clean             Purge all the files in the given output directory 
+            --gui               Run with GUI 
+            --test-performance  For GUI Only. Autostart without speed limit. Notice: UI will not 
+                                fully work 
+            --output TEXT       Output path. Overwrites preset. 
+            --agents UINT       Agent count. Overwrites preset. 
+            --grid TEXT         Grid directory path. Overwrites preset. 
   ```
 - resource files, such as presets or grids are present in `resources/` directory.
 - modify and create presets. Example in `resources/presets`.
